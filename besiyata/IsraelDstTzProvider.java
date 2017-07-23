@@ -95,7 +95,7 @@ Rule	Zion	2004	only	-	Sep	22	1:00	0	S
  *
  * @author orr
  */
-public class TzDstManager implements TimeZoneProvider
+public class IsraelDstTzProvider implements TimeZoneProvider
 {
 
     static int year;

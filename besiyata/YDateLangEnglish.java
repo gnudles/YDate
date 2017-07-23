@@ -11,7 +11,7 @@ package besiyata.YDate;
  */
 public class YDateLangEnglish extends YDateLanguage
 {
-        static final String WeekTokens []={"Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"};
+    static final String WeekTokens []={"Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"};
     static final String HebMonthTokens []={"Tishrei", "Cheshvan", "Kislev", "Tevet",
                 "Shevat", "Adar",
                 "Adar I",
@@ -31,7 +31,28 @@ public class YDateLangEnglish extends YDateLanguage
                  "October",
                  "November",
                  "December"};
-    
+
+    public static final String[] zodiac_names =
+            {
+                    "Aries","Taurus","Gemini","Cancer","Leo","Virgo","Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"
+            };
+    /*
+    fire: Aries Leo Sagittarius
+    earth: Taurus Virgo Capricorn
+    wind: Gemini Libra Aquarius
+    water: Cancer Scorpio Pisces
+       fire doesn't connect with water
+       earth doesn't connect with wind
+    */
+    public static final String[] four_elements_names =
+            {
+                    "fire", "earth", "wind", "water"
+            };
+    public static final String[] star_names =
+            {
+                    "Mercury","Moon","Saturn","Jupiter","Mars","Sun","Venus"
+            };
+
     @Override
     public String getWeekToken(int token)
     {
@@ -53,9 +74,19 @@ public class YDateLangEnglish extends YDateLanguage
     @Override
     public String getZodiacToken(int token)
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return zodiac_names[token];
     }
-    
+
+    @Override
+    public String getElementToken(int token) {
+        return four_elements_names[token];
+    }
+
+    @Override
+    public String getStarToken(int token) {
+        return star_names[token];
+    }
+
     @Override
     public String getEventToken(int token)
     {
@@ -66,5 +97,20 @@ public class YDateLangEnglish extends YDateLanguage
     public String getNumber(int num)
     {
         return String.valueOf(num);
+    }
+
+    @Override
+    public String FormatGregorianDate(int day, int month, int year) {
+        return getGregMonthToken(month-1)+" "+Integer.toString(day)+", "+Integer.toString(year);
+    }
+
+    @Override
+    public String FormatJewishDate(int day, int monthId, int year) {
+        return getHebMonthToken(monthId)+" "+Integer.toString(day)+", "+Integer.toString(year);
+    }
+
+    @Override
+    public String FormatPeriod(int monthId) {
+        return getHebMonthToken(monthId)+" Period";
     }
 }

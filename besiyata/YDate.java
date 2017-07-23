@@ -14,7 +14,7 @@ public class YDate
 {
     public interface TimeZoneProvider {
 
-        float getOffset(Date d); //offset in hours
+        float getOffset(Date d); //offset in hours from UTC
     }
     static final int EPOCH_DAY=2092591;//1.1.1970
 
@@ -166,19 +166,13 @@ public class YDate
                 return false;
             }
         }
-        GregorianDate(int days)
+        public GregorianDate(int days)
         {
             valid=setByDays(days);
         }
-        String dayString(boolean Heb)
+        public String dayString(YDateLanguage.Language language)
         {
-            String s=Integer.toString(this.day);
-            if(Heb)
-                s+= " ב";
-            else
-                s+= " in ";
-            s+= monthName(Heb) + " " + Integer.toString(this.year);
-            return s;
+            return YDateLanguage.getLanguageEngine(language).FormatGregorianDate(day,month,year);
         }
         public int dayInWeek()
         {
@@ -223,8 +217,9 @@ public class YDate
         {
             return daysSinceBeginning()+JULIAN_DAY_OFFSET-0.5;
         }
-        public String monthName(boolean Heb)
+        public String monthName(YDateLanguage.Language language)
         {
+            /*
             final String[][] months =
             {
                 {"ינואר", "פברואר", "מרס", 
@@ -255,15 +250,15 @@ public class YDate
                  "Oct",
                  "Nov",
                  "Dec"},
-            };
-            return months[Heb?0:1][this.month-1];
+            };*/
+            return YDateLanguage.getLanguageEngine(language).getGregMonthToken(this.month-1);
         }
         private static final int[][] months_days_offsets=
         {
             {0 , 31 , 59 , 90 , 120 , 151 , 181 , 212 , 243 , 273 , 304 , 334 , 365 },
             {0 , 31 , 60 , 91 , 121 , 152 , 182 , 213 , 244 , 274 , 305 , 335 , 366 }
         };
-        private void setMonthDay(int days)
+        private void setMonthDay(int days)//finds the month by day in year.
         {
             int mo_year_t=isLeap(this.year)?1:0;
             int m=days*2/61;
@@ -332,8 +327,14 @@ public class YDate
                 year_first_day+=((year-1)/4)+year*365;
             return year_first_day;
         }
-                
-        
+        public void stepMonthForward(boolean cyclic)
+        {
+            setByYearMonthDay(year+(cyclic?0:(month==12?1:0)),(month%12)+1,day);
+        }
+        public void stepMonthBackward(boolean cyclic)
+        {
+            setByYearMonthDay(year-(cyclic?0:(month==1?1:0)),((month+10)%12)+1,day);
+        }
     }
     public static final class JewishDate
     {
@@ -500,16 +501,13 @@ public class YDate
             setMonthDay(this.day_in_year);
             return true;
         }
-        JewishDate(int days)
+        public JewishDate(int days)
         {
             valid=setByDays(days);
         }
-        public String dayString(boolean Heb)
+        public String dayString(YDateLanguage.Language lang)
         {
-            if (!Heb)
-                return Integer.toString(this.day) + " in " + monthName(Heb) + " " + Integer.toString(this.year);
-            else
-                return Format.HebIntString(this.day, true)+ " ב" + monthName(Heb) + " " + Format.HebIntString(this.year,true);
+            return YDateLanguage.getLanguageEngine(lang).FormatJewishDate(day,monthID(),year);
         }
         public int NumberOfShabbats()
         {
@@ -621,12 +619,9 @@ public class YDate
             else
                 return "Zodiac. "+zodiac_names[1][mazal] +" ("+four_elements_names[1][mazal%4]+")";
         }
-        public String TkufaName(boolean Heb)
+        public String TkufaName(YDateLanguage.Language language)
         {
-            if (Heb)
-                return "תקופת "+monthNameByID(TkufaType(),Heb);
-            else
-                return monthNameByID(TkufaType(),Heb)+" Period";
+            return YDateLanguage.getLanguageEngine(language).FormatPeriod(TkufaType());
         }
         public String MazalBeginning(TimeZoneProvider tz)
         {
@@ -748,15 +743,16 @@ public class YDate
             lstr+=" ("+clock_type+ ")";
             return lstr;
         }
-        public String MoladString(TimeZoneProvider tz)
+        public String MoladString(TimeZoneProvider tz, YDateLanguage.Language language)
         { 
+	//TODO: make this multilingual
             long parts=MoladParts();
             int days=(int)(parts/DAY);
             int single_parts=(int)(parts%DAY);
             int hours=(int)(single_parts/HOUR);
             single_parts=single_parts%HOUR;
             String lstr="המולד לחודש ";
-            lstr+=monthName(true);
+            lstr+=monthName(language);
             lstr+=" ";
             lstr+=Format.HebIntString(year(),true);
             lstr+=" ביום ";
@@ -857,9 +853,9 @@ public class YDate
         {
             return monthID(calculateYearMonths(year),this.month);
         }
-        public String monthNameByID(int mID,boolean Heb)
+        public static String monthNameByID(int mID,YDateLanguage.Language language)
         {
-            final String[][] months =
+            /*final String[][] months =
             {
                 {"תשרי", "חשוון", "כסלו", "טבת",
                 "שבט", "אדר",
@@ -873,12 +869,12 @@ public class YDate
                 "Adar II",
                 "Nisan", "Iyar",
                 "Sivan", "Tammuz", "Av", "Elul"},
-            };
-            return months[Heb?0:1][mID];
+            };*/
+            return YDateLanguage.getLanguageEngine(language).getHebMonthToken(mID);
         }
-        public String monthName(boolean Heb)
+        public String monthName(YDateLanguage.Language language)
         {
-            return monthNameByID(monthID(),Heb);
+            return monthNameByID(monthID(),language);
         }
         public int daysSinceBeginning()
         {
@@ -893,7 +889,7 @@ public class YDate
             {0 , 30 , 59 , 89 , 118 , 148 , 178 , 207 , 237 , 266 , 296 , 325 , 355 , 384 },
             {0 , 30 , 60 , 90 , 119 , 149 , 179 , 208 , 238 , 267 , 297 , 326 , 356 , 385 }
         };
-        private void setMonthDay(int days)
+        private void setMonthDay(int days)//finds the month by day in year.
         {
             int mo_year_t=mo_year_type(this.year_length);
             int m=days*2/59;
@@ -984,7 +980,28 @@ public class YDate
             return calculateDayInYear(year_length,month,day);
         }
 
-
+        public void stepMonthForward(boolean cyclic)
+        {
+            int months_in_year=calculateYearMonths(year);
+            if (month==months_in_year) {
+                setByYearMonthIdDay(year+(cyclic?0:1),M_ID_TISHREI,day);
+            }
+            else
+            {
+                setByYearMonthIdDay(year,monthID(months_in_year,month+1),day);
+            }
+        }
+        public void stepMonthBackward(boolean cyclic)
+        {
+            if (month==1) {
+                setByYearMonthIdDay(year-(cyclic?0:1),M_ID_ELUL,day);
+            }
+            else
+            {
+                int months_in_year=calculateYearMonths(year);
+                setByYearMonthIdDay(year,monthID(months_in_year,month-1),day);
+            }
+        }
         public int monthLength()
         {
             return monthLengthInYear(this.year_length,this.month);
@@ -1151,7 +1168,7 @@ public class YDate
             events_previous=getAnnualFromCache(hd.year-1,JewishDate.calculateYearLength(hd.year-1),JewishDate.calculateYearFirstDay(hd.year-1),diaspora);
         }
     }
-    YDateAnnual yearEvents(){ return events_current;}
+    public YDateAnnual yearEvents(){ return events_current;}
     public byte getEvent()
     {
         return getEvent(hd.dayInYear());
@@ -1168,7 +1185,7 @@ public class YDate
         return events_next.getYearEvents()[day_in_year];
     }
 
-    private void maintainEvents()
+    private void updateEvents()
     {
         if (events_current!=null)
         {
@@ -1197,7 +1214,104 @@ public class YDate
         {
             gd.setByDays(days);
             hd.setByDays(days);
-            maintainEvents();
+            updateEvents();
+            return true;
+        }
+        return false;
+    }
+    public enum STEP_TYPE
+    {
+        HEB_MONTH_FORWARD,
+        HEB_MONTH_BACKWARD,
+        HEB_MONTH_FORWARD_CYCLIC,
+        HEB_MONTH_BACKWARD_CYCLIC,
+        HEB_YEAR_FORWARD,
+        HEB_YEAR_BACKWARD,
+        GRE_MONTH_FORWARD,
+        GRE_MONTH_BACKWARD,
+        GRE_MONTH_FORWARD_CYCLIC,
+        GRE_MONTH_BACKWARD_CYCLIC,
+        GRE_YEAR_FORWARD,
+        GRE_YEAR_BACKWARD,
+    }
+    public boolean step(STEP_TYPE st)
+    {
+        boolean cyclic= (st == STEP_TYPE.HEB_MONTH_BACKWARD_CYCLIC ||
+                st == STEP_TYPE.HEB_MONTH_FORWARD_CYCLIC ||
+                st == STEP_TYPE.GRE_MONTH_BACKWARD_CYCLIC ||
+                st == STEP_TYPE.GRE_MONTH_FORWARD_CYCLIC);
+        boolean heb_changed=(st==STEP_TYPE.HEB_MONTH_BACKWARD_CYCLIC||
+        st==STEP_TYPE.HEB_MONTH_BACKWARD || st==STEP_TYPE.HEB_MONTH_FORWARD || st== STEP_TYPE.HEB_MONTH_FORWARD_CYCLIC ||
+        st == STEP_TYPE.HEB_YEAR_BACKWARD || st == STEP_TYPE.HEB_YEAR_FORWARD);
+        JewishDate new_hd=null;
+        GregorianDate new_gd=null;
+        if (heb_changed)
+        {
+            new_hd=new JewishDate(hd);
+        }
+        else
+        {
+            new_gd=new GregorianDate(gd);
+        }
+        switch (st)
+        {
+            case HEB_MONTH_BACKWARD_CYCLIC:
+            case HEB_MONTH_BACKWARD:
+                new_hd.stepMonthBackward(cyclic);
+                break;
+            case HEB_MONTH_FORWARD_CYCLIC:
+            case HEB_MONTH_FORWARD:
+                new_hd.stepMonthForward(cyclic);
+                break;
+            case HEB_YEAR_BACKWARD:
+                new_hd.setByYearMonthIdDay(hd.year()-1,hd.monthID(),hd.dayInMonth());
+                break;
+            case HEB_YEAR_FORWARD:
+                new_hd.setByYearMonthIdDay(hd.year()+1,hd.monthID(),hd.dayInMonth());
+                break;
+            case GRE_MONTH_BACKWARD_CYCLIC:
+            case GRE_MONTH_BACKWARD:
+                new_gd.stepMonthBackward(cyclic);
+                break;
+            case GRE_MONTH_FORWARD_CYCLIC:
+            case GRE_MONTH_FORWARD:
+                new_gd.stepMonthForward(cyclic);
+                break;
+            case GRE_YEAR_BACKWARD:
+                new_gd.setByYearMonthDay(gd.year()-1,gd.month(),gd.dayInMonth());
+                break;
+            case GRE_YEAR_FORWARD:
+                new_gd.setByYearMonthDay(gd.year()+1,gd.month(),gd.dayInMonth());
+                break;
+        }
+        if (heb_changed) {
+            return ApplyJewishToGregorian(new_hd);
+        }
+        else
+        {
+            return ApplyGregorianToJewish(new_gd);
+        }
+    }
+
+    private boolean ApplyGregorianToJewish(GregorianDate new_gd)
+    {
+        int days=new_gd.daysSinceBeginning();
+        if (commonRange(days) && new_gd.valid)
+        {
+            gd=new_gd;
+            hd.setByDays(days);
+            updateEvents();
+            return true;
+        }
+        return false;
+    }
+    private boolean ApplyJewishToGregorian(JewishDate new_hd)
+    {
+        int days = new_hd.daysSinceBeginning();
+        if (commonRange(days) && new_hd.valid) {
+            hd = new_hd;
+            gd.setByDays(days);
+            updateEvents();
             return true;
         }
         return false;
@@ -1206,13 +1320,7 @@ public class YDate
     {
         JewishDate new_hd=new JewishDate(hd);
         new_hd.setByYearMonthIdDay(year, month_id, day);
-        int days=new_hd.daysSinceBeginning();
-        if (commonRange(days) && new_hd.valid)
-        {
-            hd=new_hd;
-            gd.setByDays(days);
-            maintainEvents();
-        }
+        ApplyJewishToGregorian(new_hd);
     }
     public void setByDate(Date d)
     {
@@ -1229,13 +1337,7 @@ public class YDate
         {
             GregorianDate new_gd=new GregorianDate(gd);
             new_gd.setByYearMonthDay(year, month, day);
-            int days=new_gd.daysSinceBeginning();
-            if (commonRange(days) && new_gd.valid)
-            {
-                gd=new_gd;
-                hd.setByDays(days);
-                maintainEvents();
-            }
+            ApplyGregorianToJewish(new_gd);
         }
     }
 

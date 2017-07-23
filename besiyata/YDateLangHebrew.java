@@ -24,6 +24,26 @@ public class YDateLangHebrew extends YDateLanguage
                  "אפריל", "מאי", "יוני", "יולי", 
                  "אוגוסט", "ספטמבר", "אוקטובר", 
                  "נובמבר", "דצמבר"};
+    public static final String[] zodiac_names =
+            {
+                    "טלה", "שור", "תאומים", "סרטן", "אריה", "בתולה", "מאזנים", "עקרב", "קשת", "גדי", "דלי", "דגים"
+            };
+    /*
+    fire: Aries Leo Sagittarius
+    earth: Taurus Virgo Capricorn
+    wind: Gemini Libra Aquarius
+    water: Cancer Scorpio Pisces
+       fire doesn't connect with water
+       earth doesn't connect with wind
+    */
+    public static final String[] four_elements_names =
+            {
+                    "אש", "עפר", "רוח", "מים"
+            };
+    public static final String[] star_names =
+            {
+                    "כוכב", "לבנה", "שבתאי", "צדק", "מאדים", "חמה", "נגה"
+            };
     
     @Override
     public String getWeekToken(int token)
@@ -46,9 +66,19 @@ public class YDateLangHebrew extends YDateLanguage
     @Override
     public String getZodiacToken(int token)
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return zodiac_names[token];
     }
-    
+
+    @Override
+    public String getElementToken(int token) {
+        return four_elements_names[token];
+    }
+
+    @Override
+    public String getStarToken(int token) {
+        return star_names[token];
+    }
+
     @Override
     public String getEventToken(int token)
     {
@@ -58,7 +88,21 @@ public class YDateLangHebrew extends YDateLanguage
     @Override
     public String getNumber(int num)
     {
-        return Format.HebIntSubString(num, true, true);
+        return Format.HebIntString(num, true);
+    }
+
+    @Override
+    public String FormatGregorianDate(int day, int month, int year) {
+        return Integer.toString(day)+" ב"+getGregMonthToken(month-1)+" "+Integer.toString(year);
+    }
+
+    @Override
+    public String FormatJewishDate(int day, int monthId, int year) {
+        return Integer.toString(day)+" ב"+getHebMonthToken(monthId)+" "+Format.HebIntString(year, true);
+    }
+    @Override
+    public String FormatPeriod(int monthId) {
+        return "תקופת "+getHebMonthToken(monthId);
     }
 
 }

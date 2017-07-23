@@ -5,6 +5,7 @@
  */
 package besiyata.YDate;
 
+import java.util.Calendar;
 import java.util.TimeZone;
 
 /**
@@ -15,34 +16,19 @@ public class YDatePreferences
 {
     public YDatePreferences()
     {
-        tz=TimeZone.getDefault();
+        TimeZone tz= Calendar.getInstance().getTimeZone();
+        timeZoneProvider=new NativeTzProvider(tz);
         diaspora=!tz.equals(TimeZone.getTimeZone("Asia/Jerusalem"));
-        if (tz.equals(TimeZone.getTimeZone("Asia/Jerusalem")))
-        {
-            language=Language.HEBREW;
-        }
-        else if (tz.equals(TimeZone.getTimeZone("Europe/Paris")))
-        {
-            language=Language.FRENCH;
-        }
-        else
-        {
-            language=Language.ENGLISH;
-        }
     }
-    enum Language {
-        HEBREW,
-        ENGLISH,
-        YIDDISH,
-        SPANISH,
-        FRENCH,
-        RUSSIAN,
-        GERMAN,
-        PERSIAN,
-        ARABIC,
-        ARAMIC,
+    public YDatePreferences(YDate.TimeZoneProvider _timeZoneProvider, boolean _diaspora)
+    {
+        timeZoneProvider=_timeZoneProvider;
+        diaspora=_diaspora;
     }
-    Language language;
-    boolean diaspora;
-    TimeZone tz;
+
+    public double longitude;
+    public double latitude;
+    public double altitude;//in meters from MSL
+    public boolean diaspora;
+    public YDate.TimeZoneProvider timeZoneProvider;
 }
