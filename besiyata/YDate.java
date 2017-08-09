@@ -654,6 +654,39 @@ public class YDate
             //and that tkufa started at tkufa*10227/112
             //which is actually 1461/16 or 16/1461
         }
+
+		public static final int [][] possibleMonthDay={
+			{MONDAY,TUESDAY,THURSDAY,SATURDAY},//TISHREI
+			{MONDAY,WEDNESDAY,THURSDAY,SATURDAY},//CHESHVAN
+			{SUNDAY,MONDAY,TUESDAY,WEDNESDAY,THURSDAY,FRIDAY},//KISLEV
+			{SUNDAY,MONDAY,TUESDAY,WEDNESDAY,FRIDAY},//TEVET
+			{MONDAY,TUESDAY,WEDNESDAY,THUSDAY,SATURDAY},//SHEVAT
+			{MONDAY,WEDNESDAY,FRIDAY,SATURDAY},//ADAR
+			{MONDAY,WEDNESDAY,THURSDAY,SATURDAY},//ADAR_I
+			{MONDAY,WEDNESDAY,FRIDAY,SATURDAY},//ADAR_II
+			{SUNDAY,TUESDAY,THURSDAY,SATURDAY},//NISAN
+			{MONDAY,TUESDAY,THURSDAY,SATURDAY},//IYAR
+			{SUNDAY,TUESDAY,WEDNESDAY,FRIDAY},//SIVAN
+			{SUNDAY,TUESDAY,THURSDAY,FRIDAY},//TAMMUZ
+			{MONDAY,WEDNESDAY,FRIDAY,SATURDAY},//AV
+			{SUNDAY,MONDAY,WEDNESDAY,FRIDAY}//ELUL
+		};
+		public static final int [][] possibleMonthLength={
+			{30},//TISHREI
+			{29,30},//CHESHVAN
+			{29,30},//KISLEV
+			{29},//TEVET
+			{30},//SHEVAT
+			{29},//ADAR
+			{30},//ADAR_I
+			{29},//ADAR_II
+			{30},//NISAN
+			{29},//IYAR
+			{30},//SIVAN
+			{29},//TAMMUZ
+			{30},//AV
+			{29}//ELUL
+		};
         public String yearSign()
         {
             final byte [] yeartype={8,11,21};
