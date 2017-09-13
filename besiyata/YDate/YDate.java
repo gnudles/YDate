@@ -10,6 +10,8 @@ import java.util.TreeMap;
 import java.lang.ref.SoftReference;
 import java.util.TimeZone;
 
+import besiyata.gp.EventHandler;
+
 public class YDate
 {
     public interface TimeZoneProvider {
@@ -660,7 +662,7 @@ public class YDate
 			{MONDAY,WEDNESDAY,THURSDAY,SATURDAY},//CHESHVAN
 			{SUNDAY,MONDAY,TUESDAY,WEDNESDAY,THURSDAY,FRIDAY},//KISLEV
 			{SUNDAY,MONDAY,TUESDAY,WEDNESDAY,FRIDAY},//TEVET
-			{MONDAY,TUESDAY,WEDNESDAY,THUSDAY,SATURDAY},//SHEVAT
+			{MONDAY,TUESDAY,WEDNESDAY,THURSDAY,SATURDAY},//SHEVAT
 			{MONDAY,WEDNESDAY,FRIDAY,SATURDAY},//ADAR
 			{MONDAY,WEDNESDAY,THURSDAY,SATURDAY},//ADAR_I
 			{MONDAY,WEDNESDAY,FRIDAY,SATURDAY},//ADAR_II
@@ -698,12 +700,17 @@ public class YDate
         {
             return (day==30 || day==1);
         }
+        public boolean shabbaton(YDatePreferences.DiasporaType diaspora)
+        {
+            if (diaspora== YDatePreferences.DiasporaType.Both)
+                return shabbaton(true) || shabbaton(false);
+            return shabbaton(diaspora == YDatePreferences.DiasporaType.Diaspora);
+        }
         public boolean shabbaton(boolean diaspora)
         {
             byte[] events =YDateAnnual.getEvents(year_length, year_first_day, diaspora);
             short type=YDateAnnual.getEventType(events[day_in_year]);
             return ((type & YDateAnnual.EV_TYPE_MASK) == YDateAnnual.EV_YOM_TOV) || (dayInWeek()==7);
-            
         }
         public int dayOfChanukkah()
         {
@@ -1163,73 +1170,18 @@ public class YDate
     }
 
     public JewishDate hd;
-    
     public GregorianDate gd;
-    private YDateAnnual events_previous=null;
-    private YDateAnnual events_current=null;
-    private YDateAnnual events_next=null;
-    private static AbstractMap<Integer ,SoftReference<YDateAnnual> > annuals_cache = new TreeMap<>();
-    private static AbstractMap<Integer ,SoftReference<YDateAnnual> > annuals_cache_diaspora = new TreeMap<>();
 
-    private static YDateAnnual getAnnualFromCache(int hd_year,int hd_year_length, int hd_year_first_day,boolean diaspora)
+    private EventHandler dateChanged = new EventHandler();
+    public void registerOnDateChanged(EventHandler.Listener listener)
     {
-        AbstractMap<Integer ,SoftReference<YDateAnnual> > cache;
-        if (diaspora)
-        {
-            cache=annuals_cache_diaspora;
-        }
-        else
-            cache=annuals_cache;
-        YDateAnnual annual;
-        SoftReference<YDateAnnual> sa = cache.get(hd_year);
-        if (sa!=null)
-        {
-            annual=sa.get();
-            if (annual!=null)
-                return annual;
-        }
-        annual = new YDateAnnual(hd_year,hd_year_length,hd_year_first_day,diaspora);
-        cache.put(hd_year,new SoftReference<>(annual));
-        return annual;
+        dateChanged.addListener(listener);
     }
-    public void setMaintainEvents(boolean diaspora)
+    private void notifyDateChanged()
     {
-        if (events_current==null)
-        {
-            events_current=getAnnualFromCache(hd.year,hd.year_length,hd.year_first_day,diaspora);
-            events_next=getAnnualFromCache(hd.year+1,JewishDate.calculateYearLength(hd.year+1),hd.year_first_day+hd.year_length,diaspora);
-            events_previous=getAnnualFromCache(hd.year-1,JewishDate.calculateYearLength(hd.year-1),JewishDate.calculateYearFirstDay(hd.year-1),diaspora);
-        }
-    }
-    public YDateAnnual yearEvents(){ return events_current;}
-    public byte getEvent()
-    {
-        return getEvent(hd.dayInYear());
-    }
-    public byte getEvent(int day_in_year)
-    {
-        if (day_in_year<-events_previous.yearLength() || day_in_year>= events_current.yearLength() + events_next.yearLength())
-            return 0;
-        if (day_in_year<0)
-            return events_previous.getYearEvents()[events_previous.yearLength()+day_in_year];
-        if (day_in_year<events_current.yearLength())
-            return events_current.getYearEvents()[day_in_year];
-        day_in_year-=events_current.yearLength();
-        return events_next.getYearEvents()[day_in_year];
+        dateChanged.trigger(this);
     }
 
-    private void updateEvents()
-    {
-        if (events_current!=null)
-        {
-            if (events_current.year()!=hd.year())
-            {
-                boolean diaspora=events_current.diaspora();
-                events_current=null;
-                setMaintainEvents(diaspora);
-            }
-        }
-    }
     private static boolean commonRange(int days)
     {
         if (days<JewishDate.DAYS_OF_6001 && days>=GregorianDate.DAYS_OF_1600)
@@ -1247,7 +1199,7 @@ public class YDate
         {
             gd.setByDays(days);
             hd.setByDays(days);
-            updateEvents();
+            notifyDateChanged();
             return true;
         }
         return false;
@@ -1333,7 +1285,7 @@ public class YDate
         {
             gd=new_gd;
             hd.setByDays(days);
-            updateEvents();
+            notifyDateChanged();
             return true;
         }
         return false;
@@ -1344,7 +1296,7 @@ public class YDate
         if (commonRange(days) && new_hd.valid) {
             hd = new_hd;
             gd.setByDays(days);
-            updateEvents();
+            notifyDateChanged();
             return true;
         }
         return false;
@@ -1393,12 +1345,10 @@ public class YDate
                 hd= new JewishDate(gd.daysSinceBeginning());
         }
     }
-    private YDate(JewishDate hd, GregorianDate gd, boolean events, boolean diaspora)
+    private YDate(JewishDate hd, GregorianDate gd)
     {
         this.gd=new GregorianDate(gd);
         this.hd=new JewishDate(hd);
-        if (events)
-            setMaintainEvents(diaspora);
     }
     private YDate(int days)
     {
@@ -1407,10 +1357,7 @@ public class YDate
     }
     public static YDate createFrom(YDate other)
     {
-        boolean diaspora=false;
-        if (other.events_current!=null)
-            diaspora=other.events_current.diaspora();
-        return new YDate(other.hd,other.gd,other.events_current!=null,diaspora);
+        return new YDate(other.hd,other.gd);
     }
     public static YDate createFrom(int days)
     {
@@ -1475,22 +1422,10 @@ public class YDate
             return Format.TimeString(hour, min,sec);
         return Format.TimeString(hour, min);
     }
-    public boolean shabbaton()
+    public boolean shabbaton(YDatePreferences.DiasporaType diaspora)
     {
-        return hd.shabbaton(getPreferences().diaspora);
+        return hd.shabbaton(diaspora);
     }
-    YDatePreferences prefernces;
-    YDatePreferences getPreferences()
-    {
-        if (prefernces==null)
-        {
-            prefernces=new YDatePreferences();
-        }
-        return prefernces;
-    }
-    public void setPreferences(YDatePreferences p)
-    {
-        prefernces=p;
-    }
+
 
 }
