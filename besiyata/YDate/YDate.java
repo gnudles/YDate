@@ -521,7 +521,7 @@ public class YDate
         {
             if(diaspora)
             {
-                int day_tkufa=dayInTkufa();
+                //int day_tkufa=dayInTkufa();
                 int starting=getTkufaDay(0)+59;
                 if (daysSinceBeginning()< starting)
                     return false;
@@ -545,6 +545,27 @@ public class YDate
             }
             int pessach_day=calculateDayInYearByMonthId(year_length, M_ID_NISAN, 15);
             return (day_in_year==pessach_day && !afterTikkunTime) || day_in_year<pessach_day;
+        }
+        public String Segulah()
+        {
+            String lstr="";
+            if (TorahReading.getShabbatBereshit(yearLength(),yearFirstDay())+15*7-4 == daysSinceBeginning()) //Tuesday in Beshalach
+            {
+                return "סגולת פרשת המן שניים מקרא ואחד תרגום\n";
+            }
+            if (monthID()==M_ID_NISAN)
+            {
+                lstr+="ברכת האילנות\n";
+                if (dayInMonth()<=13)
+                {
+                    lstr+="קרבנות הנשיאים\n";
+                }
+            }
+            if (monthID()==M_ID_IYAR && dayInMonth() == 29)
+            {
+                lstr+="תפילת השל\"ה\n";
+            }
+            return  lstr;
         }
         public int ShmitaOrdinal()//unfortunatly we don't have Yovel.
         {
@@ -700,6 +721,9 @@ public class YDate
         {
             return (day==30 || day==1);
         }
+        public boolean mevarchinShabbat() {return (day>=23 && day<30 && dayInWeek()==7 && monthID()!= M_ID_ELUL);}//not mevarchin before Tishrei
+        public boolean yomHakhel() {return  (day==16 && monthID()==M_ID_TISHREI &&
+                (ShmitaOrdinal()-1)%7 == 0 ); }// in the year after Shmita, after first day of Succot.
         public boolean shabbaton(YDatePreferences.DiasporaType diaspora)
         {
             if (diaspora== YDatePreferences.DiasporaType.Both)

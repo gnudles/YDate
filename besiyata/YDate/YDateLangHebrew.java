@@ -98,7 +98,7 @@ public class YDateLangHebrew extends YDateLanguage
 
     @Override
     public String FormatJewishDate(int day, int monthId, int year) {
-        return Integer.toString(day)+" ב"+getHebMonthToken(monthId)+" "+Format.HebIntString(year, true);
+        return Format.HebIntString(day, true)+" ב"+getHebMonthToken(monthId)+" "+Format.HebIntString(year, true);
     }
     @Override
     public String FormatPeriod(int monthId) {

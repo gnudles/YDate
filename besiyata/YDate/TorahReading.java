@@ -207,7 +207,8 @@ public class TorahReading
         "החודש",
         "הגדול",
         "שירה",
-        "נחמו"
+        "נחמו",
+        "תשובה"
     };
     private static final int SHABAT_SHKALIM = 0;
     private static final int SHABAT_ZAKHOR = 1;
@@ -216,6 +217,7 @@ public class TorahReading
     private static final int SHABAT_HAGADOL = 4;
     private static final int SHABAT_SHIRA = 5;
     private static final int SHABAT_NACHAMU = 6;
+    private static final int SHABAT_TSHUVA = 7;
 
     public static String parshiot4(YDate h)
     {
@@ -262,6 +264,14 @@ public class TorahReading
             {
                 return special_shabat[SHABAT_NACHAMU];
             }
+            int shabbat_tshuva = h.hd.yearFirstDay();
+            shabbat_tshuva += YDate.JewishDate.calculateDayInYearByMonthId(h.hd.yearLength(), JewishDate.M_ID_TISHREI, 9);
+            shabbat_tshuva = YDate.getPrevious(YDate.SATURDAY, shabbat_tshuva);
+            if (h.hd.daysSinceBeginning() == shabbat_tshuva)
+            {
+                return special_shabat[SHABAT_TSHUVA];
+            }
+
         }
         return "";
     }
