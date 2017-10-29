@@ -536,15 +536,22 @@ public class YDate
                 return false;
             return true;
         }
-        public boolean MashivHaruah(boolean afterTikkunTime)
+		/**
+         * This method tells if we need to say Mashiv Ha'Ruah in the prayer or Morid Ha'Tal.
+		 * If we are in summer time, we say Morid Ha'Tal (bless for dew descend).
+		 * But if we are in the winter, we say Mashiv Ha'Ruah
+         * @param MusafAndAfter indicates whether we are about to pray Musaf and after that, or whether we are before Shacharit and that period hasn't began yet.
+         * @return true if we need to say Mashiv Ha'Ruah
+         */
+        public boolean MashivHaruah(boolean MusafAndAfter)
         {
             int shmini_azeret=21;
-            if ((day_in_year==shmini_azeret && !afterTikkunTime) || day_in_year<shmini_azeret)
+            if ((day_in_year==shmini_azeret && !MusafAndAfter) || day_in_year<shmini_azeret)
             {
                 return false;
             }
             int pessach_day=calculateDayInYearByMonthId(year_length, M_ID_NISAN, 15);
-            return (day_in_year==pessach_day && !afterTikkunTime) || day_in_year<pessach_day;
+            return (day_in_year==pessach_day && !MusafAndAfter) || day_in_year<pessach_day;
         }
         public int ShmitaOrdinal()//unfortunatly we don't have Yovel.
         {
@@ -656,6 +663,26 @@ public class YDate
             //and that tkufa started at tkufa*10227/112
             //which is actually 1461/16 or 16/1461
         }
+		/**
+         * find out when B' H' B' after Succot...
+         *
+         * @return day from beginning for the Shabbat before the first taanit monday.
+         */
+		public int taanit252ForCheshvan()
+		{
+			/* 1 in tishrey is day 0. tishrey has 30 days. so 30 in tishrey is day 29. and 1 cheshvan is day 30.
+			*/
+            return YDate.getNext(YDate.SATURDAY,year_first_day+31);
+		}
+		/**
+         * find out when B' H' B' after Pesach...
+         * There is a tradition to bless those who fast in these days in the Shabbat before the Taaniot
+         * @return day from beginning for the Shabbat before the first taanit monday.
+         */
+		public int taanit252ForIyar()
+		{
+			return YDate.getNext(YDate.SATURDAY,monthFirstDay(IYAR)+1);//+2 to get first monday, +5 to get thursday, and +9 to get the last monday.
+		}
 
 		public static final int [][] possibleMonthDay={
 			{MONDAY,TUESDAY,THURSDAY,SATURDAY},//TISHREI
@@ -849,6 +876,11 @@ public class YDate
             int mo_year_t=mo_year_type(this.year_length);
             return this.year_first_day+months_days_offsets[mo_year_t][this.month-1];
         }
+		public int monthFirstDay(int monthId)
+        {
+            int mo_year_t=mo_year_type(this.year_length);
+            return this.year_first_day+months_days_offsets[mo_year_t][monthFromID(monthId)-1];
+        }
         public static int monthFromIDByYear(int year,int monthId)
         {
             return monthFromIDByYearMonths(calculateYearMonths(year),monthId);
@@ -856,6 +888,10 @@ public class YDate
         public static int monthFromIDByYearLength(int year_length,int monthId)
         {
             return monthFromIDByYearMonths((year_length>355)?13:12,monthId);
+        }
+		public int monthFromID(int monthId)
+        {
+            return monthFromIDByYearMonths((this.year_length>355)?13:12,monthId);
         }
         public static int monthFromIDByYearMonths(int year_months,int monthId)
         {
