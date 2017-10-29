@@ -11,13 +11,19 @@ import java.lang.ref.SoftReference;
 import java.util.TimeZone;
 
 import besiyata.gp.EventHandler;
-
+/**
+ * @author      Orr Dvori <dvoreader@gmail.com>
+ * @version     4.0.5   
+ */
 public class YDate
 {
     public interface TimeZoneProvider {
 
         float getOffset(Date d); //offset in hours from UTC
     }
+/**
+ * The day of the unix epoch (Jan. 1 1970). It measured by the "beginning count".
+ */
     static final int EPOCH_DAY=2092591;//1.1.1970
 
     static final int SUNDAY = 0;//Sun - Sunne in old english
@@ -27,7 +33,10 @@ public class YDate
     static final int THURSDAY = 4;//Jupiter - ?unor in old english
     static final int FRIDAY = 5;//Venus - frig in old english
     static final int SATURDAY = 6;//Saturn - S?tern in old english
-    static final int JULIAN_DAY_OFFSET=347997;
+/**
+ * The difference between the "beginning count" and the julian count. (the julian count start earlier)
+ */
+    static final int JULIAN_DAY_OFFSET=347997; 
     
     public static final String[][] day_names =
     {
@@ -48,11 +57,20 @@ public class YDate
        fire doesn't connect with water
        earth doesn't connect with wind
     */
+/**
+ * Every zodiac sign is connected with an element. this string contains the names of the four elements.
+ */
     public static final String[][] four_elements_names =
     {
         {"אש", "עפר", "רוח", "מים"},
         {"fire", "earth", "wind", "water"}
     };
+/**
+ * There are seven stars. each star controls different hour of the day in the following sequence:
+ * Saturn, Jupiter, Mars, Sun, Venus, Mercury, Moon. That sequence starts in the beginning of the 
+ * wednesday night (right after the stars comes out). Also, according to the book of Yezira, each
+ * star is connected with a single day of the week (just as their names suggest).
+ */
     public static final String[][] star_names =
     {
         {"כוכב", "לבנה", "שבתאי", "צדק", "מאדים", "חמה", "נגה"},
@@ -60,20 +78,69 @@ public class YDate
     };
     public static final class GregorianDate
     {
+/**
+ * Number of days in 400 gregorian years.
+ * The calculation is as follows:
+ * Every four years we have an extra day in february.
+ * But every 100 years the previous rule doesn't take a place.
+ * In addition, every 400 year the rule of the 100 years doesn't take a place,
+ * and thus we do have an extra day.
+ * So with the first rule we have in 400 years, 100 years with 366 days in them, and 300 years 365.
+ * And with the second rule we have in 400 years, 96 years with 366 days in them, and 304 years 365.
+ * And with the third rule we have in 400 years, 97 years with 366 days in them, and 303 years 365.
+ * To summerize this: 97*366+303*365=146097.
+ */
         static final int DAYS_IN_400 = 146097;
+/**
+ * Number of days in regular four gregorian years.
+ * The calculation is as follows:
+ * Every regular four years we have an extra day in february.
+ * To summerize this: 3*366+1*365=1461.
+ */
         static final int DAYS_IN_4 = 1461;
+/**
+ * The day of Jan. 1 1600 in the "beginning count".
+ * This constant is important because for simplicity, we start all the calculations, only after that date.
+ * Also this date starts a new cycle of 400 years.
+ */
         static final int DAYS_OF_1600 = 1957451;// days since beginning up to year 1.1.1600 (14 in tevet, 5360)
+/**
+ * The day of Jan. 1 2300 in the "beginning count". I limited the date calculation to that date.
+ */
         static final int DAYS_OF_2300 = 2213121;
 
 
         static final int[] HUNDRED_OFFSET ={0,36525,36525*2-1,36525*3-2};
-        private int year; // year 1 is the first year.
-        private int month; // range 1..12, 1 January, February
-        private int day; // range 1..31
-        private int year_length; // days in year - 365,366
-        private int year_first_day; // 1.1.year from the beginning
-        private int day_in_year; // days after year beginning. first day in year  is 0
+        private int year; // year 1 is the first year. there is no year zero.
+/**
+ * The month in the year. There are twelve months in a year.
+ * The value is in the range 1..12, while 1 denotes January, 2 denotes February .. 12 denotes December
+ */
+        private int month;
+/**
+ * The day in the month. The value is in the range 1..31 .
+ */
+        private int day;
+/**
+ * The number of days in the year. The value may be only 365 or 366.
+ */
+        private int year_length;
+/**
+ * The number of days from the beginning of the year's first day (1st of January of the year)
+ */
+        private int year_first_day;
+/**
+ * The day in the year (or number of days after year beginning). 0 denotes the year's first day (1st of January of the year).
+ * the value is in the range 0..364 in regular year and in the range 0..365 in a leap year.
+ */
+        private int day_in_year;
+/**
+ * Is the date valid?
+ */
         private boolean valid;
+/**
+ * Simple copy constructor.
+ */
         GregorianDate(GregorianDate o)
         {
             this.valid=o.valid;
@@ -84,30 +151,46 @@ public class YDate
             this.year_length=o.year_length;
             this.day_in_year=o.day_in_year;
         }
+/**
+ * Constructs a date object by day, month and year.
+ * @param year Gregorian year in the range 1600..2299.
+ * @param month Gregorian month (range 1..12, while 1 denotes January, 2 denotes February .. 12 denotes December).
+ * @param day Gregorian day in month (range 1..31).
+ */
         GregorianDate(int year,int month,int day)
         {
             valid=setByYearMonthDay(year, month, day);
         }
+/**
+ * Set the members of the class by day, month and year.
+ * @return true if that date can be calculated properly and false otherwise.
+ */
         private boolean setByYearMonthDay(int year, int month,int  day)
         {
             if (year>=1600 && year< 2300)
             {
                 this.year=year;
+				//fix the month parameter
                 if (month>12)
                     month=12;
                 else if (month<1)
                     month=1;
                 this.month=month;
+                //calculate the year's first day in the "beginning count".
                 this.year_first_day=days_until_year(this.year);
-                this.year_length=isLeap(this.year)?366:365;
-                int month_length=monthLength();
-                if (day>month_length)
-                    day=month_length;
-                else if (day<1)
-                    day=1;
-                this.day=day;
-                this.day_in_year=calculateDayInYear(this.year_length,this.month,this.day);
-                return true;
+                //calculate the year's length.
+                this.year_length = isLeap(this.year)?366:365;
+                //calculate the month's length.
+                int month_length = monthLength();
+                //fix the day parameter
+                if (day > month_length) 
+                    day = month_length;
+                else if (day < 1) 
+                    day = 1;
+				
+                this.day = day;
+                this.day_in_year = calculateDayInYear( this.year_length, this.month, this.day );
+                return true; //validity
             }
             else
                 return false;
@@ -137,11 +220,11 @@ public class YDate
                     days-=DAYS_OF_1600;
                     gd_year=1600+400*((days)/DAYS_IN_400);
                     days=days%DAYS_IN_400;
-                    int h=(days*4)/DAYS_IN_400;
+                    int h=(days*4)/DAYS_IN_400;// what hundred are we?
                     if (h==0)
                     {
                         h=(days*4)/DAYS_IN_4;
-                        gd_year+=h;
+                        gd_year+=h;// maybe gd_year+=4*h;?
                         days=days-(h*DAYS_IN_4+3)/4;
                     }
                     else
@@ -168,6 +251,11 @@ public class YDate
                 return false;
             }
         }
+/**
+ * Constructs a date object by a day in the "beginning count".
+ * The "beginning count" starts in the extrapolated creation day according to the jewish tradition.
+ * @param days number of days since the beginning to construct the date object from it.
+ */
         public GregorianDate(int days)
         {
             valid=setByDays(days);
@@ -260,7 +348,11 @@ public class YDate
             {0 , 31 , 59 , 90 , 120 , 151 , 181 , 212 , 243 , 273 , 304 , 334 , 365 },
             {0 , 31 , 60 , 91 , 121 , 152 , 182 , 213 , 244 , 274 , 305 , 335 , 366 }
         };
-        private void setMonthDay(int days)//finds the month by day in year.
+/**
+ * Sets the month and day in month according to the day in year.
+ * @param days day in the year.
+ */
+        private void setMonthDay(int days)
         {
             int mo_year_t=isLeap(this.year)?1:0;
             int m=days*2/61;
@@ -270,6 +362,7 @@ public class YDate
                 m++;
             this.month=m+1;
             this.day=days-months_days_offsets[mo_year_t][m]+1;
+			//TODO: create a static version for this methos.
         }
         private static int calculateDayInYear(int year_length,int month,int day)
         {
@@ -373,7 +466,9 @@ public class YDate
         public static final int MINIAN_SHTAROT = 3449;
         public static final int HORBAN_BAIT_RISHON = 3339;
         public static final int HORBAN_BAIT_SHENI = 3829;
-
+/**
+ * Number of months per year in a 19 years cycle.
+ */
         static final int[] MONTHS_DIVISION =
         {
             12, 12, 13, 12, 12, 13, 12, 13, 12, 12, 13, 12, 12, 13, 12, 12, 13, 12, 13
@@ -521,7 +616,7 @@ public class YDate
         {
             if(diaspora)
             {
-                int day_tkufa=dayInTkufa();
+                //int day_tkufa=dayInTkufa();
                 int starting=getTkufaDay(0)+59;
                 if (daysSinceBeginning()< starting)
                     return false;
@@ -552,6 +647,27 @@ public class YDate
             }
             int pessach_day=calculateDayInYearByMonthId(year_length, M_ID_NISAN, 15);
             return (day_in_year==pessach_day && !MusafAndAfter) || day_in_year<pessach_day;
+        }
+        public String Segulah()
+        {
+            String lstr="";
+            if (TorahReading.getShabbatBereshit(yearLength(),yearFirstDay())+15*7-4 == daysSinceBeginning()) //Tuesday in Beshalach
+            {
+                return "סגולת פרשת המן שניים מקרא ואחד תרגום\n";
+            }
+            if (monthID()==M_ID_NISAN)
+            {
+                lstr+="ברכת האילנות\n";
+                if (dayInMonth()<=13)
+                {
+                    lstr+="קרבנות הנשיאים\n";
+                }
+            }
+            if (monthID()==M_ID_IYAR && dayInMonth() == 29)
+            {
+                lstr+="תפילת השל\"ה\n";
+            }
+            return  lstr;
         }
         public int ShmitaOrdinal()//unfortunatly we don't have Yovel.
         {
@@ -727,6 +843,9 @@ public class YDate
         {
             return (day==30 || day==1);
         }
+        public boolean mevarchinShabbat() {return (day>=23 && day<30 && dayInWeek()==7 && monthID()!= M_ID_ELUL);}//not mevarchin before Tishrei
+        public boolean yomHakhel() {return  (day==16 && monthID()==M_ID_TISHREI &&
+                (ShmitaOrdinal()-1)%7 == 0 ); }// in the year after Shmita, after first day of Succot.
         public boolean shabbaton(YDatePreferences.DiasporaType diaspora)
         {
             if (diaspora== YDatePreferences.DiasporaType.Both)
