@@ -13,27 +13,31 @@ import besiyata.gp.EventHandler;
 
 /**
  * @author Orr Dvori <dvoreader@gmail.com>
- * @version 4.0.6
+ * @version 4.0.5
  */
 public class YDate {
 
     public interface TimeZoneProvider {
-
+        /**
+         * returns offset in hours for specific timezone.
+         * @param d Date object to get timezone offset for.
+         * @return offset in hours from UTC.
+         */
         float getOffset(Date d); //offset in hours from UTC
     }
     /**
-     * The day of the unix epoch (Jan. 1 1970).
-     * It measured by the "beginning count".
+     * The day of the unix epoch (Jan. 1 1970). It measured by the "beginning
+     * count".
      */
     static final int EPOCH_DAY = 2092591;//1.1.1970
 
     static final int SUNDAY = 0;//Sun - Sunne in old english
-    static final int MONDAY = 1;//Moon - M?na in old english
-    static final int TUESDAY = 2;//Mars - T?w in old english
-    static final int WEDNESDAY = 3;//Mercury - W?den in old english
-    static final int THURSDAY = 4;//Jupiter - ?unor in old english
+    static final int MONDAY = 1;//Moon - Mōna in old english
+    static final int TUESDAY = 2;//Mars - Tīw in old english
+    static final int WEDNESDAY = 3;//Mercury - Wōden in old english
+    static final int THURSDAY = 4;//Jupiter - Þunor in old english
     static final int FRIDAY = 5;//Venus - frig in old english
-    static final int SATURDAY = 6;//Saturn - S?tern in old english
+    static final int SATURDAY = 6;//Saturn - Sætern in old english
     /**
      * The difference between the "beginning count" and the julian count. (the
      * julian count start earlier)
@@ -59,13 +63,19 @@ public class YDate {
     /**
      * Every zodiac sign is connected with an element. this string contains the
      * names of the four elements.
+     * The signs that are connected with Fire are: Aries, Leo, Sagittarius.
+     * The signs that are connected with Earth are: Taurus, Virgo, Capricorn.
+     * The signs that are connected with Wind are: Gemini, Libra, Aquarius.
+     * The signs that are connected with Water are: Cancer, Scorpio, Pisces.
+     * The ones with the element of fire doesn't get along with those of water.
+     * The ones with the element of earth doesn't get along with those of wind.
      */
     public static final String[][] four_elements_names = {
         {"אש", "עפר", "רוח", "מים"},
         {"fire", "earth", "wind", "water"}
     };
     /**
-     * There are seven stars. each star controls different hour of the day in
+     * There are seven stars, each star controls different hour of the day in
      * the following sequence: Saturn, Jupiter, Mars, Sun, Venus, Mercury, Moon.
      * That sequence starts in the beginning of the wednesday night (right after
      * the stars comes out). Also, according to the book of Yezira, each star is
@@ -132,7 +142,7 @@ public class YDate {
          */
         private int year_length;
         /**
-         * The number of days from the beginning of the year's first day (1st of
+         * The number of days from the beginning to the year's first day (1st of
          * January of the year)
          */
         private int year_first_day;
@@ -213,7 +223,7 @@ public class YDate {
             }
         }
 
-        public static int test_setByDays_new() {
+        /*public static int test_setByDays_new() {
             GregorianDate gd1 = new GregorianDate(1600, 1, 1);
             GregorianDate gd2 = new GregorianDate(1600, 1, 1);
             int i;
@@ -237,7 +247,7 @@ public class YDate {
                 }
             }
             return i;
-        }
+        }*/
 
         private boolean setByDaysDemystified(int days) {
             if (days >= DAYS_OF_1600 && days < DAYS_OF_2300) {
@@ -303,37 +313,13 @@ public class YDate {
                     gd_year = 100 * (n - 49) + i + l;
                 }
 
-                /*{
-					int gd_year_first_day=days;
-                    days-=DAYS_OF_1600;
-                    gd_year=1600+400*((days)/DAYS_IN_400);
-                    days=days%DAYS_IN_400;
-                    int h=(days*4)/DAYS_IN_400;// what hundred are we? 0 1 2 3 ?
-					int not_h0=(h+3)/4; //if h>0
-					gd_year+=100*h;
-					days=days-HUNDRED_OFFSET[h];
-					int y_in_h = ((days+not_h0)*4)/DAYS_IN_4;// which year in this hundred?
-					gd_year += y_in_h;
-					y_in_h_not0=(y_in_h+99)/100;
-					days=days-(y_in_h*DAYS_IN_4+3)/4 + y_in_h_not0*not_h0;//we subtract one day too much if we are not in the first year and not in the first hundred.
-					gd_year_first_day -= days;
-					
-                    int mo_year_t=isLeap(gd_year)?1:0;
-					int m=days*2/61;
-					if (months_days_offsets[mo_year_t][m]>days)
-						m--;
-					else if (months_days_offsets[mo_year_t][m+1]<=days)
-						m++;
-					gd_month=m+1;
-					gd_day=days-months_days_offsets[mo_year_t][m]+1;
-					this.day_in_year = days;
-                }*/
                 this.year = gd_year;
                 this.month = gd_month;
                 this.day = gd_day;
-                this.year_first_day = days_until_year(this.year);
+                
                 this.year_length = isLeap(this.year) ? 366 : 365;
                 this.day_in_year = calculateDayInYear(this.year_length, this.month, this.day);
+                this.year_first_day = days - this.day_in_year; //previously it was days_until_year(this.year);
                 return true;
             }
             else {
@@ -352,19 +338,35 @@ public class YDate {
         public GregorianDate(int days) {
             valid = setByDaysDemystified(days);
         }
-
+        /**
+         * This method gives you a formatted string of the current date.
+         * You may subclass the language class with a new FormatGregorianDate method,
+         * to achieve different formatting options.
+         * @param language The language object in which the string will be formatted.
+         * @return a string in the format "August 1, 1999".
+         */
         public String dayString(YDateLanguage.Language language) {
             return YDateLanguage.getLanguageEngine(language).FormatGregorianDate(day, month, year);
         }
-
+        /**
+         * Get the day in the week for that specific date.
+         * @return the week day number in range 1..7, where 1 denotes sunday and 7 denotes saturday.
+         */
         public int dayInWeek() {
             return daysSinceBeginning() % 7 + 1;
         }
-
+        /**
+         * Get the day in the month for that specific date.
+         * @return the day number in range 1..31 .
+         */
         public int dayInMonth() {
             return this.day;
         }
-
+        /**
+         * Get the day in the year for that specific date.
+         * Please note that the first day of the year (January 1) gives 0.
+         * @return the day in range 0..364 or 0..365 in a leap year.
+         */
         public int dayInYear() {
             return this.day_in_year;
         }
@@ -380,11 +382,17 @@ public class YDate {
         public int daysSinceBeginning() {
             return year_first_day + day_in_year;
         }
-
+        /**
+         * @return The number of days in the "beginning count" to the year's first day (1st of
+         * January of the year)
+         */
         public int yearFirstDay() {
             return this.year_first_day;
         }
-
+        /**
+         * @return The number of days in the "beginning count" to the first day in the current month.
+         * @see YDate.GregorianDate.yearFirstDay
+         */
         public int monthFirstDay() {
             return year_first_day + day_in_year - day + 1;
         }
@@ -870,12 +878,12 @@ public class YDate {
         }
 
         /**
-         * find out when B' H' B' after Succot...
+         * find out when B' H' B' after Sukkot...
          *
          * @return day from beginning for the Shabbat before the first taanit
          * monday.
          */
-        public int taanit252ForCheshvan() {
+        public int taanitBetHehBetForCheshvan() {
             /* 1 in tishrey is day 0. tishrey has 30 days. so 30 in tishrey is day 29. and 1 cheshvan is day 30.
              */
             return YDate.getNext(YDate.SATURDAY, year_first_day + 31);
@@ -888,7 +896,7 @@ public class YDate {
          * @return day from beginning for the Shabbat before the first taanit
          * monday.
          */
-        public int taanit252ForIyar() {
+        public int taanitBetHehBetForIyar() {
             return YDate.getNext(YDate.SATURDAY, monthFirstDay(M_ID_IYAR) + 1);//+2 to get first monday, +5 to get thursday, and +9 to get the last monday.
         }
 

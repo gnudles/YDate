@@ -31,19 +31,25 @@ public class YDateLangEnglish extends YDateLanguage
                  "October",
                  "November",
                  "December"};
+    static final String ShortGregMonthTokens []=
+    {"Jan", 
+                 "Feb",
+                 "Mar",
+                 "Apr",
+                 "May",
+                 "Jun",
+                 "Jul",
+                 "Aug",
+                 "Sep",
+                 "Oct",
+                 "Nov",
+                 "Dec"};
 
     public static final String[] zodiac_names =
             {
                     "Aries","Taurus","Gemini","Cancer","Leo","Virgo","Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"
             };
-    /*
-    fire: Aries Leo Sagittarius
-    earth: Taurus Virgo Capricorn
-    wind: Gemini Libra Aquarius
-    water: Cancer Scorpio Pisces
-       fire doesn't connect with water
-       earth doesn't connect with wind
-    */
+
     public static final String[] four_elements_names =
             {
                     "fire", "earth", "wind", "water"
@@ -69,6 +75,11 @@ public class YDateLangEnglish extends YDateLanguage
     public String getGregMonthToken(int token)
     {
         return GregMonthTokens[token];
+    }
+    @Override
+    public String getShortGregMonthToken(int token)
+    {
+        return ShortGregMonthTokens[token];
     }
 
     @Override
@@ -112,5 +123,10 @@ public class YDateLangEnglish extends YDateLanguage
     @Override
     public String FormatPeriod(int monthId) {
         return getHebMonthToken(monthId)+" Period";
+    }
+
+    @Override
+    public String getShortWeekToken(int token) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

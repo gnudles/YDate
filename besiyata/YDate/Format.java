@@ -34,9 +34,9 @@ public class Format
         char b=(char)('0'+x%10);
         return (":"+a)+b;
     }
-    private static String get00String(int x)
+    public static String get00String(int x)
     {
-        
+        x=x%100;
         char a=(char)('0'+x/10);
         char b=(char)('0'+x%10);
         return (""+a)+b;

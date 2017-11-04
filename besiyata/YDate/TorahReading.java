@@ -194,7 +194,7 @@ public class TorahReading
             //42-49
             "Matot", "Mas\'ei", "Devarim", "Vaetchanan", "Ekev", "Re\'eh", "Shoftim", "Ki-Tetze",
             //50-54
-            "Ki-Tavo", "Nitzavim", "Vayelech", "Ha\'azinu", "Vezot Habracha"
+            "Ki-Tavo", "Nitzavim", "Vayelech", "Ha\'azinu", "Vezot Haberacha"
         }
 
     };

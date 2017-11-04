@@ -10,7 +10,7 @@ public abstract class YDateLanguage
     public enum Language {
         HEBREW,
         ENGLISH,
-        YIDDISH,
+        YIDDISH,//דעצעמבער
         SPANISH,
         FRENCH,
         RUSSIAN,
@@ -18,6 +18,7 @@ public abstract class YDateLanguage
         PERSIAN,
         ARABIC,
         ARAMIC,
+        ITALIAN
     }
     public static Language guessLanguageFromLocation(TimeZone tz)
     {
@@ -62,29 +63,70 @@ public abstract class YDateLanguage
             new YDateLangEnglish(),
             null,
             null,
-            null,
+            new YDateLangFrench(),
             null,
             null,
             null,
             null,
             null
     };
-    static final int SUNDAY = 0;//Sun - Sunne in old english
-    static final int MONDAY = 1;//Moon - M?na in old english
-    static final int TUESDAY = 2;//Mars - T?w in old english
-    static final int WEDNESDAY = 3;//Mercury - W?den in old english
-    static final int THURSDAY = 4;//Jupiter - ?unor in old english
-    static final int FRIDAY = 5;//Venus - frig in old english
-    static final int SATURDAY = 6;//Saturn - S?tern in old english
+    static final int SUNDAY = 0;
+    static final int MONDAY = 1;
+    static final int TUESDAY = 2;
+    static final int WEDNESDAY = 3;
+    static final int THURSDAY = 4;
+    static final int FRIDAY = 5;
+    static final int SATURDAY = 6;
     public abstract String getWeekToken(int token);
+    public abstract String getShortWeekToken(int token);
     public abstract String getHebMonthToken(int token);
+    public abstract String getShortHebMonthToken(int token);
     public abstract String getGregMonthToken(int token);
+    public abstract String getShortGregMonthToken(int token);
     public abstract String getEventToken(int token);
     public abstract String getZodiacToken(int token);
     public abstract String getElementToken(int token);
     public abstract String getStarToken(int token);
     public abstract String getNumber(int num);
     public abstract String FormatGregorianDate(int day,int month,int year);
+    public String FormatGregorianDate(int day,int month,int year, int week_day, String format)
+    {
+        //TODO..
+        return "";
+    }
     public abstract String FormatJewishDate(int day,int monthId,int year);
-    public abstract String FormatPeriod(int monthId);
+            /**
+             * 
+             * @param day
+             * @param monthId
+             * @param year
+             * @param week_day day week in range 0..6
+             * @param event - event ID from YDateAnnual.
+             * @param format a string that contains _mn_ will be replaced with month name, 
+             * _smn_ short month name,
+             * _dw_ week day name
+             * _sdw_ short week day,
+             * _y_ year in numeric form
+             * _y2_ two digits year in numeric form
+             * _yhl_ year in hebrew letters
+             * _d_ day in month
+             * _dhl_ day in month hebrew letters
+             * _ev_ holiday or event.
+             * @return 
+             */
+    public String FormatJewishDate(int day,int monthId,int year, int week_day, int event, String format)
+    {
+        format = format.replaceAll("_mn_", getHebMonthToken(monthId));
+        format = format.replaceAll("_smn_", getShortHebMonthToken(monthId));
+        format = format.replaceAll("_dw_", getWeekToken(week_day));
+        format = format.replaceAll("_sdw_", getShortWeekToken(week_day));
+        format = format.replaceAll("_yhl_", Format.HebIntString(year, true));
+        format = format.replaceAll("_y_", Integer.toString(year));
+        format = format.replaceAll("_y2_", Format.get00String(year));
+        format = format.replaceAll("_dhl_", Format.HebIntString(day, true));
+        format = format.replaceAll("_d_", Integer.toString(day));
+        format = format.replaceAll("_ev_", getEventToken(event));
+        return format;
+    }
+    public abstract String FormatPeriod(int monthId);//tkufa
 }

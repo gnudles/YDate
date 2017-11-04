@@ -5,7 +5,53 @@ import besiyata.YDate.YDate.JewishDate;
 import java.util.Arrays;
 public class YDateAnnual
 {
+    static final int A_EV_ROSH_HASHANA_A = 1;
+    static final int A_EV_ROSH_HASHANA_B = 2;
+    static final int A_EV_TZOM_GEDALIA = 3;
+    static final int A_EV_EREV_YOM_KIPPUR = 4;
+    static final int A_EV_YOM_KIPPUR = 5;
+    static final int A_EV_EREV_SUKKOT = 6;
+    static final int A_EV_SUKKOT = 7;
+    /**
+     * Second day of galuyot of Sukkot.
+     */
+    static final int A_EV_SDOG_SUKKOT = 8;
+    static final int A_EV_SUKKOT_HOL_HAMOED = 9;
+    static final int A_EV_HOSHANA_RABBAH = 10;
+    static final int A_EV_SHEMINI_ATZERET = 11;
+    static final int A_EV_SIMCHAT_TORAH = 12;
+    static final int A_EV_SHEMINI_ATZERET_SIMCHAT_TORAH = 13;
+    static final int A_EV_HANUKKAH_ONE_CANDLE = 14;
+    static final int A_EV_HANUKKAH_TWO_CANDLES = 15;
+    static final int A_EV_HANUKKAH_THREE_CANDLES = 16;
+    static final int A_EV_HANUKKAH_FOUR_CANDLES = 17;
+    static final int A_EV_HANUKKAH_FIVE_CANDLES = 18;
+    static final int A_EV_HANUKKAH_SIX_CANDLES = 19;
+    static final int A_EV_HANUKKAH_SEVEN_CANDLES = 20;
+    static final int A_EV_HANUKKAH_EIGHT_CANDLES = 21;
+    static final int A_EV_TENTH_OF_TEVET = 22;
+    static final int A_EV_TU_BISHVAT = 23;
+    static final int A_EV_TAANIT_ESTHER = 24;
+    static final int A_EV_PURIM = 25;
+    static final int A_EV_SHUSHAN_PURIM = 26;
+    static final int A_EV_PURIM_KATAN = 27;
+    static final int A_EV_EREV_PESACH = 28;
+    static final int A_EV_PESACH = 29;//Passover
+    /**
+     * Sheni Shel Pesach (second yom-tov day of galuyot - diaspora)
+     * this is NOT Pesach Sheni!
+     */
+    static final int A_EV_SDOG_PESACH = 30;
+    static final int A_EV_PESACH_HOL_HAMOED = 31;
+    static final int A_EV_SHVII_PESACH = 32;
+    static final int A_EV_SHVII_SDOG_PESACH = 33;
+    static final int A_EV_PESACH_SHENI = 34;
+    static final int A_EV_RASHBI_THIRTY_THREE = 35;
+    static final int A_EV_EREV_SHAVUOT = 36;
+    static final int A_EV_SHAVUOT = 37;
+    static final int A_EV_SDOG_SHAVUOT = 38;
 
+    
     public final static String[] events_str =
     {
         "",//0 -reserved for none
@@ -22,7 +68,7 @@ public class YDateAnnual
         "שמיני עצרת",
         "שמחת תורה",
         "שמיני עצרת שמחת תורה",
-        "א' חנוכה",
+        "א' חנוכה",//14
         "ב' חנוכה",
         "ג' חנוכה",//16
         "ד' חנוכה",
@@ -32,7 +78,7 @@ public class YDateAnnual
         "ח' חנוכה",//21
         "צום י' בטבת",
         "ט\"ו בשבט",
-        "תענית אסתר",
+        "תענית אסתר",//24
         "פורים",//25
         "שושן פורים",
         "פורים קטן",
@@ -135,9 +181,9 @@ public class YDateAnnual
 
     static final byte [][] event_db= 
     {// month_id,day,array index,# of days,jump/dhia(if #_days==1)
-        {JewishDate.M_ID_TISHREI,1,1,2,1},//two days of rosh hashana
-        {JewishDate.M_ID_TISHREI,3,3,1,1},//zom gdalia, dhia
-        {JewishDate.M_ID_TISHREI,9,4,2,1},//yom kippur
+        {JewishDate.M_ID_TISHREI,1,A_EV_ROSH_HASHANA_A,2,1},//two days of rosh hashana
+        {JewishDate.M_ID_TISHREI,3,A_EV_TZOM_GEDALIA,1,1},//zom gdalia, dhia
+        {JewishDate.M_ID_TISHREI,9,A_EV_EREV_YOM_KIPPUR,2,1},//yom kippur
         {JewishDate.M_ID_TISHREI,11,44,1,0},//yom Simhat Cohen
         {JewishDate.M_ID_TISHREI,14,6,2,1},//sukkot
         {JewishDate.M_ID_TISHREI,16,9,5,0},//hol hamoed sukkot
@@ -198,8 +244,10 @@ public class YDateAnnual
     {
         return this.diaspora;
     }
-    public String getYearEventForDay(JewishDate d)
+    public String getYearEventForDay(JewishDate d, YDateLanguage language)
     {
+        //TODO: replace events_str with language
+        //return language.getEventToken(current_year_events[d.dayInYear()]);
         return events_str[current_year_events[d.dayInYear()]];
     }
     public short getYearEventTypeForDay(JewishDate d)
@@ -301,8 +349,10 @@ public class YDateAnnual
     }
     static byte [][][] annual_events = new byte [2][JewishDate.N_YEAR_TYPES][];//[diaspora][year_type][day_in_year]
     static short [][] annual_events_dhia = new short [JewishDate.N_YEAR_TYPES][4];//[year_type][5]->[day_in_year]
-    public static String getEventForDay(JewishDate d,boolean diaspora)
+    public static String getEventForDay(JewishDate d, boolean diaspora, YDateLanguage language)
     {
+        //TODO: make this depended on language...
+        //return language.getEventToken(getEvents(d, diaspora)[d.dayInYear()]);
         return events_str[getEvents(d, diaspora)[d.dayInYear()]];
     }
     public static byte [] getEvents(JewishDate d,boolean diaspora)

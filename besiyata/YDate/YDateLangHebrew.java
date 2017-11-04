@@ -24,6 +24,11 @@ public class YDateLangHebrew extends YDateLanguage
                  "אפריל", "מאי", "יוני", "יולי", 
                  "אוגוסט", "ספטמבר", "אוקטובר", 
                  "נובמבר", "דצמבר"};
+    static final String ShortGregMonthTokens []=
+    {"ינו", "פב", "מרס", 
+                 "אפר", "מאי", "יונ", "יול", 
+                 "אוג", "ספט", "אוק", 
+                 "נוב", "דצמ"};
     public static final String[] zodiac_names =
             {
                     "טלה", "שור", "תאומים", "סרטן", "אריה", "בתולה", "מאזנים", "עקרב", "קשת", "גדי", "דלי", "דגים"
@@ -61,6 +66,11 @@ public class YDateLangHebrew extends YDateLanguage
     public String getGregMonthToken(int token)
     {
         return GregMonthTokens[token];
+    }
+    @Override
+    public String getShortGregMonthToken(int token)
+    {
+        return ShortGregMonthTokens[token];
     }
 
     @Override
@@ -103,6 +113,11 @@ public class YDateLangHebrew extends YDateLanguage
     @Override
     public String FormatPeriod(int monthId) {
         return "תקופת "+getHebMonthToken(monthId);
+    }
+
+    @Override
+    public String getShortWeekToken(int token) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }
