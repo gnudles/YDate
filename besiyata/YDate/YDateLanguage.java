@@ -18,6 +18,7 @@ public abstract class YDateLanguage
         PERSIAN,
         ARABIC,
         ARAMIC,
+        ITALIAN
     }
     public static Language guessLanguageFromLocation(TimeZone tz)
     {

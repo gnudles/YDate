@@ -13,7 +13,7 @@ import besiyata.gp.EventHandler;
 
 /**
  * @author Orr Dvori <dvoreader@gmail.com>
- * @version 4.0.6
+ * @version 4.0.5
  */
 public class YDate {
 
@@ -22,18 +22,18 @@ public class YDate {
         float getOffset(Date d); //offset in hours from UTC
     }
     /**
-     * The day of the unix epoch (Jan. 1 1970).
-     * It measured by the "beginning count".
+     * The day of the unix epoch (Jan. 1 1970). It measured by the "beginning
+     * count".
      */
     static final int EPOCH_DAY = 2092591;//1.1.1970
 
     static final int SUNDAY = 0;//Sun - Sunne in old english
-    static final int MONDAY = 1;//Moon - M?na in old english
-    static final int TUESDAY = 2;//Mars - T?w in old english
-    static final int WEDNESDAY = 3;//Mercury - W?den in old english
-    static final int THURSDAY = 4;//Jupiter - ?unor in old english
+    static final int MONDAY = 1;//Moon - Mōna in old english
+    static final int TUESDAY = 2;//Mars - Tīw in old english
+    static final int WEDNESDAY = 3;//Mercury - Wōden in old english
+    static final int THURSDAY = 4;//Jupiter - Þunor in old english
     static final int FRIDAY = 5;//Venus - frig in old english
-    static final int SATURDAY = 6;//Saturn - S?tern in old english
+    static final int SATURDAY = 6;//Saturn - Sætern in old english
     /**
      * The difference between the "beginning count" and the julian count. (the
      * julian count start earlier)
@@ -65,7 +65,7 @@ public class YDate {
         {"fire", "earth", "wind", "water"}
     };
     /**
-     * There are seven stars. each star controls different hour of the day in
+     * There are seven stars, each star controls different hour of the day in
      * the following sequence: Saturn, Jupiter, Mars, Sun, Venus, Mercury, Moon.
      * That sequence starts in the beginning of the wednesday night (right after
      * the stars comes out). Also, according to the book of Yezira, each star is
@@ -303,37 +303,13 @@ public class YDate {
                     gd_year = 100 * (n - 49) + i + l;
                 }
 
-                /*{
-					int gd_year_first_day=days;
-                    days-=DAYS_OF_1600;
-                    gd_year=1600+400*((days)/DAYS_IN_400);
-                    days=days%DAYS_IN_400;
-                    int h=(days*4)/DAYS_IN_400;// what hundred are we? 0 1 2 3 ?
-					int not_h0=(h+3)/4; //if h>0
-					gd_year+=100*h;
-					days=days-HUNDRED_OFFSET[h];
-					int y_in_h = ((days+not_h0)*4)/DAYS_IN_4;// which year in this hundred?
-					gd_year += y_in_h;
-					y_in_h_not0=(y_in_h+99)/100;
-					days=days-(y_in_h*DAYS_IN_4+3)/4 + y_in_h_not0*not_h0;//we subtract one day too much if we are not in the first year and not in the first hundred.
-					gd_year_first_day -= days;
-					
-                    int mo_year_t=isLeap(gd_year)?1:0;
-					int m=days*2/61;
-					if (months_days_offsets[mo_year_t][m]>days)
-						m--;
-					else if (months_days_offsets[mo_year_t][m+1]<=days)
-						m++;
-					gd_month=m+1;
-					gd_day=days-months_days_offsets[mo_year_t][m]+1;
-					this.day_in_year = days;
-                }*/
                 this.year = gd_year;
                 this.month = gd_month;
                 this.day = gd_day;
-                this.year_first_day = days_until_year(this.year);
+                
                 this.year_length = isLeap(this.year) ? 366 : 365;
                 this.day_in_year = calculateDayInYear(this.year_length, this.month, this.day);
+                this.year_first_day = days - this.day_in_year; //previously it was days_until_year(this.year);
                 return true;
             }
             else {
@@ -870,12 +846,12 @@ public class YDate {
         }
 
         /**
-         * find out when B' H' B' after Succot...
+         * find out when B' H' B' after Sukkot...
          *
          * @return day from beginning for the Shabbat before the first taanit
          * monday.
          */
-        public int taanit252ForCheshvan() {
+        public int taanitBetHehBetForCheshvan() {
             /* 1 in tishrey is day 0. tishrey has 30 days. so 30 in tishrey is day 29. and 1 cheshvan is day 30.
              */
             return YDate.getNext(YDate.SATURDAY, year_first_day + 31);
@@ -888,7 +864,7 @@ public class YDate {
          * @return day from beginning for the Shabbat before the first taanit
          * monday.
          */
-        public int taanit252ForIyar() {
+        public int taanitBetHehBetForIyar() {
             return YDate.getNext(YDate.SATURDAY, monthFirstDay(M_ID_IYAR) + 1);//+2 to get first monday, +5 to get thursday, and +9 to get the last monday.
         }
 
