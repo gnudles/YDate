@@ -1645,7 +1645,13 @@ public class YDate {
         Date d = new Date();
         return createFrom(d);
     }
-
+    /**
+     * Return the upcoming day in week, or the current day if it is that certain day in week.
+     * 
+     * @param diw day in week. un range 0..6
+     * @param days day in "beginning count" or other count that day 0 is sunday
+     * @return days + x (6 > = x > = 0). that gives that certain day in week. 
+     */
     public static int getNext(int diw, int days) // return the upcoming diw (or today if it's that diw)
     {
         int diff = (diw - days % 7 + 7) % 7;

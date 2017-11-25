@@ -30,7 +30,7 @@ public class YDateAnnual
     static final int A_EV_HANUKKAH_SEVEN_CANDLES = 20;
     static final int A_EV_HANUKKAH_EIGHT_CANDLES = 21;
     static final int A_EV_TENTH_OF_TEVET = 22;
-    static final int A_EV_TU_BISHVAT = 23;
+    static final int A_EV_FIFTEEN_SHVAT = 23;
     static final int A_EV_TAANIT_ESTHER = 24;
     static final int A_EV_PURIM = 25;
     static final int A_EV_SHUSHAN_PURIM = 26;
@@ -50,6 +50,29 @@ public class YDateAnnual
     static final int A_EV_EREV_SHAVUOT = 36;
     static final int A_EV_SHAVUOT = 37;
     static final int A_EV_SDOG_SHAVUOT = 38;
+    static final int A_EV_ISRU_HAG = 39;
+    static final int A_EV_TZOM_SEVENTEEN_TAMMUZ = 40;
+    static final int A_EV_TZOM_NINE_AV = 41;
+    static final int A_EV_FIFTEEN_AV = 42;
+    static final int A_EV_EREV_ROSH_HASHANA = 43;
+    static final int A_EV_SIMCHAT_COHEN = 44;
+    /**
+     *     holocaust day. decided in 27 Nissan 1951 (5711). if on friday, move it backward. if on sunday after 1997 move it afterward.
+     */
+    static final int A_EV_HOLOCAUST_DAY = 45;
+    /**
+     * memorial day. in 4 Iyar 1951 (5711).
+     */
+    static final int A_EV_MEMORIAL_DAY_FALLEN = 46;
+    static final int A_EV_INDEPENDENTS_DAY = 47;
+    static final int A_EV_JERUSALEMS_DAY = 48;
+    /**
+     * family day. in 30 Shevat since 1973 (5733).
+     */
+    static final int A_EV_FAMILY_DAY = 49;
+    static final int A_EV_ISAAC_RABIN_DAY = 50;
+    static final int A_EV_TAANIT_GZEROT_408_409 = 51;
+
 
     
     public final static String[] events_str =
@@ -105,7 +128,7 @@ public class YDateAnnual
         "יום ירושלים",
         "יום המשפחה",
         "יום הזכרון ליצחק רבין",//50
-            "תענית ת\"ח ת\"ט",
+        "תענית ת\"ח ת\"ט",
     };
 
     public static final short EV_NONE=0;
@@ -175,7 +198,7 @@ public class YDateAnnual
         EV_NATIONAL,
         EV_NATIONAL,
         EV_NATIONAL|EV_MEMORIAL,//50
-            EV_TZOM|EV_MEMORIAL,//51
+        EV_TZOM|EV_MEMORIAL,//51
     };
 
 
@@ -184,33 +207,34 @@ public class YDateAnnual
         {JewishDate.M_ID_TISHREI,1,A_EV_ROSH_HASHANA_A,2,1},//two days of rosh hashana
         {JewishDate.M_ID_TISHREI,3,A_EV_TZOM_GEDALIA,1,1},//zom gdalia, dhia
         {JewishDate.M_ID_TISHREI,9,A_EV_EREV_YOM_KIPPUR,2,1},//yom kippur
-        {JewishDate.M_ID_TISHREI,11,44,1,0},//yom Simhat Cohen
-        {JewishDate.M_ID_TISHREI,14,6,2,1},//sukkot
-        {JewishDate.M_ID_TISHREI,16,9,5,0},//hol hamoed sukkot
-        {JewishDate.M_ID_TISHREI,21,10,1,0},//hoshana raba
-        {JewishDate.M_ID_TISHREI,22,13,1,0},//shmini azeret simhat_tora
-        {JewishDate.M_ID_TISHREI,23,39,1,0},//isru hag
-        {JewishDate.M_ID_KISLEV,25,14,8,1},//Chanukah
-        {JewishDate.M_ID_TEVET,10,22,1,0},//Tzom Asara B'Tevet
-        {JewishDate.M_ID_SHEVAT,15,23,1,0},//Tu B'Shvat
-        {JewishDate.M_ID_ADAR,13,24,1,-2},//taanit ester, dhia
-        {JewishDate.M_ID_ADAR,14,25,2,1},//Purim+Shushan
-        {JewishDate.M_ID_ADAR_I,14,27,2,0},//Purim katan - two days
-        {JewishDate.M_ID_ADAR_II,13,24,1,-2},//taanit ester, dhia
-        {JewishDate.M_ID_ADAR_II,14,25,2,1},//Purim+Shushan
+        {JewishDate.M_ID_TISHREI,11,A_EV_SIMCHAT_COHEN,1,0},//yom Simhat Cohen
+        {JewishDate.M_ID_TISHREI,14,A_EV_EREV_SUKKOT,2,1},//Erev Sukkot+Sukkot
+        {JewishDate.M_ID_TISHREI,16,A_EV_SUKKOT_HOL_HAMOED,5,0},//hol hamoed sukkot
+        {JewishDate.M_ID_TISHREI,21,A_EV_HOSHANA_RABBAH,1,0},//hoshana raba
+        {JewishDate.M_ID_TISHREI,22,A_EV_SHEMINI_ATZERET_SIMCHAT_TORAH,1,0},//shmini azeret simhat_tora
+        {JewishDate.M_ID_TISHREI,23,A_EV_ISRU_HAG,1,0},//isru hag
+        {JewishDate.M_ID_KISLEV,25,A_EV_HANUKKAH_ONE_CANDLE,8,1},//Chanukah
+        {JewishDate.M_ID_TEVET,10,A_EV_TENTH_OF_TEVET,1,0},//Tzom Asara B'Tevet
+        {JewishDate.M_ID_SHEVAT,15,A_EV_FIFTEEN_SHVAT,1,0},//Tu B'Shvat
+        {JewishDate.M_ID_ADAR,13,A_EV_TAANIT_ESTHER,1,-2},//taanit ester, dhia
+        {JewishDate.M_ID_ADAR,14,A_EV_PURIM,2,1},//Purim+Shushan
+        {JewishDate.M_ID_ADAR_I,14,A_EV_PURIM_KATAN,2,0},//Purim katan - two days
+        {JewishDate.M_ID_ADAR_II,13,A_EV_TAANIT_ESTHER,1,-2},//taanit ester, dhia
+        {JewishDate.M_ID_ADAR_II,14,A_EV_PURIM,2,1},//Purim+Shushan
         {JewishDate.M_ID_NISAN,14,28,2,1},//Erev Pesah+Pesah
         {JewishDate.M_ID_NISAN,16,31,5,0},//Hol Ha'moed Pesah
         {JewishDate.M_ID_NISAN,21,32,1,0},//Shvi'i Pesah
-        {JewishDate.M_ID_NISAN,22,39,1,0},//isru hag
+        {JewishDate.M_ID_NISAN,22,A_EV_ISRU_HAG,1,0},//isru hag
         {JewishDate.M_ID_IYAR,14,34,1,0},//Pesah Sheni
         {JewishDate.M_ID_IYAR,18,35,1,0},//Lag Ba'Omer
         {JewishDate.M_ID_SIVAN,5,36,2,1},//Erev Shavu'ot+Shavu'ot
-        {JewishDate.M_ID_SIVAN,7,39,1,0},//isru hag
+        {JewishDate.M_ID_SIVAN,7,A_EV_ISRU_HAG,1,0},//isru hag
         {JewishDate.M_ID_TAMMUZ,17,40,1,1},//Tzom 17 Tamuz, dhia
         {JewishDate.M_ID_AV,9,41,1,1},//Tzom 9 Av, dhia
         {JewishDate.M_ID_AV,15,42,1,0},//15 Av
         {JewishDate.M_ID_ELUL,29,43,1,0},//Erev Rosh Hashana
-        {JewishDate.M_ID_SIVAN,20,51,1,0},//5408-5409 memorial
+        {JewishDate.M_ID_SIVAN,20,51,1,0},//5408-5409 memorial 
+//TODO: maybe add event since year parameter. for 5408 memorial.
     };
     static final byte [][] event_db_diaspora= 
     {// month_id,day,array index,# of days,jump/dhia(if #_days==1)
@@ -221,12 +245,7 @@ public class YDateAnnual
         {JewishDate.M_ID_NISAN,22,33,1,0},//Shmi'ni Pesah
         {JewishDate.M_ID_SIVAN,7,38,1,0},//Shavu'ot II
     };
-/*
-    holocaust day (44) in 27 Nisan 1951 (5711). if on friday, move it backward. if on sunday after 1997 move it afterward.
-    memorial day (45) in 4 Iyar 1951 (5711).
-    family day (48) in 30 Shevat since 1973 (5733).
-    
-    */
+
     
     private byte [] current_year_events;
     private boolean diaspora;

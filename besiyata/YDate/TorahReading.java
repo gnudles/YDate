@@ -347,9 +347,9 @@ public class TorahReading
         int succot = 15;
         int day_type = getDayType(h);
         int pnum = 0;
-        if (diy + 1 == simhat_torah)
+        if (diy + 1 == simhat_torah) //diy + 1 is day in month tishrei. so if we are in simchat torah...
         {
-            pnum = 54;
+            pnum = 54;//Vezot Haberacha
         }
         else
         {
@@ -362,7 +362,7 @@ public class TorahReading
             {
                 if (diy + 1 <= simhat_torah && diy + 1 >= succot)
                 {
-                    pnum = 54;
+                    pnum = 54;//Vezot Haberacha
                 }
                 else
                 {
@@ -372,7 +372,7 @@ public class TorahReading
                         pnum = sidra_array[sat / 7];
                         if (pnum == 0 && (sat / 7) == 2)
                         {
-                            pnum = 54;
+                            pnum = 54;//Vezot Haberacha
                         }
                         sat += 7;
                     }
@@ -494,7 +494,9 @@ public class TorahReading
         }
         return lstr;
     }
-    static byte[][][] sidra_reading = new byte[2][JewishDate.N_YEAR_TYPES][];//[diaspora][year_type][shabat]
+    static byte[][][] sidra_reading = new byte[2][JewishDate.N_YEAR_TYPES][];//[diaspora][year_type][shabbat]
+    //reverse access:
+    static byte[][][] sidra_to_shabbat = new byte[2][JewishDate.N_YEAR_TYPES][54];//[diaspora][year_type][sidra]
 
     private static int getNextJoinPointer(byte[] joining, int jp)
     {
@@ -535,7 +537,9 @@ public class TorahReading
         shabats++; // one for the next year
         byte[] reading = new byte[shabats];
         sidra_reading[diaspora ? 0 : 1][ldt - 1] = reading;
-        if ((year_diw >> 2) == 0) //if monday or tuesday - pat bag
+        //the following if is like if (year_diw  == YDate.MONDAY || year_diw  == YDate.TUESDAY)
+        // or like doing if (year_diw > 2)
+        if ((year_diw >> 2) == 0) //if the year started in monday or tuesday - pat bag
         {
             reading[s] = 52;//Vayelech
             ++s;
@@ -563,7 +567,7 @@ public class TorahReading
         }
         int pesah_day = YDate.JewishDate.calculateDayInYearByMonthId(year_length, JewishDate.M_ID_NISAN, 15);
         int pesah_length = diaspora ? 8 : 7;
-        int azeret_day = 50 + pesah_day;
+        int azeret_day = 50 + pesah_day;//SHAVOUT
         int azeret_length = diaspora ? 2 : 1;
         int tr = 1;
         //now s points to shabat bereshit
@@ -601,12 +605,81 @@ public class TorahReading
         }
         return reading;
     }
-
+    private static byte[] generateSidraToShabbatArray(int year_length, int year_first_day, boolean diaspora)
+    {
+        int year_diw = year_first_day % 7; // can be only 1 2 4 6 (+1 = 2 3 5 7)
+        int ldt = YDate.JewishDate.ld_year_type(year_length, year_diw + 1);
+        byte[] reading = calculateSidraArray(year_length, year_first_day, diaspora);
+        byte[] rev_access = sidra_to_shabbat[diaspora ? 0 : 1][ldt - 1];
+        if (rev_access[0]!=0)
+            return rev_access;
+        rev_access[54-1]=-1;//Vezot Habracha.
+        int r=0;
+        for (int i=0; i< reading.length;)
+        {
+            if (reading[i]>0)
+            {
+                rev_access[reading[i]-1]=(byte)i;
+            }
+            else if(reading[i]<0)//joined
+            {
+                rev_access[-reading[i]-1]=(byte)i;
+                rev_access[-reading[i]]=(byte)i;
+            }
+        }
+        return rev_access;        
+    }
+    
     public static int getShabbatBereshit(int year_length, int year_first_day)
     {
         int bereshit_saturday = year_first_day;
         bereshit_saturday += YDate.JewishDate.calculateDayInYearByMonthId(year_length, JewishDate.M_ID_TISHREI, 23);
         bereshit_saturday = YDate.getNext(YDate.SATURDAY, bereshit_saturday);
         return bereshit_saturday;
+    }
+    /**
+     * return the Vayelech shabbat that is at the end of this year or at the beginning of the next year.
+     * @param year_length
+     * @param year_first_day
+     * @return 
+     */
+    public static int getLastShabbatVayelech(int year_length, int year_first_day)
+    {
+        return getFirstShabbatVayelech(year_first_day + year_length);
+    }
+    public static int getFirstShabbatVayelech(int year_first_day)
+    {
+        int year_diw= (year_first_day)%7;
+        if ((year_diw >> 2) == 0) //if the year starts in monday or tuesday - pat bag
+        {
+            return YDate.getNext(YDate.SATURDAY, year_first_day);
+        }
+        return YDate.getPrevious(YDate.SATURDAY, year_first_day - 1);
+    }
+    /**
+     * UNTESTED. should give you day in "beginning count" for specific sidra.
+     * Vaelech might be twice in year or just once or zero. if there are two shabbats Vayelech,
+     * it gives the one in the end of the year.
+     * there are two methods to get the desired Vayelech shabbat.
+     * @param sidra 1..54
+     * @param year_length
+     * @param year_first_day
+     * @param diaspora
+     * @return -1 if not found. (might happen with "Vayelech")
+     */
+    public static int getParashaDayInYear(int sidra,int year_length, int year_first_day, boolean diaspora)
+    {
+        if (sidra < 1 || sidra > 54)
+            return -1;
+        if (sidra==54)
+        {
+            // Simchat torah is in Tishrey 22 in Israel or 23 in Galuyot.
+            // but while day in month starts from 1, our day in year count starts from 0.
+            return year_first_day + (diaspora ? 22 : 21); 
+        }
+        int sat_num = generateSidraToShabbatArray(year_length,year_first_day,diaspora)[sidra-1];
+        if (sat_num<0)
+            return -1;
+        return YDate.getNext(YDate.SATURDAY, year_first_day) + sat_num * 7;
     }
 }
