@@ -22,6 +22,16 @@ public class EventHandler {
     {
         listeners.add(new SoftReference<Listener>(l));
     }
+    public void removeListener(Listener rm_l)
+    {
+        for (SoftReference<Listener> sr_l : listeners)
+        {
+            Listener lptr=sr_l.get();
+            if (lptr==rm_l) {
+                listeners.remove(sr_l);
+            }
+        }
+    }
     public void trigger( Object sender )
     {
         for (SoftReference<Listener> l : listeners)

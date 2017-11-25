@@ -19,8 +19,8 @@ public class YDate {
 
     public interface TimeZoneProvider {
         /**
-         * returns offset in hours for specific timezone.
-         * @param d Date object to get timezone offset for.
+         * returns offset in hours for specific TimeZone.
+         * @param d Date object to get TimeZone offset for.
          * @return offset in hours from UTC.
          */
         float getOffset(Date d); //offset in hours from UTC
@@ -39,8 +39,8 @@ public class YDate {
     static final int FRIDAY = 5;//Venus - frig in old english
     static final int SATURDAY = 6;//Saturn - Sætern in old english
     /**
-     * The difference between the "beginning count" and the julian count. (the
-     * julian count start earlier)
+     * The difference between the "beginning count" and the Julian count. (the
+     * Julian count start earlier)
      */
     static final int JULIAN_DAY_OFFSET = 347997;
 
@@ -77,9 +77,10 @@ public class YDate {
     /**
      * There are seven stars, each star controls different hour of the day in
      * the following sequence: Saturn, Jupiter, Mars, Sun, Venus, Mercury, Moon.
-     * That sequence starts in the beginning of the wednesday night (right after
-     * the stars comes out). Also, according to the book of Yezira, each star is
-     * connected with a single day of the week (just as their names suggest).
+     * That sequence starts in the beginning of the Wednesday night (right after
+     * the stars comes out). So Sunday's night starts with Mercury.
+     * Also, according to the book of Yezira, each star is connected with a
+     * single day of the week (just as their names suggest).
      */
     public static final String[][] star_names
             = {
@@ -90,8 +91,8 @@ public class YDate {
     public static final class GregorianDate {
 
         /**
-         * Number of days in 400 gregorian years. The calculation is as follows:
-         * Every four years we have an extra day in february. But every 100
+         * Number of days in 400 Gregorian years. The calculation is as follows:
+         * Every four years we have an extra day in February. But every 100
          * years the previous rule doesn't take a place. In addition, every 400
          * year the rule of the 100 years doesn't take a place, and thus we do
          * have an extra day. So with the first rule we have in 400 years, 100
@@ -103,8 +104,8 @@ public class YDate {
          */
         static final int DAYS_IN_400 = 146097;
         /**
-         * Number of days in regular four gregorian years. The calculation is as
-         * follows: Every regular four years we have an extra day in february.
+         * Number of days in regular four Gregorian years. The calculation is as
+         * follows: Every regular four years we have an extra day in February.
          * To summerize this: 3*366+1*365=1461.
          */
         static final int DAYS_IN_4 = 1461;
@@ -591,7 +592,7 @@ public class YDate {
         private int day_in_year; // days after year beginning. first day in year  is 0
         private boolean valid;
 
-        JewishDate(JewishDate o) {
+        public JewishDate(JewishDate o) {
             this.valid = o.valid;
             this.year = o.year;
             this.month = o.month;
@@ -601,8 +602,8 @@ public class YDate {
             this.year_length = o.year_length;
             this.day_in_year = o.day_in_year;
         }
-
-        JewishDate(int year, int month, int day) {
+        
+        private JewishDate(int year, int month, int day) {
             if (year >= 4119 && year < 7001) {
                 this.valid = true;
                 this.year = year;
@@ -633,9 +634,7 @@ public class YDate {
                 int month_length = monthLength();
                 this.day = Math.min(month_length, day);
                 this.day_in_year = calculateDayInYear(this.year_length, this.month, this.day);
-
             }
-
         }
 
         private boolean setByDays(int days) {
@@ -694,6 +693,34 @@ public class YDate {
             valid = setByDays(days);
         }
 
+        /**
+         * Gives a cloned object with the next date.
+         * That is useful to get the correct date if you are after twilight.
+         * @return a cloned object of the next day.
+         */
+        public JewishDate getDayAfterTwilight()
+        {
+            if (day_in_year+1 == year_length)// we reached the end of the year.
+            {
+                return new JewishDate(year+1, 1, 1);//we must recalculate the year variables.
+            }
+            else
+            {
+                JewishDate cln = new JewishDate(this);
+                cln.day_in_year++;
+                if (cln.day == cln.monthLength())// we reached the end of the month.
+                {
+                    cln.day = 1;
+                    cln.month++;
+                }
+                else
+                {
+                    cln.day++;
+                }
+                return cln;
+            }
+        }
+        
         public String dayString(YDateLanguage.Language lang) {
             return YDateLanguage.getLanguageEngine(lang).FormatJewishDate(day, monthID(), year);
         }
@@ -707,13 +734,13 @@ public class YDate {
         public boolean TenTalVeMatar(boolean diaspora) {
             if (diaspora) {
                 //int day_tkufa=dayInTkufa();
-                int starting = getTkufaDay(0) + 59;
+                int starting = getTkufaDay(0) + 59; // the sixty day from when Tkufat Tishrei begins (first day in count)
                 if (daysSinceBeginning() < starting) {
                     return false;
                 }
             }
             else {
-                if (day_in_year < 36) {
+                if (day_in_year < 36) { //36 is day in year of 7 in Cheshvan
                     return false;
                 }
             }
@@ -799,6 +826,11 @@ public class YDate {
             return (int) (d / DAY);
         }
 
+        /**
+         * 
+         * @param tkufa 0 -Tishrei, 1- Tevet, 2 - Nisan , 3- Tammuz
+         * @return day since beginning for that tkufa in the current year.
+         */
         public int getTkufaDay(int tkufa)//0 -Tishrei, 1- Tevet, 2 - Nisan , 3- Tammuz
         {
             long tkufa_parts = (long) ((year - 4117) * 4 - 2 + tkufa) * TKUFA;
