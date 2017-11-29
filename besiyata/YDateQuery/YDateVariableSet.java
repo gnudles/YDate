@@ -6,6 +6,7 @@
 package besiyata.YDateQuery;
 
 import besiyata.YDate.YDate;
+import besiyata.YDate.YDatePreferences;
 import static besiyata.YDateQuery.YDateEvaluator.FALSE;
 import static besiyata.YDateQuery.YDateEvaluator.TRUE;
 
@@ -20,8 +21,9 @@ import java.util.Map;
 public class YDateVariableSet implements AbstractVariableSet<Integer>
 {
         YDate m_ydate;
+        YDatePreferences.DiasporaType m_diaspora;
         static private interface LambdaQuery {
-            int get(YDate ydate);
+            int get(YDate ydate, YDatePreferences.DiasporaType diaspora);
         }
         public static final int M_ID_TISHREI = 0;
         public static final int M_ID_CHESHVAN = 1;
@@ -57,41 +59,41 @@ public class YDateVariableSet implements AbstractVariableSet<Integer>
             constants.put("elul", M_ID_ELUL);
 
             lambdas = new HashMap<>();
-            lambdas.put("dsb", ((ydate) ->
+            lambdas.put("dsb", ((ydate, diaspora) ->
             {
                 return ydate.hd.daysSinceBeginning();
             }));
-            lambdas.put("weekday", ((ydate) ->
+            lambdas.put("weekday", ((ydate, diaspora) ->
             {
                 return ydate.hd.dayInWeek();
             }));
-            lambdas.put("month_id", ((ydate) ->
+            lambdas.put("month_id", ((ydate, diaspora) ->
             {
                 return ydate.hd.monthID();
             }));
-            lambdas.put("day_in_month", ((ydate) ->
+            lambdas.put("day_in_month", ((ydate, diaspora) ->
             {
                 return ydate.hd.dayInMonth();
             }));
-            lambdas.put("day_in_year", ((ydate) ->
+            lambdas.put("day_in_year", ((ydate, diaspora) ->
             {
                 return ydate.hd.dayInYear();
             }));
-            lambdas.put("year", ((ydate) ->
+            lambdas.put("year", ((ydate, diaspora) ->
             {
                 return ydate.hd.year();
             }));
-            lambdas.put("shabbaton", ((ydate) ->
+            lambdas.put("shabbaton", ((ydate, diaspora) ->
             {
-                return ydate.shabbaton()?TRUE:FALSE; //shabbat or yom-tov
+                return ydate.shabbaton(diaspora)?TRUE:FALSE; //shabbat or yom-tov
             }));
-            LambdaQuery rosh_chodesh=((ydate) ->
+            LambdaQuery rosh_chodesh=((ydate, diaspora) ->
             {
                 return ydate.hd.roshChodesh()?TRUE:FALSE;
             });
             lambdas.put("rosh_chodesh", rosh_chodesh);
             lambdas.put("rosh_hodesh", rosh_chodesh);
-            LambdaQuery chanukkah=((ydate) ->
+            LambdaQuery chanukkah=((ydate, diaspora) ->
             {
                 return (ydate.hd.dayOfChanukkah()>0)?TRUE:FALSE;
             });
@@ -99,16 +101,17 @@ public class YDateVariableSet implements AbstractVariableSet<Integer>
             lambdas.put("hanukkah", chanukkah);
         }
 
-        public YDateVariableSet(YDate ydate)
+        public YDateVariableSet(YDate ydate,YDatePreferences.DiasporaType diaspora)
         {
             m_ydate=ydate;
+            m_diaspora=diaspora;
         }
         @Override
         public Integer get(String variableName) {
             variableName=variableName.toLowerCase();
             if (lambdas.containsKey(variableName))
             {
-                return lambdas.get(variableName).get(m_ydate);
+                return lambdas.get(variableName).get(m_ydate,m_diaspora);
             }
             else if (constants.containsKey(variableName))
             {

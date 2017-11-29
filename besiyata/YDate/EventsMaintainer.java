@@ -5,10 +5,11 @@ import java.lang.ref.SoftReference;
 import java.util.AbstractMap;
 import java.util.TreeMap;
 
-import besiyata.gp.EventHandler;
+import besiyata.GP.EventHandler;
 
 /**
- * Created by Orr Dvori on 8/10/2017.
+ * EventsMaintainer manages events for specific YDate object.
+ * @author Orr Dvori &lt;dvoreader@gmail.com&gt;
  */
 
 public class EventsMaintainer {

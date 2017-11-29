@@ -27,18 +27,30 @@ public class Format
         }
         return stime;
     }
+    private static char getSingleDigitChar(int d)
+    {
+        return (char)('0'+(d%10));
+    }
+    /**
+     * Colon prefixed two digits string
+     * @param x
+     * @return 
+     */
     private static String getc00String(int x)
     {
-        
-        char a=(char)('0'+x/10);
-        char b=(char)('0'+x%10);
+        char a = getSingleDigitChar(getTenthsDigit(x));
+        char b = getSingleDigitChar(getOnesDigit(x));
         return (":"+a)+b;
     }
+    /**
+     * Two digits string
+     * @param x
+     * @return 
+     */
     public static String get00String(int x)
     {
-        x=x%100;
-        char a=(char)('0'+x/10);
-        char b=(char)('0'+x%10);
+        char a = getSingleDigitChar(getTenthsDigit(x));
+        char b = getSingleDigitChar(getOnesDigit(x));
         return (""+a)+b;
     }
     public static String GDateString(int y,int m,int d)
@@ -135,6 +147,33 @@ public class Format
         out+=HebIntSubString(n,true,true);
         
         return out;
+    }
+    public static int getOnesDigit(int num)
+    {
+        return num%10;
+    }
+    public static int getTenthsDigit(int num)
+    {
+        return (num/10)%10;
+    }
+    public static int getHundredsDigit(int num)
+    {
+        return (num/100)%10;
+    }
+    public static String numSuffix(int num) {
+        if (getTenthsDigit(num) == 1) {
+            return "th";
+        }
+        switch (getOnesDigit(num)) {
+            case 1:
+                return "st";
+            case 2:
+                return "nd";
+            case 3:
+                return "rd";
+            default:
+                return "th";
+        }
     }
 
 }

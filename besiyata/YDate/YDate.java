@@ -8,11 +8,13 @@ import java.util.Date;
 import java.util.TreeMap;
 import java.lang.ref.SoftReference;
 import java.util.TimeZone;
+import besiyata.GP.EventHandler;
 
-import besiyata.gp.EventHandler;
+
 
 /**
- * @author Orr Dvori <dvoreader@gmail.com>
+ * YDate class contains both Jewish and Gregorian date objects, and let you manipulate them.
+ * @author Orr Dvori &lt;dvoreader@gmail.com&gt;
  * @version 4.0.5
  */
 public class YDate {
@@ -391,8 +393,8 @@ public class YDate {
             return this.year_first_day;
         }
         /**
+         * see YDate.GregorianDate.yearFirstDay for more information
          * @return The number of days in the "beginning count" to the first day in the current month.
-         * @see YDate.GregorianDate.yearFirstDay
          */
         public int monthFirstDay() {
             return year_first_day + day_in_year - day + 1;
@@ -518,7 +520,7 @@ public class YDate {
             year = year % 100;
             //if the assumption (-1)/4 ==0 is incorrect (like in python), use the following code.
             if ((-1) / 4 != 0) {
-                year_first_day += (((year - 1 < 0) ? 0 : year - 1) / 4) + year * 365;
+                year_first_day += (((year == 0) ? 0 : year - 1) / 4) + year * 365;
             }
             else {
                 year_first_day += ((year - 1) / 4) + year * 365;
@@ -692,7 +694,6 @@ public class YDate {
         public JewishDate(int days) {
             valid = setByDays(days);
         }
-
         /**
          * Gives a cloned object with the next date.
          * That is useful to get the correct date if you are after twilight.
@@ -768,6 +769,30 @@ public class YDate {
             }
             int pessach_day = calculateDayInYearByMonthId(year_length, M_ID_NISAN, 15);
             return (day_in_year == pessach_day && !MusafAndAfter) || day_in_year < pessach_day;
+        }
+        public enum Gvurot
+                {
+                    MASHIV_HARUACH,
+                    MORID_HATAL,
+                    MASHIV_HARUACH_BECOME_MORID_HATAL,
+                    MORID_HATAL_BECOME_MASHIV_HARUACH
+                };
+        /**
+         * This method tells if we need to say Mashiv Ha'Ruah in the prayer or
+         * Morid Ha'Tal. If we are in summer time, we say Morid Ha'Tal (bless
+         * for dew descend). But if we are in the winter, we say Mashiv Ha'Ruah
+         *
+         */
+        public Gvurot getPrayerGvurot() {
+            int shmini_azeret = 21;
+            if (day_in_year == shmini_azeret)
+                return Gvurot.MORID_HATAL_BECOME_MASHIV_HARUACH;
+            int pessach_day = calculateDayInYearByMonthId(year_length, M_ID_NISAN, 15);
+            if (day_in_year == pessach_day)
+                return Gvurot.MASHIV_HARUACH_BECOME_MORID_HATAL;
+            if (day_in_year < shmini_azeret || day_in_year > pessach_day)
+                return Gvurot.MORID_HATAL;
+            return Gvurot.MASHIV_HARUACH;
         }
 
         public String Segulah() {
@@ -1000,18 +1025,29 @@ public class YDate {
 
         public int dayOfChanukkah() {
             int diy = dayInYear();
-            int chnkday = YDate.JewishDate.calculateDayInYearByMonthId(day_in_year, M_ID_KISLEV, 25);
+            int chnkday = YDate.JewishDate.calculateDayInYearByMonthId(year_length, M_ID_KISLEV, 25);
             return (diy >= chnkday && diy < chnkday + 8) ? diy - chnkday + 1 : -1;
+        }
+        public boolean isKippurDay() {
+            return dayInYear() == 9; // 10 in Tishrei.
+        }
+        public boolean isNineAv() {
+            return dayInYear() == YDate.JewishDate.calculateDayInYearByMonthId(year_length, M_ID_AV, 9); // 9 in Av.
         }
 
         public int sfiratHaomer() {
             int before_fisrt_omer_day = calculateDayInYearByMonthId(this.year_length, M_ID_NISAN, 15);//pessah night
             int omer = this.day_in_year - before_fisrt_omer_day;
-            if (omer < 0 || omer > 49) //if omer ==0 then its the night before hasfira
+            if (omer < 0 || omer > 49) //if omer ==0 then its the day before the night of hasfira
             {
                 return -1;
             }
             return omer;
+        }
+        public int MasechetAvotChapter(boolean AskenazTradition)
+        {
+            //TODO:...
+            return 0;
         }
 
         String starForHour(long parts, boolean Heb) {
@@ -1359,7 +1395,7 @@ public class YDate {
             /*
              the loop:
              for x in range(0,19):
-             print (235*(x+1)+1)/19-(235*x+1)/19
+             &nbsp;&nbsp;print (235*(x+1)+1)/19-(235*x+1)/19
              gives exactly:
              12,12,13,12,12,13,12,13,12,12,13,12,12,13,12,12,13,12,13
              which is the 19-years period month's division
@@ -1372,12 +1408,12 @@ public class YDate {
             /*
              the loop:
              for x in range(0,19):
-             print (235*(x+1)+1)/19-(235*x+1)/19
+             &nbsp;&nbsp;print (235*(x+1)+1)/19-(235*x+1)/19
              gives exactly:
              12,12,13,12,12,13,12,13,12,12,13,12,12,13,12,12,13,12,13
              which is the 19-years period month's division
              */
-            int months = (235 * (year - 1) + 1) / 19;//first year was year one.
+            int months = (235 * (year - 1) + 1) / 19;//first year was year one. so we subtract one from year to start from 0.
             long parts = MOLAD + MONTH * (long) months;
             return parts;
         }
@@ -1682,7 +1718,7 @@ public class YDate {
      * 
      * @param diw day in week. un range 0..6
      * @param days day in "beginning count" or other count that day 0 is sunday
-     * @return days + x (6 > = x > = 0). that gives that certain day in week. 
+     * @return days + x (6 &gt; = x &gt; = 0). that gives that certain day in week. 
      */
     public static int getNext(int diw, int days) // return the upcoming diw (or today if it's that diw)
     {

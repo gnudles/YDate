@@ -221,19 +221,19 @@ public class YDateAnnual
         {JewishDate.M_ID_ADAR_I,14,A_EV_PURIM_KATAN,2,0},//Purim katan - two days
         {JewishDate.M_ID_ADAR_II,13,A_EV_TAANIT_ESTHER,1,-2},//taanit ester, dhia
         {JewishDate.M_ID_ADAR_II,14,A_EV_PURIM,2,1},//Purim+Shushan
-        {JewishDate.M_ID_NISAN,14,28,2,1},//Erev Pesah+Pesah
-        {JewishDate.M_ID_NISAN,16,31,5,0},//Hol Ha'moed Pesah
-        {JewishDate.M_ID_NISAN,21,32,1,0},//Shvi'i Pesah
+        {JewishDate.M_ID_NISAN,14,A_EV_EREV_PESACH,2,1},//Erev Pesah+Pesah
+        {JewishDate.M_ID_NISAN,16,A_EV_PESACH_HOL_HAMOED,5,0},//Hol Ha'moed Pesah
+        {JewishDate.M_ID_NISAN,21,A_EV_SHVII_PESACH,1,0},//Shvi'i Pesah
         {JewishDate.M_ID_NISAN,22,A_EV_ISRU_HAG,1,0},//isru hag
-        {JewishDate.M_ID_IYAR,14,34,1,0},//Pesah Sheni
-        {JewishDate.M_ID_IYAR,18,35,1,0},//Lag Ba'Omer
-        {JewishDate.M_ID_SIVAN,5,36,2,1},//Erev Shavu'ot+Shavu'ot
+        {JewishDate.M_ID_IYAR,14,A_EV_PESACH_SHENI,1,0},//Pesah Sheni
+        {JewishDate.M_ID_IYAR,18,A_EV_RASHBI_THIRTY_THREE,1,0},//Lag Ba'Omer
+        {JewishDate.M_ID_SIVAN,5,A_EV_EREV_SHAVUOT,2,1},//Erev Shavu'ot+Shavu'ot
         {JewishDate.M_ID_SIVAN,7,A_EV_ISRU_HAG,1,0},//isru hag
-        {JewishDate.M_ID_TAMMUZ,17,40,1,1},//Tzom 17 Tamuz, dhia
-        {JewishDate.M_ID_AV,9,41,1,1},//Tzom 9 Av, dhia
-        {JewishDate.M_ID_AV,15,42,1,0},//15 Av
-        {JewishDate.M_ID_ELUL,29,43,1,0},//Erev Rosh Hashana
-        {JewishDate.M_ID_SIVAN,20,51,1,0},//5408-5409 memorial 
+        {JewishDate.M_ID_TAMMUZ,17,A_EV_TZOM_SEVENTEEN_TAMMUZ,1,1},//Tzom 17 Tamuz, dhia
+        {JewishDate.M_ID_AV,9,A_EV_TZOM_NINE_AV,1,1},//Tzom 9 Av, dhia
+        {JewishDate.M_ID_AV,15,A_EV_FIFTEEN_AV,1,0},//15 Av
+        {JewishDate.M_ID_ELUL,29,A_EV_EREV_ROSH_HASHANA,1,0},//Erev Rosh Hashana
+        {JewishDate.M_ID_SIVAN,20,A_EV_TAANIT_GZEROT_408_409,1,0},//5408-5409 memorial 
 //TODO: maybe add event since year parameter. for 5408 memorial.
     };
     static final byte [][] event_db_diaspora= 

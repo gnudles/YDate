@@ -447,22 +447,23 @@ public class DailyLimud {
                 }
 
             };
+
     static final String[][] masechet_name
             = {
                 {
-                    "ברכות",
-                    "שבת",
-                    "עירובין",
-                    "פסחים",
-                    "שקלים",
-                    "יומא",
-                    "סוכה",
-                    "ביצה",
-                    "ראש השנה",
-                    "תענית",
-                    "מגילה",
-                    "מועד קטן",
-                    "חגיגה",
+                    "ברכות",//0
+                    "שבת",//11
+                    "עירובין",//12
+                    "פסחים",//13
+                    "שקלים",//14
+                    "יומא",//15
+                    "סוכה",//16
+                    "ביצה",//17
+                    "ראש השנה",//18
+                    "תענית",//19
+                    "מגילה",//20
+                    "מועד קטן",//21
+                    "חגיגה",//22
                     "יבמות",
                     "כתובות",
                     "נדרים",
@@ -623,6 +624,8 @@ public class DailyLimud {
     private static final int dafyomi_first_cycle = 2075677;
     private static final int dafyomi_eighth_cycle = dafyomi_first_cycle + 7 * 2702;
     private static final int mishnayomit_first_cycle = 2084329;
+    private static final int yerushalmi_first_cycle = 2096275;//15 shevat 5740 (Febuary, 2, 1980)
+    private static final int yerushalmi_total_length = 1554;
 
     public static String MishnaYomit(int d, boolean show_seder, boolean Heb) {
         if (d < mishnayomit_first_cycle) {
@@ -763,5 +766,95 @@ public class DailyLimud {
             }
         }
         return "";
+    }
+
+    /**
+     * indices for mishna name array.
+     */
+    private static int masechtotYerushalmiIndex[] = {0, 1, 2, 3, 4,
+        5, 6, 7, 8, 9, 10, 11, 12, 13,
+        17, 18, 15, 16, 19, 14, 20, 22, 21,
+        23, 24, 27, 25, 26, 28, 29, 30, 31,
+        32, 33, 34, 35, 37, 39, 57};
+    private final static int[] yerushalmi_length = {
+        68, 37, 34, 44, 31, 59, 26, 33, 28, 20, 13, 92, 65, 71, 22, 22, 42, 26, 26, 33, 34, 22,
+        19, 85, 72, 47, 40, 47, 54, 48, 44, 37, 34, 44, 9, 57, 37, 19, 13};
+    private final static JewishDate yerushalmi_jd = new JewishDate(yerushalmi_first_cycle);
+
+    public static String getYerushalmi(int d, boolean Heb) {
+        if (d < yerushalmi_first_cycle) {
+            return "";
+        }
+        JewishDate jd = new JewishDate(d);
+        if (jd.isKippurDay() || jd.isNineAv()) {
+            return "";
+        }
+
+        int offset = d - yerushalmi_first_cycle;
+        // subtract the number of nine in Av and Kippur day from cycle begin till now.
+        offset -= countNoLimudDays(yerushalmi_jd, jd);
+        offset %= yerushalmi_total_length;
+        int daf_counter = 0;
+        for (int masechet = 0; masechet < yerushalmi_length.length; masechet++) {
+            daf_counter += yerushalmi_length[masechet];
+            if (offset < daf_counter)//found it!
+            {
+                offset -= (daf_counter - yerushalmi_length[masechet]);
+                String page_num;
+                //Daf in yerushalmi starts from Alef, not from Bet as Bavli.
+                if (Heb) {
+                    page_num = Format.HebIntString(offset + 1, false);
+                }
+                else {
+                    page_num = String.valueOf(offset + 1);
+                }
+                String masechet_str = mishna_name[Heb ? 0 : 1][masechtotYerushalmiIndex[masechet]];
+                return masechet_str + " " + page_num;
+            }
+        }
+        return "";
+
+    }
+
+    private static int countNoLimudDays(JewishDate jd_from, JewishDate jd_to) {
+        if (jd_to.daysSinceBeginning() <= jd_from.daysSinceBeginning()) {
+            return 0;
+        }
+
+        int res = 0;
+        if (jd_to.year() == jd_from.year()) {
+            int kipp = 9; // kippur day in year
+            if (jd_to.dayInYear() > kipp && jd_from.dayInYear() <= kipp) {
+                res++;
+            }
+            int nine_av = JewishDate.calculateDayInYearByMonthId(jd_to.yearLength(), JewishDate.M_ID_AV, 9); // kippur
+            if (jd_to.dayInYear() > nine_av && jd_from.dayInYear() <= nine_av) {
+                res++;
+            }
+        }
+        else {
+            res += (jd_to.year() - jd_from.year() - 1) * 2;
+            {
+                int kipp_to = 9; // kippur
+                if (jd_to.dayInYear() > kipp_to) {
+                    res++;
+                }
+                int nine_av_to = JewishDate.calculateDayInYearByMonthId(jd_to.yearLength(), JewishDate.M_ID_AV, 9); // kippur
+                if (jd_to.dayInYear() > nine_av_to) {
+                    res++;
+                }
+            }
+            {
+                int kipp_from = 9; // kippur
+                if (jd_from.dayInYear() <= kipp_from) {
+                    res++;
+                }
+                int nine_av_from = JewishDate.calculateDayInYearByMonthId(jd_from.yearLength(), JewishDate.M_ID_AV, 9); // kippur
+                if (jd_from.dayInYear() <= nine_av_from) {
+                    res++;
+                }
+            }
+        }
+        return res;
     }
 }
