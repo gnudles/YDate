@@ -1031,8 +1031,20 @@ public class YDate {
         public boolean isKippurDay() {
             return dayInYear() == 9; // 10 in Tishrei.
         }
+        /**
+         * if nine av is nidcha (postponed), return ten av.
+         * @return the day in year of the nine av fast day
+         */
+        public int nineAvDayInYear()
+        {
+            int nine_av = YDate.JewishDate.calculateDayInYearByMonthId(year_length, M_ID_AV, 9); // 9 in Av.
+            if ((nine_av+year_first_day)%7==SATURDAY)
+                ++nine_av;
+            return nine_av;
+        }
         public boolean isNineAv() {
-            return dayInYear() == YDate.JewishDate.calculateDayInYearByMonthId(year_length, M_ID_AV, 9); // 9 in Av.
+            
+            return dayInYear() == nineAvDayInYear(); // 9 in Av.
         }
 
         public int sfiratHaomer() {

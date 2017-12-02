@@ -199,7 +199,7 @@ public class TorahReading
 
     };
 
-    final static String[] special_shabat =
+    /*final static String[] special_shabat =
     {
         "שקלים",
         "זכור",
@@ -209,7 +209,7 @@ public class TorahReading
         "שירה",
         "נחמו",
         "תשובה"
-    };
+    };*/
     private static final int SHABAT_SHKALIM = 0;
     private static final int SHABAT_ZAKHOR = 1;
     private static final int SHABAT_PARA = 2;
@@ -219,12 +219,12 @@ public class TorahReading
     private static final int SHABAT_NACHAMU = 6;
     private static final int SHABAT_TSHUVA = 7;
 
-    public static String parshiot4(YDate h)
+    public static String parshiot4(YDate h, YDateLanguage lang)
     {
         YDate tweaked = YDate.createFrom(h);
         if (getShabbatBereshit(h.hd.yearLength(), h.hd.yearFirstDay()) + 15 * 7 == h.hd.daysSinceBeginning())
         {
-            return special_shabat[SHABAT_SHIRA];
+            return lang.getSpecialShabbat(SHABAT_SHIRA);
         }
         if (h.hd.dayInWeek() == 7)
         {
@@ -233,11 +233,11 @@ public class TorahReading
             {
                 if (tweaked.hd.dayInMonth() <= 7)
                 {
-                    return special_shabat[SHABAT_HACHODESH];
+                    return lang.getSpecialShabbat(SHABAT_HACHODESH);
                 }
                 if (h.hd.dayInMonth() < 15 && h.hd.dayInMonth() > 7)
                 {
-                    return special_shabat[SHABAT_HAGADOL];
+                    return lang.getSpecialShabbat(SHABAT_HAGADOL);
                 }
             }
             if (tweaked.hd.monthID() == YDate.JewishDate.M_ID_ADAR
@@ -245,15 +245,15 @@ public class TorahReading
             {
                 if (tweaked.hd.dayInMonth() <= 7)
                 {
-                    return special_shabat[SHABAT_SHKALIM];
+                    return lang.getSpecialShabbat(SHABAT_SHKALIM);
                 }
                 if (h.hd.dayInMonth() < 14 && h.hd.dayInMonth() > 7)
                 {
-                    return special_shabat[SHABAT_ZAKHOR];
+                    return lang.getSpecialShabbat(SHABAT_ZAKHOR);
                 }
                 if (h.hd.dayInMonth() > 16)
                 {
-                    return special_shabat[SHABAT_PARA];
+                    return lang.getSpecialShabbat(SHABAT_PARA);
                 }
             }
             int shabbat_nachamu = h.hd.yearFirstDay();
@@ -262,14 +262,14 @@ public class TorahReading
 
             if (h.hd.daysSinceBeginning() == shabbat_nachamu)
             {
-                return special_shabat[SHABAT_NACHAMU];
+                return lang.getSpecialShabbat(SHABAT_NACHAMU);
             }
             int shabbat_tshuva = h.hd.yearFirstDay();
             shabbat_tshuva += YDate.JewishDate.calculateDayInYearByMonthId(h.hd.yearLength(), JewishDate.M_ID_TISHREI, 9);
             shabbat_tshuva = YDate.getPrevious(YDate.SATURDAY, shabbat_tshuva);
             if (h.hd.daysSinceBeginning() == shabbat_tshuva)
             {
-                return special_shabat[SHABAT_TSHUVA];
+                return lang.getSpecialShabbat(SHABAT_TSHUVA);
             }
 
         }

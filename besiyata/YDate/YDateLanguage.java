@@ -18,7 +18,8 @@ public abstract class YDateLanguage
         PERSIAN,
         ARABIC,
         ARAMIC,
-        ITALIAN
+        ITALIAN,
+        ENGLISH_ASKENAZ
     }
     public static Language guessLanguageFromLocation(TimeZone tz)
     {
@@ -68,6 +69,7 @@ public abstract class YDateLanguage
             null,
             null,
             null,
+            null,
             null
     };
     static final int SUNDAY = 0;
@@ -78,6 +80,7 @@ public abstract class YDateLanguage
     static final int FRIDAY = 5;
     static final int SATURDAY = 6;
     public abstract String getWeekToken(int token);
+    public abstract String getSpecialShabbat(int token);
     public abstract String getShortWeekToken(int token);
     public abstract String getHebMonthToken(int token);
     public abstract String getShortHebMonthToken(int token);

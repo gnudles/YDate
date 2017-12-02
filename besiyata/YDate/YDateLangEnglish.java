@@ -58,6 +58,17 @@ public class YDateLangEnglish extends YDateLanguage
             {
                     "Mercury","Moon","Saturn","Jupiter","Mars","Sun","Venus"
             };
+    final static String[] special_shabbat =
+    {
+        "Shkalim",
+        "Zakhor",
+        "Parah",
+        "HaChodesh",
+        "HaGadol",
+        "Shira",
+        "Nachamu",
+        "Tshuva"
+    };
 
     @Override
     public String getWeekToken(int token)
@@ -133,5 +144,10 @@ public class YDateLangEnglish extends YDateLanguage
     @Override
     public String getShortHebMonthToken(int token) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getSpecialShabbat(int token) {
+        return special_shabbat[token];
     }
 }

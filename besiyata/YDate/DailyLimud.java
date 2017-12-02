@@ -447,94 +447,51 @@ public class DailyLimud {
                 }
 
             };
-
-    static final String[][] masechet_name
+static final int[] bavli_name_index
             = {
-                {
-                    "ברכות",//0
-                    "שבת",//11
-                    "עירובין",//12
-                    "פסחים",//13
-                    "שקלים",//14
-                    "יומא",//15
-                    "סוכה",//16
-                    "ביצה",//17
-                    "ראש השנה",//18
-                    "תענית",//19
-                    "מגילה",//20
-                    "מועד קטן",//21
-                    "חגיגה",//22
-                    "יבמות",
-                    "כתובות",
-                    "נדרים",
-                    "נזיר",
-                    "סוטה",
-                    "גיטין",
-                    "קידושין",
-                    "בבא קמא",
-                    "בבא מציעא",
-                    "בבא בתרא",
-                    "סנהדרין",
-                    "מכות",
-                    "שבועות",
-                    "עבודה זרה",
-                    "הוריות",
-                    "זבחים",
-                    "מנחות",
-                    "חולין",
-                    "בכורות",
-                    "ערכין",
-                    "תמורה",
-                    "כריתות",
-                    "מעילה",
-                    "קנים",
-                    "תמיד",
-                    "מדות",
-                    "נדה"
-                },
-                {
-                    "Berachot",
-                    "Shabbat",
-                    "Eruvin",
-                    "Pesachim",
-                    "Shekalim",
-                    "Yoma",
-                    "Sukkah",
-                    "Beitzah",
-                    "Rosh Hashana",
-                    "Ta'anit",
-                    "Megillah",
-                    "Mo'ed Katan",
-                    "Chagigah",
-                    "Yevamot",
-                    "Ketubot",
-                    "Nedarim",
-                    "Nazir",
-                    "Sotah",
-                    "Gittin",
-                    "Kiddushin",
-                    "Baba Kamma",
-                    "Baba Metzia",
-                    "Baba Batra",
-                    "Sanhedrin",
-                    "Makkot",
-                    "Shevu'ot",
-                    "Avodah Zarah",
-                    "Horayot",
-                    "Zevachim",
-                    "Menachot",
-                    "Chullin",
-                    "Bechorot",
-                    "Arachin",
-                    "Temurah",
-                    "Keritot",
-                    "Meilah",
-                    "Kinnim",
-                    "Tamid",
-                    "Middot",
-                    "Niddah",}
-            };
-    static final int[] masechet_length
+                
+                    0,
+                    11,
+                    12,
+                    13,
+                    14,
+                    15,
+                    16,
+                    17,
+                    18,
+                    19,
+                    20,
+                    21,
+                    22,
+                    23,
+                    24,
+                    25,
+                    26,
+                    27,
+                    28,
+                    29,
+                    30,
+                    31,
+                    32,
+                    33,
+                    34,
+                    35,
+                    37,
+                    39,
+                    40,
+                    41,
+                    42,
+                    43,
+                    44,
+                    45,
+                    46,
+                    47,
+                    50,
+                    48,
+                    49,
+                    57
+                };
+    static final int[] bavli_masechet_length
             = {
                 63, //Berachot
                 156, //Shabbat
@@ -577,7 +534,7 @@ public class DailyLimud {
                 4, //Midot 
                 72//Niddah
             };
-    static final int[] masechet_begin
+    static final int[] bavli_masechet_begin // page start. (usually Daf Bet)
             = {
                 2, //Berachot
                 2, //Shabbat
@@ -741,26 +698,26 @@ public class DailyLimud {
             offset = (d - dafyomi_eighth_cycle) % cycle;
         }
         int daf_counter = 0;
-        for (int masechet = 0; masechet < masechet_length.length; masechet++) {
-            daf_counter += masechet_length[masechet];
+        for (int masechet = 0; masechet < bavli_masechet_length.length; masechet++) {
+            daf_counter += bavli_masechet_length[masechet];
             if (cycle == 2702 && masechet == 4) //shekalim
             {
                 daf_counter -= 9; // 21 - 9 = 12
             }
             if (offset < daf_counter)//found it!
             {
-                offset -= (daf_counter - masechet_length[masechet]);
+                offset -= (daf_counter - bavli_masechet_length[masechet]);
                 String page_num;
                 if (Heb) {
-                    page_num = Format.HebIntString(offset + masechet_begin[masechet], false);
+                    page_num = Format.HebIntString(offset + bavli_masechet_begin[masechet], false);
                 }
                 else {
-                    page_num = String.valueOf(offset + masechet_begin[masechet]);
+                    page_num = String.valueOf(offset + bavli_masechet_begin[masechet]);
                 }
-                String masechet_str = masechet_name[Heb ? 0 : 1][masechet];
-                if (offset == masechet_length[masechet] - 1 && (masechet == 35 || masechet == 36))//Meilah Kinnim
+                String masechet_str = mishna_name[Heb ? 0 : 1][bavli_name_index[masechet]];
+                if (offset == bavli_masechet_length[masechet] - 1 && (masechet == 35 || masechet == 36))//Meilah Kinnim
                 {
-                    masechet_str += ", " + masechet_name[Heb ? 0 : 1][masechet + 1];
+                    masechet_str += ", " + mishna_name[Heb ? 0 : 1][bavli_name_index[masechet+1]];
                 }
                 return masechet_str + " " + page_num;
             }
@@ -776,7 +733,10 @@ public class DailyLimud {
         17, 18, 15, 16, 19, 14, 20, 22, 21,
         23, 24, 27, 25, 26, 28, 29, 30, 31,
         32, 33, 34, 35, 37, 39, 57};
-    private final static int[] yerushalmi_length = {
+    /**
+     * number of pages in each masechta
+     */
+    private final static int[] yerushalmi_masechet_length = {
         68, 37, 34, 44, 31, 59, 26, 33, 28, 20, 13, 92, 65, 71, 22, 22, 42, 26, 26, 33, 34, 22,
         19, 85, 72, 47, 40, 47, 54, 48, 44, 37, 34, 44, 9, 57, 37, 19, 13};
     private final static JewishDate yerushalmi_jd = new JewishDate(yerushalmi_first_cycle);
@@ -795,11 +755,11 @@ public class DailyLimud {
         offset -= countNoLimudDays(yerushalmi_jd, jd);
         offset %= yerushalmi_total_length;
         int daf_counter = 0;
-        for (int masechet = 0; masechet < yerushalmi_length.length; masechet++) {
-            daf_counter += yerushalmi_length[masechet];
+        for (int masechet = 0; masechet < yerushalmi_masechet_length.length; masechet++) {
+            daf_counter += yerushalmi_masechet_length[masechet];
             if (offset < daf_counter)//found it!
             {
-                offset -= (daf_counter - yerushalmi_length[masechet]);
+                offset -= (daf_counter - yerushalmi_masechet_length[masechet]);
                 String page_num;
                 //Daf in yerushalmi starts from Alef, not from Bet as Bavli.
                 if (Heb) {
@@ -827,7 +787,7 @@ public class DailyLimud {
             if (jd_to.dayInYear() > kipp && jd_from.dayInYear() <= kipp) {
                 res++;
             }
-            int nine_av = JewishDate.calculateDayInYearByMonthId(jd_to.yearLength(), JewishDate.M_ID_AV, 9); // kippur
+            int nine_av = jd_to.nineAvDayInYear(); // nine av
             if (jd_to.dayInYear() > nine_av && jd_from.dayInYear() <= nine_av) {
                 res++;
             }
@@ -839,7 +799,7 @@ public class DailyLimud {
                 if (jd_to.dayInYear() > kipp_to) {
                     res++;
                 }
-                int nine_av_to = JewishDate.calculateDayInYearByMonthId(jd_to.yearLength(), JewishDate.M_ID_AV, 9); // kippur
+                int nine_av_to = jd_to.nineAvDayInYear(); //nine av
                 if (jd_to.dayInYear() > nine_av_to) {
                     res++;
                 }
@@ -849,7 +809,7 @@ public class DailyLimud {
                 if (jd_from.dayInYear() <= kipp_from) {
                     res++;
                 }
-                int nine_av_from = JewishDate.calculateDayInYearByMonthId(jd_from.yearLength(), JewishDate.M_ID_AV, 9); // kippur
+                int nine_av_from = jd_from.nineAvDayInYear(); //nine av
                 if (jd_from.dayInYear() <= nine_av_from) {
                     res++;
                 }
