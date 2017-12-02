@@ -1076,10 +1076,13 @@ public class YDate {
             int single_parts = (int) (parts % DAY);
             int hours = (int) (single_parts / HOUR);
             single_parts = single_parts % HOUR;
-            //we subtract 1 day but we add 18 hours. I mean 16 hours . I mean 15:39
+            //all the parts caculation is relative to jerusalem.
+            //the longitude of jerusalem is 35.2354. if you divide it by 360 and multiply by 24 hour in a day you get 2.349 hours diff, where we already added the 2,
+            //we need to manualy add that 0.349 hour which is 20.9416 minutes (20 minutes and 56.496 seconds)
+            //so we subtract 1 day but we add 18 hours (3 quarters). I mean 16 hours . I mean 15:39:03 (to get UTC)
             long millis = (long) (days - EPOCH_DAY - 1) * 3600L * 24 * 1000L;
-            final int offset_utc = 15 * 60 + 39;// or you can use 16*60 instead
-            millis += (hours * 3600L * 1000L + single_parts * 10000L / 3 + offset_utc * 60L * 1000L);
+            final int offset_utc = 15 * 60 * 60 + 39*60 + 3;//15:39:03 or you can use 16*60*60 instead if you don't want that 21 minutes thing
+            millis += (hours * 3600L * 1000L + single_parts * 10000L / 3 + offset_utc * 1000L);
             return new Date(millis);
         }
 

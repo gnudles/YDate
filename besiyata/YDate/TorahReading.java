@@ -343,11 +343,11 @@ public class TorahReading
         int diy = h.dayInYear();
         int ydiw = h.yearFirstDay() % 7;
         //int diw = (diy + ydiw) % 7;
-        int simhat_torah = diaspora ? 23 : 22;
-        int succot = 15;
+        int simhat_torah = diaspora ? 23 : 22;//22 in tishrei or 23 in tishrei.
+        int succot = 15;//15 in tishrei.
         int day_type = getDayType(h);
         int pnum = 0;
-        if (diy + 1 == simhat_torah) //diy + 1 is day in month tishrei. so if we are in simchat torah...
+        if ((diy + 1) == simhat_torah) //diy + 1 is day in month of tishrei. so if we are in simchat torah...
         {
             pnum = 54;//Vezot Haberacha
         }
@@ -360,7 +360,7 @@ public class TorahReading
             }
             else if (((day_type & HOL_DAY_MONDAY_THURSDAY) != 0 && (!(diaspora && (day_type & REGALIM_DIASPORA) != 0))))
             {
-                if (diy + 1 <= simhat_torah && diy + 1 >= succot)
+                if ((diy + 1) <= simhat_torah && (diy + 1) >= succot)
                 {
                     pnum = 54;//Vezot Haberacha
                 }
@@ -438,7 +438,12 @@ public class TorahReading
         }
         return lstr;
     }
-
+/**
+ * This method gives you the upcoming parasha. it is useful to know what parasha we should start studying.
+ * @param h the hebrew date object
+ * @param diaspora are we in the diaspora?
+ * @return the string of the parasha.
+ */
     public static String GetSidra(JewishDate h, boolean diaspora)
     {
         int diy = h.dayInYear();
@@ -447,32 +452,33 @@ public class TorahReading
         int succot = 15;
         int day_type = getDayType(h);
         int pnum = 0;
-        if (diy + 1 == simhat_torah)
+        if ((diy + 1) == simhat_torah)
         {
-            pnum = 54;
+            pnum = 54;//Vezot Haberacha
         }
         else
         {
             byte[] sidra_array = calculateSidraArray(h.yearLength(), h.yearFirstDay(), diaspora);
-            if ((day_type & SHABBAT_DAY) != 0)
+            if ((day_type & SHABBAT_DAY) != 0) // we are in shabbat
             {
                 pnum = sidra_array[diy / 7];
             }
             if (pnum == 0)
             {
-                if (diy + 1 <= simhat_torah && diy + 1 >= succot)
+                if ((diy + 1) <= simhat_torah && (diy + 1) >= succot)
                 {
-                    pnum = 54;
+                    pnum = 54;//Vezot Haberacha
                 }
                 else
                 {
-                    int sat = YDate.getNext(YDate.SATURDAY, diy + ydiw) - ydiw;
+                    int sat = YDate.getNext(YDate.SATURDAY, diy + ydiw) - ydiw;// get the day in year of next saturday.
                     while (pnum == 0)
                     {
                         pnum = sidra_array[sat / 7];
-                        if (pnum == 0 && (sat / 7) == 2)
+                        //if the next saturday is in succot, it means we are already in Vezot Haberacha.
+                        if (pnum == 0 && (sat / 7) == 2)//sat>=14 && sat <=20
                         {
-                            pnum = 54;
+                            pnum = 54;//Vezot Haberacha
                         }
                         sat += 7;
                     }
@@ -518,12 +524,23 @@ public class TorahReading
         }
         return double_reading[jp];
     }
-
+/**
+ * this method calculate all the parashot of a given year.
+ * there are 14 possible year types, and for each one of the 14 we have different settings for diaspora.
+ * the year can start in 4 out of 7 possible day in week (not in sunday, wednesday,friday). the year length might be one of the following: 353,354,355,383,384,385.
+ * but some of the combinations are not possible so we don't have 24(6*4) combination, we only have 14.
+ * the calculations of this method are cached for rapid access.
+ * @param year_length
+ * @param year_first_day
+ * @param diaspora
+ * @return 
+ */
     private static byte[] calculateSidraArray(int year_length, int year_first_day, boolean diaspora)
     {
-
-        int year_diw = year_first_day % 7; // can be only 1 2 4 6 (+1 = 2 3 5 7)
-        int ldt = YDate.JewishDate.ld_year_type(year_length, year_diw + 1);
+        int year_diw = year_first_day % 7; // can be only 1(+1=MON) 2(+1=TUE) 4(+1=THU) 6(+1=SAT) 
+        
+        
+        int ldt = YDate.JewishDate.ld_year_type(year_length, year_diw + 1);//the year type out of 14 possible types ( the method gives us range of 1..14)
         if (sidra_reading[diaspora ? 0 : 1][ldt - 1] != null)
         {
             return sidra_reading[diaspora ? 0 : 1][ldt - 1];
@@ -533,7 +550,7 @@ public class TorahReading
         int s = 0;
 
         int diy = YDate.getNext(YDate.SATURDAY, year_diw) - year_diw;
-        int shabats = (year_length - (diy) + 6) / 7;
+        int shabats = (year_length - (diy) + 6) / 7;//number of shabbats in the given year.
         shabats++; // one for the next year
         byte[] reading = new byte[shabats];
         sidra_reading[diaspora ? 0 : 1][ldt - 1] = reading;
@@ -565,9 +582,9 @@ public class TorahReading
             ++s;
             diy += 21;
         }
-        int pesah_day = YDate.JewishDate.calculateDayInYearByMonthId(year_length, JewishDate.M_ID_NISAN, 15);
-        int pesah_length = diaspora ? 8 : 7;
-        int azeret_day = 50 + pesah_day;//SHAVOUT
+        int pesah_day = YDate.JewishDate.calculateDayInYearByMonthId(year_length, JewishDate.M_ID_NISAN, 15); // day in year of pessach night.
+        int pesah_length = diaspora ? 8 : 7;//how much days in pessach?
+        int azeret_day = 50 + pesah_day;//SHAVOUT day in year.
         int azeret_length = diaspora ? 2 : 1;
         int tr = 1;
         //now s points to shabat bereshit
