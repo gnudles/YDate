@@ -1,3 +1,13 @@
+/* 
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the 
+ * Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version. This program is distributed in the
+ * hope that it will be useful, but WITHOUT ANY WARRANTY; without even the 
+ * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License
+ * <http://opensource.org/licenses/lgpl-3.0.html> for more details.
+ */
 package com.fathzer.soft.javaluator;
 
 import java.util.ArrayDeque;
@@ -15,7 +25,7 @@ import java.util.Map;
  * <br>Please note that this class is not thread safe. Under multi-threaded context you may have to instantiate one instance per thread (for instance using java.lang.ThreadLocal).
  * @param <T> The type of values handled by the evaluator 
  * @author Jean-Marc Astesana
- * @see <a href="../../../license.html">License information</a>
+ * @see <a href="license.html">License information</a>
  */
 public abstract class AbstractEvaluator<T> {
 	private final Tokenizer tokenizer;
