@@ -1,5 +1,19 @@
 /* This is free and unencumbered software released into the public domain.
+ *
+ * THIS SOFTWARE IS PROVIDED THE CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY 
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; BUSINESS
+ * INTERRUPTION; OR ANY SPIRITUAL DAMAGE) HOWEVER CAUSED
+ * AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
  */
+
 package besiyata.YDate;
 
 import besiyata.YDate.YDate.JewishDate;
@@ -40,124 +54,70 @@ public class TorahReading
     **39 - Chukat Balak         X   X   X   X   X   X   X   X
     * 42 - Matot Mas'ei         V   V   V   V   V   X   X   V
     * 51 - Nitzavim Vayelech    V   X   V   V   V   X   X   V
-    you can obtain the joining in israel by copying the joining outside IL and removing Chukat Balak joining.
-    except year type 4,11,12 where you should remove Behar Bechukotai in 4 Matot Mas'ei in 11 12
-     */
-    final static byte[][][] SidraJoin =
-    {
+    * you can obtain the joining in israel by copying the joining outside IL and removing Chukat Balak joining.
+    * except year type 4,11,12 where you should remove Behar Bechukotai in year type 4 and Matot Mas'ei in year types 11,12
+    */
+    final static byte[][] SidraJoin =
+    {//lsb to msb : 22, 27, 29, 32, 39, 42, 51
         { //Diaspora
-            {
-                1, 1, 1, 1, 0, 1, 1
-            },//1
-            
-            {
-                1, 1, 1, 1, 0, 1, 0
-            },//2
-            
-            {
-                1, 1, 1, 1, 1, 1, 1
-            },//3
-            
-            {
-                1, 1, 1, 1, 0, 1, 0
-            },//4
-            
-            {
-                1, 1, 1, 1, 1, 1, 1
-            },//5
-            
-            {
-                0, 1, 1, 1, 0, 1, 0
-            },//6
-            
-            {
-                1, 1, 1, 1, 0, 1, 1
-            },//7
-            
-            {
-                0, 0, 0, 0, 1, 1, 1
-            },//8
-            
-            {
-                0, 0, 0, 0, 0, 0, 0
-            },//9
-            
-            {
-                0, 0, 0, 0, 0, 1, 1
-            },//10
-            
-            {
-                0, 0, 0, 0, 0, 1, 0
-            },//11
-            
-            {
-                0, 0, 0, 0, 0, 1, 0
-            },//12
-            
-            {
-                0, 0, 0, 0, 0, 0, 1
-            },//13
-            
-            {
-                0, 0, 0, 0, 1, 1, 1
-            } //14
+                0x6f //1, 1, 1, 1, 0, 1, 1
+            ,//1
+                0x2f //1, 1, 1, 1, 0, 1, 0
+            ,//2
+                0x7f //1, 1, 1, 1, 1, 1, 1
+            ,//3
+                0x2f //1, 1, 1, 1, 0, 1, 0
+            ,//4
+                0x7f //1, 1, 1, 1, 1, 1, 1
+            ,//5
+                0x2e //0, 1, 1, 1, 0, 1, 0
+            ,//6
+                0x6f //1, 1, 1, 1, 0, 1, 1
+            ,//7
+                0x70 //0, 0, 0, 0, 1, 1, 1
+            ,//8
+                0x00 //0, 0, 0, 0, 0, 0, 0
+            ,//9
+                0x60 //0, 0, 0, 0, 0, 1, 1
+            ,//10
+                0x20 //0, 0, 0, 0, 0, 1, 0
+            ,//11
+                0x20 //0, 0, 0, 0, 0, 1, 0
+            ,//12
+                0x40 //0, 0, 0, 0, 0, 0, 1
+            ,//13
+                0x70 //0, 0, 0, 0, 1, 1, 1
+             //14
         },
         {
-            {
-                1, 1, 1, 1, 0, 1, 1
-            },//1
-            
-            {
-                1, 1, 1, 1, 0, 1, 0
-            },//2
-            
-            {
-                1, 1, 1, 1, 0, 1, 1
-            },//3
-            
-            {
-                1, 1, 1, 0, 0, 1, 0
-            },//4
-            
-            {
-                1, 1, 1, 1, 0, 1, 1
-            },//5
-            
-            {
-                0, 1, 1, 1, 0, 1, 0
-            },//6
-            
-            {
-                1, 1, 1, 1, 0, 1, 1
-            },//7
-            
-            {
-                0, 0, 0, 0, 0, 1, 1
-            },//8
-            
-            {
-                0, 0, 0, 0, 0, 0, 0
-            },//9
-            
-            {
-                0, 0, 0, 0, 0, 1, 1
-            },//10
-            
-            {
-                0, 0, 0, 0, 0, 0, 0
-            },//11
-            
-            {
-                0, 0, 0, 0, 0, 0, 0
-            },//12
-            
-            {
-                0, 0, 0, 0, 0, 0, 1
-            },//13
-            
-            {
-                0, 0, 0, 0, 0, 1, 1
-            } //14
+                0x6f //1, 1, 1, 1, 0, 1, 1
+            ,//1
+                0x2f //1, 1, 1, 1, 0, 1, 0
+            ,//2
+                0x6f //1, 1, 1, 1, 0, 1, 1
+            ,//3
+                0x27//1, 1, 1, 0, 0, 1, 0
+            ,//4
+                0x6f //1, 1, 1, 1, 0, 1, 1
+            ,//5
+                0x2e //0, 1, 1, 1, 0, 1, 0
+            ,//6
+                0x6f //1, 1, 1, 1, 0, 1, 1
+            ,//7
+                0x60 //0, 0, 0, 0, 0, 1, 1
+            ,//8
+                0x00 //0, 0, 0, 0, 0, 0, 0
+            ,//9
+                0x60 //0, 0, 0, 0, 0, 1, 1
+            ,//10
+                0x00 //0, 0, 0, 0, 0, 0, 0
+            ,//11
+                0x00 //0, 0, 0, 0, 0, 0, 0
+            ,//12
+                0x40 //0, 0, 0, 0, 0, 0, 1
+            ,//13
+                0x60 //0, 0, 0, 0, 0, 1, 1
+             //14
         }
     };
     final static String[][] sidra =
@@ -504,11 +464,11 @@ public class TorahReading
     //reverse access:
     static byte[][][] sidra_to_shabbat = new byte[2][JewishDate.N_YEAR_TYPES][54];//[diaspora][year_type][sidra]
 
-    private static int getNextJoinPointer(byte[] joining, int jp)
+    private static int getNextJoinPointer(byte joining, int jp)
     {
-        for (; jp < joining.length; ++jp)
+        for (; jp < double_reading.length; ++jp)
         {
-            if (joining[jp] == 1)
+            if ((joining&(1<<jp)) != 0)
             {
                 break;
             }
@@ -520,7 +480,7 @@ public class TorahReading
     {
         if (jp >= double_reading.length)
         {
-            return 55;
+            return 55;//return invalid parasha. valid number is only in the range 1..54
         }
         return double_reading[jp];
     }
@@ -545,7 +505,7 @@ public class TorahReading
         {
             return sidra_reading[diaspora ? 0 : 1][ldt - 1];
         }
-        byte[] joining = SidraJoin[diaspora ? 0 : 1][ldt - 1];
+        byte joining = SidraJoin[diaspora ? 0 : 1][ldt - 1];
 
         int s = 0;
 

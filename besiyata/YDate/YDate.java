@@ -1,4 +1,17 @@
 /* This is free and unencumbered software released into the public domain.
+ *
+ * THIS SOFTWARE IS PROVIDED THE CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY 
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; BUSINESS
+ * INTERRUPTION; OR ANY SPIRITUAL DAMAGE) HOWEVER CAUSED
+ * AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
  */
 package besiyata.YDate;
 
@@ -10,8 +23,6 @@ import java.lang.ref.SoftReference;
 import java.util.TimeZone;
 import besiyata.GP.EventHandler;
 
-
-
 /**
  * YDate class contains both Jewish and Gregorian date objects, and let you manipulate them.
  * @author Orr Dvori &lt;dvoreader@gmail.com&gt;
@@ -20,6 +31,7 @@ import besiyata.GP.EventHandler;
 public class YDate {
 
     public interface TimeZoneProvider {
+
         /**
          * returns offset in hours for specific TimeZone.
          * @param d Date object to get TimeZone offset for.
@@ -76,19 +88,6 @@ public class YDate {
         {"אש", "עפר", "רוח", "מים"},
         {"fire", "earth", "wind", "water"}
     };
-    /**
-     * There are seven stars, each star controls different hour of the day in
-     * the following sequence: Saturn, Jupiter, Mars, Sun, Venus, Mercury, Moon.
-     * That sequence starts in the beginning of the Wednesday night (right after
-     * the stars comes out). So Sunday's night starts with Mercury.
-     * Also, according to the book of Yezira, each star is connected with a
-     * single day of the week (just as their names suggest).
-     */
-    public static final String[][] star_names
-            = {
-                {"כוכב", "לבנה", "שבתאי", "צדק", "מאדים", "חמה", "נגה"},
-                {"Mercury", "Moon", "Saturn", "Jupiter", "Mars", "Sun", "Venus"}
-            };
 
     public static final class GregorianDate {
 
@@ -251,7 +250,6 @@ public class YDate {
             }
             return i;
         }*/
-
         private boolean setByDaysDemystified(int days) {
             if (days >= DAYS_OF_1600 && days < DAYS_OF_2300) {
                 int gd_day;
@@ -319,7 +317,7 @@ public class YDate {
                 this.year = gd_year;
                 this.month = gd_month;
                 this.day = gd_day;
-                
+
                 this.year_length = isLeap(this.year) ? 366 : 365;
                 this.day_in_year = calculateDayInYear(this.year_length, this.month, this.day);
                 this.year_first_day = days - this.day_in_year; //previously it was days_until_year(this.year);
@@ -341,6 +339,7 @@ public class YDate {
         public GregorianDate(int days) {
             valid = setByDaysDemystified(days);
         }
+
         /**
          * This method gives you a formatted string of the current date.
          * You may subclass the language class with a new FormatGregorianDate method,
@@ -351,6 +350,7 @@ public class YDate {
         public String dayString(YDateLanguage.Language language) {
             return YDateLanguage.getLanguageEngine(language).FormatGregorianDate(day, month, year);
         }
+
         /**
          * Get the day in the week for that specific date.
          * @return the week day number in range 1..7, where 1 denotes sunday and 7 denotes saturday.
@@ -358,6 +358,7 @@ public class YDate {
         public int dayInWeek() {
             return daysSinceBeginning() % 7 + 1;
         }
+
         /**
          * Get the day in the month for that specific date.
          * @return the day number in range 1..31 .
@@ -365,6 +366,7 @@ public class YDate {
         public int dayInMonth() {
             return this.day;
         }
+
         /**
          * Get the day in the year for that specific date.
          * Please note that the first day of the year (January 1) gives 0.
@@ -385,6 +387,7 @@ public class YDate {
         public int daysSinceBeginning() {
             return year_first_day + day_in_year;
         }
+
         /**
          * @return The number of days in the "beginning count" to the year's first day (1st of
          * January of the year)
@@ -392,6 +395,7 @@ public class YDate {
         public int yearFirstDay() {
             return this.year_first_day;
         }
+
         /**
          * see YDate.GregorianDate.yearFirstDay for more information
          * @return The number of days in the "beginning count" to the first day in the current month.
@@ -511,18 +515,22 @@ public class YDate {
             int year_first_day = DAYS_OF_1600;
             year_first_day += DAYS_IN_400 * (years_since_1600 / 400);
             year = years_since_1600 % 400;
-
-            year_first_day += HUNDRED_OFFSET[year / 100];
-            if (year / 100 == 0) {
+            int hundred= year / 100;
+            year_first_day += HUNDRED_OFFSET[hundred];
+            if (hundred == 0) {//if we are in the first hundred of the four hundreds
                 year_first_day += ((year + 3) / 4) + year * 365;
-                return year_first_day;
+                return year_first_day; //finito!
             }
-            year = year % 100;
+            //else if we are in one of the other 3 hundreds 
+            year = year % 100;//get the year in this hundred.
+            //in the first four years of those 3 hundreds we don't have a leap february.
+            //so we try to do some tricks to skip an extra "if".
             //if the assumption (-1)/4 ==0 is incorrect (like in python), use the following code.
-            if ((-1) / 4 != 0) {
-                year_first_day += (((year == 0) ? 0 : year - 1) / 4) + year * 365;
+            if ((-1) / 4 != 0) {//we can't save that extra "if" so we do the abs function.
+                year_first_day += (Math.abs(year - 1) / 4) + year * 365;
+                //year_first_day += (((year == 0) ? 0 : year - 1) / 4) + year * 365;
             }
-            else {
+            else {//but if we are in java, that former "if" is optimized out (omitted).
                 year_first_day += ((year - 1) / 4) + year * 365;
             }
             return year_first_day;
@@ -604,7 +612,7 @@ public class YDate {
             this.year_length = o.year_length;
             this.day_in_year = o.day_in_year;
         }
-        
+
         private JewishDate(int year, int month, int day) {
             if (year >= 4119 && year < 7001) {
                 this.valid = true;
@@ -694,19 +702,18 @@ public class YDate {
         public JewishDate(int days) {
             valid = setByDays(days);
         }
+
         /**
          * Gives a cloned object with the next date.
          * That is useful to get the correct date if you are after twilight.
          * @return a cloned object of the next day.
          */
-        public JewishDate getDayAfterTwilight()
-        {
-            if (day_in_year+1 == year_length)// we reached the end of the year.
+        public JewishDate getDayAfterTwilight() {
+            if (day_in_year + 1 == year_length)// we reached the end of the year.
             {
-                return new JewishDate(year+1, 1, 1);//we must recalculate the year variables.
+                return new JewishDate(year + 1, 1, 1);//we must recalculate the year variables.
             }
-            else
-            {
+            else {
                 JewishDate cln = new JewishDate(this);
                 cln.day_in_year++;
                 if (cln.day == cln.monthLength())// we reached the end of the month.
@@ -714,14 +721,13 @@ public class YDate {
                     cln.day = 1;
                     cln.month++;
                 }
-                else
-                {
+                else {
                     cln.day++;
                 }
                 return cln;
             }
         }
-        
+
         public String dayString(YDateLanguage.Language lang) {
             return YDateLanguage.getLanguageEngine(lang).FormatJewishDate(day, monthID(), year);
         }
@@ -770,13 +776,14 @@ public class YDate {
             int pessach_day = calculateDayInYearByMonthId(year_length, M_ID_NISAN, 15);
             return (day_in_year == pessach_day && !MusafAndAfter) || day_in_year < pessach_day;
         }
-        public enum Gvurot
-                {
-                    MASHIV_HARUACH,
-                    MORID_HATAL,
-                    MASHIV_HARUACH_BECOME_MORID_HATAL,
-                    MORID_HATAL_BECOME_MASHIV_HARUACH
-                };
+
+        public enum Gvurot {
+            MASHIV_HARUACH,
+            MORID_HATAL,
+            MASHIV_HARUACH_BECOME_MORID_HATAL,
+            MORID_HATAL_BECOME_MASHIV_HARUACH
+        };
+
         /**
          * This method tells if we need to say Mashiv Ha'Ruah in the prayer or
          * Morid Ha'Tal. If we are in summer time, we say Morid Ha'Tal (bless
@@ -785,13 +792,16 @@ public class YDate {
          */
         public Gvurot getPrayerGvurot() {
             int shmini_azeret = 21;
-            if (day_in_year == shmini_azeret)
+            if (day_in_year == shmini_azeret) {
                 return Gvurot.MORID_HATAL_BECOME_MASHIV_HARUACH;
+            }
             int pessach_day = calculateDayInYearByMonthId(year_length, M_ID_NISAN, 15);
-            if (day_in_year == pessach_day)
+            if (day_in_year == pessach_day) {
                 return Gvurot.MASHIV_HARUACH_BECOME_MORID_HATAL;
-            if (day_in_year < shmini_azeret || day_in_year > pessach_day)
+            }
+            if (day_in_year < shmini_azeret || day_in_year > pessach_day) {
                 return Gvurot.MORID_HATAL;
+            }
             return Gvurot.MASHIV_HARUACH;
         }
 
@@ -910,7 +920,7 @@ public class YDate {
             long parts = TkufaParts();
             Date m = partsToUTC(parts);
             return FormatUTC(m, tz, true) + "\nמוסיפים " + ((TkufaType() % M_ID_NISAN == M_ID_TEVET) ? "60" : "30") + " דקות לפני ואחרי."
-                    + "\nתחילת תקופה ב" + starForHour(parts, true);
+                    + "\nתחילת תקופה ב" + starForHour(parts, YDateLanguage.getLanguageEngine(YDateLanguage.Language.HEBREW));
         }
 
         /**
@@ -1023,27 +1033,47 @@ public class YDate {
             return ((type & YDateAnnual.EV_TYPE_MASK) == YDateAnnual.EV_YOM_TOV) || (dayInWeek() == 7);
         }
 
+        /**
+         * return list of the thursdays of taanit shovavim - shmot vaera bo beshalach yitro mishpatim truma tezave
+         * @return 
+         */
+        public int[] shovavim() {
+
+            int first_sunday_of_shovavim = TorahReading.getShabbatBereshit(yearLength(), yearFirstDay()) + 12 * 7 - 6;
+            int shovavim_thursday = first_sunday_of_shovavim + 4;//day since beginning.
+            int shovavim_tat_len = isLeapYear(year) ? 8 : 6;
+            int taanit[] = new int[shovavim_tat_len];
+
+            for (int i = 0; i < shovavim_tat_len; ++i) {
+                //TODO:
+            }
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
         public int dayOfChanukkah() {
             int diy = dayInYear();
             int chnkday = YDate.JewishDate.calculateDayInYearByMonthId(year_length, M_ID_KISLEV, 25);
             return (diy >= chnkday && diy < chnkday + 8) ? diy - chnkday + 1 : -1;
         }
+
         public boolean isKippurDay() {
             return dayInYear() == 9; // 10 in Tishrei.
         }
+
         /**
          * if nine av is nidcha (postponed), return ten av.
          * @return the day in year of the nine av fast day
          */
-        public int nineAvDayInYear()
-        {
+        public int nineAvDayInYear() {
             int nine_av = YDate.JewishDate.calculateDayInYearByMonthId(year_length, M_ID_AV, 9); // 9 in Av.
-            if ((nine_av+year_first_day)%7==SATURDAY)
+            if ((nine_av + year_first_day) % 7 == SATURDAY) {
                 ++nine_av;
+            }
             return nine_av;
         }
+
         public boolean isNineAv() {
-            
+
             return dayInYear() == nineAvDayInYear(); // 9 in Av.
         }
 
@@ -1056,15 +1086,22 @@ public class YDate {
             }
             return omer;
         }
-        public int MasechetAvotChapter(boolean AskenazTradition)
-        {
-            //TODO:...
-            return 0;
+
+        public int MasechetAvotChapter(boolean AskenazTradition) {
+            throw new UnsupportedOperationException("Not supported yet.");
         }
 
-        String starForHour(long parts, boolean Heb) {
+        /**
+         * There are seven stars, each star controls different hour of the day in
+         * the following sequence: Saturn, Jupiter, Mars, Sun, Venus, Mercury, Moon.
+         * That sequence starts in the beginning of the Wednesday night (right after
+         * the stars comes out). So Sunday's night starts with Mercury.
+         * Also, according to the book of Yezira, each star is connected with a
+         * single day of the week (just as their names suggest).
+         */
+        String starForHour(long parts, YDateLanguage lang) {
             int hour = (int) ((parts / HOUR) % 7);
-            return star_names[Heb ? 0 : 1][hour];
+            return lang.getStarToken(hour);
         }
 
         public long MoladParts() {
@@ -1081,12 +1118,12 @@ public class YDate {
             //we need to manualy add that 0.349 hour which is 20.9416 minutes (20 minutes and 56.496 seconds)
             //so we subtract 1 day but we add 18 hours (3 quarters). I mean 16 hours . I mean 15:39:03 (to get UTC)
             long millis = (long) (days - EPOCH_DAY - 1) * 3600L * 24 * 1000L;
-            final int offset_utc = 15 * 60 * 60 + 39*60 + 3;//15:39:03 or you can use 16*60*60 instead if you don't want that 21 minutes thing
+            final int offset_utc = 15 * 60 * 60 + 39 * 60 + 3;//15:39:03 or you can use 16*60*60 instead if you don't want that 21 minutes thing
             millis += (hours * 3600L * 1000L + single_parts * 10000L / 3 + offset_utc * 1000L);
             return new Date(millis);
         }
 
-        String dayPartName(int minutes) {
+        static String dayPartName(int minutes) {
             if (minutes > 23 * 60 || minutes < 3 * 60) {
                 return "לילה";
             }
@@ -1105,7 +1142,7 @@ public class YDate {
             return "ערב";
         }
 
-        public String FormatUTC(Date t, TimeZoneProvider tz, boolean Heb) {
+        public static String FormatUTC(Date t, TimeZoneProvider tz, boolean Heb) {
             String lstr;
             int utc_minute_offset = (int) (tz.getOffset(t) * 60);
             t.setTime(t.getTime() + utc_minute_offset * 60000L);
@@ -1147,7 +1184,7 @@ public class YDate {
             //int minutes=(single_parts)/(1080/60);
             Date m = partsToUTC(parts);
             lstr += FormatUTC(m, tz, true);
-            lstr += "\nהמולד ב" + starForHour(parts, true);
+            lstr += "\nהמולד ב" + starForHour(parts, YDateLanguage.getLanguageEngine(YDateLanguage.Language.HEBREW));
             Date fill = partsToUTC(parts + MONTH / 2);
             lstr += "\nמילוי הלבנה ";
             lstr += FormatUTC(fill, tz, true);
@@ -1303,18 +1340,37 @@ public class YDate {
         }
 
         /**
-         * Return Hebrew year type based on size and first week day of year. p -
-         * pshuta 350 + m - meuberet 380 + h - hasera + 3 k - kesidra + 4 s -
-         * shlema (melea) + 5 year type | year length | Tishery 1 day of week |
-         * 1 | 353 | 2 ph2 | XXXXX | 353 | 3 ph3 impossible | XXXXX | 353 | 5
-         * ph5 impossible | 2 | 353 | 7 ph7 | XXXXX | 354 | 2 pk2 impossible | 3
-         * | 354 | 3 pk3 | 4 | 354 | 5 pk5 | XXXXX | 354 | 7 pk7 impossible | 5
-         * | 355 | 2 ps2 | XXXXX | 355 | 3 ps3 impossible | 6 | 355 | 5 ps5 | 7
-         * | 355 | 7 ps7 | 8 | 383 | 2 mh2 | XXXXX | 383 | 3 mh3 impossible | 9
-         * | 383 | 5 mh5 |10 | 383 | 7 mh7 | XXXXX | 384 | 2 mk2 impossible |11
-         * | 384 | 3 mk3 | XXXXX | 384 | 5 mk5 impossible | XXXXX | 384 | 7 mk7
-         * impossible |12 | 385 | 2 ms2 | XXXXX | 385 | 3 ms3 impossible |13 |
-         * 385 | 5 ms5 |14 | 385 | 7 ms7
+         * Return Hebrew year type based on size and first week day of year.
+         * p - pshuta  353..355
+         * m - meuberet 383..385
+         * h - hasera [353,383]
+         * k - kesidra [354,384]
+         * s - shlema (melea) [355,385]
+         * |year type| year length | Tishery 1 day of week
+         * | 1       | 353         | 2  ph2
+         * | XXXXX   | 353         | 3  ph3 impossible
+         * | XXXXX   | 353         | 5  ph5 impossible
+         * | 2       | 353         | 7  ph7
+         * | XXXXX   | 354         | 2  pk2 impossible
+         * | 3       | 354         | 3  pk3
+         * | 4       | 354         | 5  pk5
+         * | XXXXX   | 354         | 7  pk7 impossible
+         * | 5       | 355         | 2  ps2
+         * | XXXXX   | 355         | 3  ps3 impossible
+         * | 6       | 355         | 5  ps5
+         * | 7       | 355         | 7  ps7
+         * | 8       | 383         | 2  mh2
+         * | XXXXX   | 383         | 3  mh3 impossible
+         * | 9       | 383         | 5  mh5
+         * |10       | 383         | 7  mh7
+         * | XXXXX   | 384         | 2  mk2 impossible
+         * |11       | 384         | 3  mk3
+         * | XXXXX   | 384         | 5  mk5 impossible
+         * | XXXXX   | 384         | 7  mk7 impossible
+         * |12       | 385         | 2  ms2
+         * | XXXXX   | 385         | 3  ms3 impossible
+         * |13       | 385         | 5  ms5
+         * |14       | 385         | 7  ms7
          *
          * @param size_of_year Length of year in days
          * @param year_first_dw First week day of year (1..7)
@@ -1417,6 +1473,10 @@ public class YDate {
              */
             //return (235 * year + 1) / 19 - (235 * (year - 1) + 1) / 19;
             return MONTHS_DIVISION[(year - 1) % 19];
+        }
+
+        public static boolean isLeapYear(int year) {
+            return MONTHS_DIVISION[(year - 1) % 19] == 13;
         }
 
         public static long parts_since_beginning(int year) {
@@ -1728,6 +1788,7 @@ public class YDate {
         Date d = new Date();
         return createFrom(d);
     }
+
     /**
      * Return the upcoming day in week, or the current day if it is that certain day in week.
      * 
@@ -1752,10 +1813,13 @@ public class YDate {
         return new Date(millis);
     }
 
-    public static int JdtoDays(double jd)//hour in utc
+    public static int JdToDays(double jd)//hour in utc
     {
-        return (int) (jd + 0.51 - JULIAN_DAY_OFFSET);
+        return (int) (jd + 0.5001 - JULIAN_DAY_OFFSET);
     }
+    public static double DaysToJd(int days) {
+            return days + JULIAN_DAY_OFFSET - 0.5;
+        }
 
     public static String getTimeString(Date d, TimeZone tz, boolean seconds) {
         Calendar cal = Calendar.getInstance(tz);

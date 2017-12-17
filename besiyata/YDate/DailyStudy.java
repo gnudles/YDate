@@ -1,33 +1,58 @@
 /* This is free and unencumbered software released into the public domain.
+ *
+ * THIS SOFTWARE IS PROVIDED THE CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY 
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; BUSINESS
+ * INTERRUPTION; OR ANY SPIRITUAL DAMAGE) HOWEVER CAUSED
+ * AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
  */
 package besiyata.YDate;
 
 import besiyata.YDate.YDate.JewishDate;
 
-public class DailyLimud {
+public class DailyStudy {
 
-    //DAF YOMI SHAS
+    //(*)DAF YOMI SHAS
+    //(*)yerushalmi
     //HALACH YOMIT - 3 SEIFIM + KITZUR SHULCHAN ARUCH 1613 PER DAY SINCE NINTH CYCLE. NINTH CYCLE STARTS 16 KISLEV 5750
     //RAMBAM YOMI - 3 PRAKIM/PEREK
     //HASHLAMAT MISHNAIOT - ONE MISHNA PER DAY
-    //MISHNA YOMIT - 2 MISHNAS PER DAY - 2096 DAYS PER CYCLE, FIRST CYCLE AT 1 SIVAV 5707
+    //(*)MISHNA YOMIT - 2 MISHNAS PER DAY - 2096 DAYS PER CYCLE, FIRST CYCLE AT 1 SIVAV 5707
     //MISHNA CHAPTER - ONE PEREK PER DAY
     //MISHNA BRURA - DAF YOMI/AMUD YOMI
     //TANACH - PEREK YOMI
     //TANIA - 
+    /** number of chapters in each masechet.
+     * 
+     */
     static final byte[] mishna_prakim
             = {
                 9, 8, 7, 9, 10, 11, 5, 5, 4, 3, 4, 24, 10, 10, 8, 8, 5, 5, 4, 4, 4, 3, 3, 16, 13, 11, 9, 9, 9, 4, 10, 10, 10, 11, 3, 8, 8, 5, 6, 3, 14, 13, 12, 9, 9, 7, 6, 6, 7, 5, 3, 30, 18, 14, 12, 10, 10, 10, 6, 5, 4, 4, 3
             };
+    /**
+     * number of mishnayot in each masechet.
+     */
     static final short[] mishna_mishnayot
             = {
                 57, 69, 53, 77, 89, 101, 40, 57, 38, 35, 39, 139, 96, 89, 52, 61, 53, 42, 35, 34, 33, 24, 23, 128, 111, 90, 60, 67, 75, 47, 79, 101, 86, 71, 34, 62, 74, 50, 108, 20, 101, 93, 74, 73, 50, 35, 43, 38, 34, 34, 15, 254, 134, 115, 96, 92, 71, 79, 54, 32, 26, 22, 28
             };
-    static final short[] seder_mishnayot
+    /**
+     * number of mishnayot in each seder.
+     */
+    static final short[] seder_mishnayot 
             = {
                 655, 681, 578, 685, 590, 1003
             };
-
+/**
+ * number of mishnayot in each chapter in each masechet.
+ */
     static final byte[][] mishnayot_in_prakim
             = {
                 {
@@ -303,6 +328,9 @@ public class DailyLimud {
                 }
 
             };
+    /**
+     * number of masechtot in each seder.
+     */
     static final byte[] seder_masechet
             = {
                 11, 12, 7, 10, 11, 12
@@ -447,142 +475,10 @@ public class DailyLimud {
                 }
 
             };
-static final int[] bavli_name_index
-            = {
-                
-                    0,
-                    11,
-                    12,
-                    13,
-                    14,
-                    15,
-                    16,
-                    17,
-                    18,
-                    19,
-                    20,
-                    21,
-                    22,
-                    23,
-                    24,
-                    25,
-                    26,
-                    27,
-                    28,
-                    29,
-                    30,
-                    31,
-                    32,
-                    33,
-                    34,
-                    35,
-                    37,
-                    39,
-                    40,
-                    41,
-                    42,
-                    43,
-                    44,
-                    45,
-                    46,
-                    47,
-                    50,
-                    48,
-                    49,
-                    57
-                };
-    static final int[] bavli_masechet_length
-            = {
-                63, //Berachot
-                156, //Shabbat
-                104, //Eruvin
-                120, //Pesachim
-                21, //Shekalim - 12 in old cycles (first seven)
-                87, //Yoma
-                55, //Sukkah
-                39, //Beitzah
-                34, //Rosh Hashana
-                30, //Taanit
-                31, //Megillah
-                28, //Moed Katan
-                26, //Chagigah
-                121, //Yevamot
-                111, //Ketubot
-                90, //Nedarim
-                65, //Nazir
-                48, //Sotah
-                89, //Gitin
-                81, //Kiddushin
-                118, //Baba Kamma
-                118, //Baba Metzia
-                175, //Baba Batra
-                112, //Sanhedrin
-                23, //Makkot
-                48, //Shevuot
-                75, //Avodah Zarah
-                13, //Horayot
-                119, //Zevachim
-                109, //Menachot
-                141, //Chullin 
-                60, //Bechorot
-                33, //Arachin 
-                33, //Temurah 
-                27, //Keritot 
-                21, //Meilah
-                3, //Kinnim +1
-                8, //Tamid +1
-                4, //Midot 
-                72//Niddah
-            };
-    static final int[] bavli_masechet_begin // page start. (usually Daf Bet)
-            = {
-                2, //Berachot
-                2, //Shabbat
-                2, //Eruvin
-                2, //Pesachim
-                2, //Shekalim
-                2, //Yoma
-                2, //Sukkah
-                2, //Beitzah
-                2, //Rosh Hashana
-                2, //Taanit
-                2, //Megillah
-                2, //Moed Katan
-                2, //Chagigah
-                2, //Yevamot
-                2, //Ketubot
-                2, //Nedarim
-                2, //Nazir
-                2, //Sotah
-                2, //Gitin
-                2, //Kiddushin
-                2, //Baba Kamma
-                2, //Baba Metzia
-                2, //Baba Batra
-                2, //Sanhedrin
-                2, //Makkot
-                2, //Shevuot
-                2, //Avodah Zarah
-                2, //Horayot
-                2, //Zevachim
-                2, //Menachot
-                2, //Chullin 
-                2, //Bechorot
-                2, //Arachin 
-                2, //Temurah 
-                2, //Keritot 
-                2, //Meilah
-                23, //Kinnim
-                26, //Tamid 
-                34, //Midot 
-                2//Niddah
-            };
 
-    private static final int dafyomi_first_cycle = 2075677;
-    private static final int dafyomi_eighth_cycle = dafyomi_first_cycle + 7 * 2702;
+
     private static final int mishnayomit_first_cycle = 2084329;
-    private static final int yerushalmi_first_cycle = 2096275;//15 shevat 5740 (Febuary, 2, 1980)
-    private static final int yerushalmi_total_length = 1554;
+
 
     public static String MishnaYomit(int d, boolean show_seder, boolean Heb) {
         if (d < mishnayomit_first_cycle) {
@@ -594,8 +490,8 @@ static final int[] bavli_name_index
         offset = (d - mishnayomit_first_cycle) % cycle;
         offset *= 2;
         int i = 0;
-        int mishna_mas = 0;
-        int mishna_mas_max = 0;
+        int mishna_mas = 0; //current masechet
+        int mishna_mas_max = 0; //the next masechet after the last in the current seder
         int chapters = 0;
         int seder = 0;
         int last_added = 0;
@@ -680,27 +576,173 @@ static final int[] bavli_name_index
         return out_str;
 
     }
+    
+        /**
+     * the index for the name of each Bavli masechet in the strings array of mishna_name
+     */
+static final int[] bavli_name_index
+            = {
+                
+                    0,
+                    11,
+                    12,
+                    13,
+                    14,
+                    15,
+                    16,
+                    17,
+                    18,
+                    19,
+                    20,
+                    21,
+                    22,
+                    23,
+                    24,
+                    25,
+                    26,
+                    27,
+                    28,
+                    29,
+                    30,
+                    31,
+                    32,
+                    33,
+                    34,
+                    35,
+                    37,
+                    39,
+                    40,
+                    41,
+                    42,
+                    43,
+                    44,
+                    45,
+                    46,
+                    47,
+                    50,
+                    48,
+                    49,
+                    57
+                };
+/**
+ * number of pages in each Bavli masechet.
+ */
+    static final int[] bavli_masechet_length
+            = {
+                63, //Berachot
+                156, //Shabbat
+                104, //Eruvin
+                120, //Pesachim
+                21, //Shekalim - 12 in old cycles (first seven)
+                87, //Yoma
+                55, //Sukkah
+                39, //Beitzah
+                34, //Rosh Hashana
+                30, //Taanit
+                31, //Megillah
+                28, //Moed Katan
+                26, //Chagigah
+                121, //Yevamot
+                111, //Ketubot
+                90, //Nedarim
+                65, //Nazir
+                48, //Sotah
+                89, //Gitin
+                81, //Kiddushin
+                118, //Baba Kamma
+                118, //Baba Metzia
+                175, //Baba Batra
+                112, //Sanhedrin
+                23, //Makkot
+                48, //Shevuot
+                75, //Avodah Zarah
+                13, //Horayot
+                119, //Zevachim
+                109, //Menachot
+                141, //Chullin 
+                60, //Bechorot
+                33, //Arachin 
+                33, //Temurah 
+                27, //Keritot 
+                21, //Meilah
+                3, //Kinnim +1
+                8, //Tamid +1
+                4, //Midot 
+                72//Niddah
+            };
+    /**
+     * the first page of each masechet in the Bavli's Talmud.
+     */
+    static final int[] bavli_masechet_begin // page start. (usually Daf Bet)
+            = {
+                2, //Berachot
+                2, //Shabbat
+                2, //Eruvin
+                2, //Pesachim
+                2, //Shekalim
+                2, //Yoma
+                2, //Sukkah
+                2, //Beitzah
+                2, //Rosh Hashana
+                2, //Taanit
+                2, //Megillah
+                2, //Moed Katan
+                2, //Chagigah
+                2, //Yevamot
+                2, //Ketubot
+                2, //Nedarim
+                2, //Nazir
+                2, //Sotah
+                2, //Gitin
+                2, //Kiddushin
+                2, //Baba Kamma
+                2, //Baba Metzia
+                2, //Baba Batra
+                2, //Sanhedrin
+                2, //Makkot
+                2, //Shevuot
+                2, //Avodah Zarah
+                2, //Horayot
+                2, //Zevachim
+                2, //Menachot
+                2, //Chullin 
+                2, //Bechorot
+                2, //Arachin 
+                2, //Temurah 
+                2, //Keritot 
+                2, //Meilah
+                23, //Kinnim
+                26, //Tamid 
+                34, //Midot 
+                2//Niddah
+            };
 
-    public static String getDafYomi(int d, boolean Heb) {
+    private static final int bavli_first_cycle = 2075677; //in days since beginning
+    private static final int bavli_cycle_length_old = 2702;//the length of each of the first seven cycles
+    private static final int bavli_old_cycles = 7;//the length of each of the first seven cycles
+    private static final int bavli_cycle_length_new = 2711;//the new length of each cycle.
+    private static final int bavli_eighth_cycle = bavli_first_cycle + bavli_old_cycles * bavli_cycle_length_old;
+    
+    public static String getBavliDafYomi(int d, boolean Heb) {
         //if last daf of Meilah, first daf of Kinnim
         //if last daf of Kinnim, first daf of Tamid
-        if (d < dafyomi_first_cycle) {
+        if (d < bavli_first_cycle) {
             return "";
         }
         int cycle;
         int offset;
-        if (d < dafyomi_eighth_cycle) {
-            cycle = 2702;
-            offset = (d - dafyomi_first_cycle) % cycle;
+        if (d < bavli_eighth_cycle) {
+            cycle = bavli_cycle_length_old;
+            offset = (d - bavli_first_cycle) % cycle;
         }
         else {
-            cycle = 2711;
-            offset = (d - dafyomi_eighth_cycle) % cycle;
+            cycle = bavli_cycle_length_new;
+            offset = (d - bavli_eighth_cycle) % cycle;
         }
         int daf_counter = 0;
         for (int masechet = 0; masechet < bavli_masechet_length.length; masechet++) {
             daf_counter += bavli_masechet_length[masechet];
-            if (cycle == 2702 && masechet == 4) //shekalim
+            if (cycle == bavli_cycle_length_old && masechet == 4) //shekalim
             {
                 daf_counter -= 9; // 21 - 9 = 12
             }
@@ -734,14 +776,16 @@ static final int[] bavli_name_index
         23, 24, 27, 25, 26, 28, 29, 30, 31,
         32, 33, 34, 35, 37, 39, 57};
     /**
-     * number of pages in each masechta
+     * number of pages in each masechta.
      */
     private final static int[] yerushalmi_masechet_length = {
         68, 37, 34, 44, 31, 59, 26, 33, 28, 20, 13, 92, 65, 71, 22, 22, 42, 26, 26, 33, 34, 22,
         19, 85, 72, 47, 40, 47, 54, 48, 44, 37, 34, 44, 9, 57, 37, 19, 13};
+    private static final int yerushalmi_first_cycle = 2096275;//15 shevat 5740 (Febuary, 2, 1980) - days since beginning.
+    private static final int yerushalmi_cycle_length = 1554;
     private final static JewishDate yerushalmi_jd = new JewishDate(yerushalmi_first_cycle);
 
-    public static String getYerushalmi(int d, boolean Heb) {
+    public static String getYerushalmiDafYomi(int d, boolean Heb) {
         if (d < yerushalmi_first_cycle) {
             return "";
         }
@@ -753,7 +797,7 @@ static final int[] bavli_name_index
         int offset = d - yerushalmi_first_cycle;
         // subtract the number of nine in Av and Kippur day from cycle begin till now.
         offset -= countNoLimudDays(yerushalmi_jd, jd);
-        offset %= yerushalmi_total_length;
+        offset %= yerushalmi_cycle_length;
         int daf_counter = 0;
         for (int masechet = 0; masechet < yerushalmi_masechet_length.length; masechet++) {
             daf_counter += yerushalmi_masechet_length[masechet];
