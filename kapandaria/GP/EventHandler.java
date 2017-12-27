@@ -14,7 +14,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package besiyata.GP;
+package kapandaria.GP;
 
 import java.lang.ref.SoftReference;
 import java.util.ArrayList;

@@ -13,7 +13,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package besiyata.YDate;
+package kapandaria.YDate;
 
 
 import java.util.TimeZone;
@@ -104,6 +104,7 @@ public abstract class YDateLanguage
     public abstract String getZodiacToken(int token);
     public abstract String getElementToken(int token);
     public abstract String getStarToken(int token);
+    public abstract String getRejection(short rejected);
     public abstract String getNumber(int num);
     public abstract String FormatGregorianDate(int day,int month,int year);
     public String FormatGregorianDate(int day,int month,int year, int week_day, String format)

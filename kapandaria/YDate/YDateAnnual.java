@@ -13,8 +13,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package besiyata.YDate;
-import besiyata.YDate.YDate.JewishDate;
+package kapandaria.YDate;
+import kapandaria.YDate.YDate.JewishDate;
 import java.util.Arrays;
 public class YDateAnnual
 {
@@ -282,6 +282,16 @@ public class YDateAnnual
         //return language.getEventToken(current_year_events[d.dayInYear()]);
         return events_str[current_year_events[d.dayInYear()]];
     }
+    public String getYearEventForDayRejection(JewishDate d, YDateLanguage language)
+    {
+        //TODO: replace events_str with language
+        //return language.getEventToken(current_year_events[d.dayInYear()]);
+        String out=events_str[current_year_events[d.dayInYear()]];
+        short rej= isRejected(d);
+        if (rej!=0)
+            out+=" ("+language.getRejection(rej)+")";
+        return out;
+    }
     public short getYearEventTypeForDay(JewishDate d)
     {
         return events_type[current_year_events[d.dayInYear()]];
@@ -379,8 +389,8 @@ public class YDateAnnual
             year_events[day_in_year] = 50;
         }
     }
-    static byte [][][] annual_events = new byte [2][JewishDate.N_YEAR_TYPES][];//[diaspora][year_type][day_in_year]
-    static short [][] annual_events_dhia = new short [JewishDate.N_YEAR_TYPES][4];//[year_type][5]->[day_in_year]
+    static final byte [][][] annual_events = new byte [2][JewishDate.N_YEAR_TYPES][];//[diaspora][year_type][day_in_year]
+    static final short [][] annual_events_dhia = new short [JewishDate.N_YEAR_TYPES][4];//[year_type][5]->[day_in_year]
     public static String getEventForDay(JewishDate d, boolean diaspora, YDateLanguage language)
     {
         //TODO: make this depended on language...

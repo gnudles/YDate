@@ -13,73 +13,64 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package besiyata.YDate;
+package kapandaria.YDate;
 
 /**
  *
  * @author orr
  */
-public class YDateLangEnglish extends YDateLanguage
+public class YDateLangHebrew extends YDateLanguage
 {
-    static final String WeekTokens []={"Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"};
-    static final String HebMonthTokens []={"Tishrei", "Cheshvan", "Kislev", "Tevet",
-                "Shevat", "Adar",
-                "Adar I",
-                "Adar II",
-                "Nisan", "Iyar",
-                "Sivan", "Tammuz", "Av", "Elul"};
-    static final String GregMonthTokens []=
-    {"January", 
-                 "February",
-                 "March",
-                 "April",
-                 "May",
-                 "June",
-                 "July",
-                 "August",
-                 "September",
-                 "October",
-                 "November",
-                 "December"};
-    static final String ShortGregMonthTokens []=
-    {"Jan", 
-                 "Feb",
-                 "Mar",
-                 "Apr",
-                 "May",
-                 "Jun",
-                 "Jul",
-                 "Aug",
-                 "Sep",
-                 "Oct",
-                 "Nov",
-                 "Dec"};
 
+    static final String WeekTokens []={"ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"};
+    static final String HebMonthTokens []={"תשרי", "חשוון", "כסלו", "טבת",
+                "שבט", "אדר",
+                "אדר א'",
+                "אדר ב'",
+                "ניסן", "אייר",
+                "סיוון", "תמוז", "אב", "אלול"};
+    static final String GregMonthTokens []=
+    {"ינואר", "פברואר", "מרס", 
+                 "אפריל", "מאי", "יוני", "יולי", 
+                 "אוגוסט", "ספטמבר", "אוקטובר", 
+                 "נובמבר", "דצמבר"};
+    static final String ShortGregMonthTokens []=
+    {"ינו", "פב", "מרס", 
+                 "אפר", "מאי", "יונ", "יול", 
+                 "אוג", "ספט", "אוק", 
+                 "נוב", "דצמ"};
     public static final String[] zodiac_names =
             {
-                    "Aries","Taurus","Gemini","Cancer","Leo","Virgo","Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"
+                    "טלה", "שור", "תאומים", "סרטן", "אריה", "בתולה", "מאזנים", "עקרב", "קשת", "גדי", "דלי", "דגים"
             };
-
+    /*
+    fire: Aries Leo Sagittarius
+    earth: Taurus Virgo Capricorn
+    wind: Gemini Libra Aquarius
+    water: Cancer Scorpio Pisces
+       fire doesn't connect with water
+       earth doesn't connect with wind
+    */
     public static final String[] four_elements_names =
             {
-                    "fire", "earth", "wind", "water"
+                    "אש", "עפר", "רוח", "מים"
             };
     public static final String[] star_names =
             {
-                    "Mercury","Moon","Saturn","Jupiter","Mars","Sun","Venus"
+                    "כוכב", "לבנה", "שבתאי", "צדק", "מאדים", "חמה", "נגה"
             };
     final static String[] special_shabbat =
     {
-        "Shkalim",
-        "Zakhor",
-        "Parah",
-        "HaChodesh",
-        "HaGadol",
-        "Shira",
-        "Nachamu",
-        "Tshuva"
+        "שקלים",
+        "זכור",
+        "פרה",
+        "החודש",
+        "הגדול",
+        "שירה",
+        "נחמו",
+        "תשובה"
     };
-
+    
     @Override
     public String getWeekToken(int token)
     {
@@ -120,6 +111,15 @@ public class YDateLangEnglish extends YDateLanguage
     }
 
     @Override
+    public String getRejection(short rejected) {
+        if (rejected==YDateAnnual.LATE)
+            return "נדחה";
+        if (rejected==YDateAnnual.PRECEDE)
+            return "הוקדם";
+        return "";
+    }
+
+    @Override
     public String getEventToken(int token)
     {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -128,22 +128,21 @@ public class YDateLangEnglish extends YDateLanguage
     @Override
     public String getNumber(int num)
     {
-        return String.valueOf(num);
+        return Format.HebIntString(num, true);
     }
 
     @Override
     public String FormatGregorianDate(int day, int month, int year) {
-        return getGregMonthToken(month-1)+" "+Integer.toString(day)+", "+Integer.toString(year);
+        return Integer.toString(day)+" ב"+getGregMonthToken(month-1)+" "+Integer.toString(year);
     }
 
     @Override
     public String FormatJewishDate(int day, int monthId, int year) {
-        return getHebMonthToken(monthId)+" "+Integer.toString(day)+", "+Integer.toString(year);
+        return Format.HebIntString(day, true)+" ב"+getHebMonthToken(monthId)+" "+Format.HebIntString(year, true);
     }
-
     @Override
     public String FormatPeriod(int monthId) {
-        return getHebMonthToken(monthId)+" Period";
+        return "תקופת "+getHebMonthToken(monthId);
     }
 
     @Override
@@ -160,4 +159,5 @@ public class YDateLangEnglish extends YDateLanguage
     public String getSpecialShabbat(int token) {
         return special_shabbat[token];
     }
+
 }

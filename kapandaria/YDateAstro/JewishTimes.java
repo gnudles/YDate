@@ -13,7 +13,9 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package besiyata.YDateAstro;
+package kapandaria.YDateAstro;
+
+import kapandaria.YDate.Format;
 
 public class JewishTimes
 {
@@ -140,4 +142,6 @@ public class JewishTimes
         //int minutes_time=(int)(1.2*(setmin - noonmin) / 12.0); //72 minutes is 1.2 hours
         return setmin_16;
     }
+
+    
 }

@@ -15,7 +15,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package besiyata.YDateAstro;
+package kapandaria.YDateAstro;
 
 public class NoaaEngine implements SunTimeEngine
 {
@@ -53,9 +53,6 @@ private double calcSunriseSetUTC(double jd, boolean rise, double SunAlt)
 
     /**
      *
-     * @param jd0
-     * @param latitude
-     * @param longitude
      * @param SunAltitude
      * @param calc
      * @return

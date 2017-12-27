@@ -13,9 +13,9 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package besiyata.YDate;
+package kapandaria.YDate;
 
-import besiyata.YDate.YDate.JewishDate;
+import kapandaria.YDate.YDate.JewishDate;
 
 public class DailyStudy {
 
@@ -770,7 +770,7 @@ static final int[] bavli_name_index
     /**
      * indices for mishna name array.
      */
-    private static int masechtotYerushalmiIndex[] = {0, 1, 2, 3, 4,
+    private final static int masechtotYerushalmiIndex[] = {0, 1, 2, 3, 4,
         5, 6, 7, 8, 9, 10, 11, 12, 13,
         17, 18, 15, 16, 19, 14, 20, 22, 21,
         23, 24, 27, 25, 26, 28, 29, 30, 31,

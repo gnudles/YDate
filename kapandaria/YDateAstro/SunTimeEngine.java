@@ -13,25 +13,20 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package besiyata.YDateAstro;
-
-import java.util.Date;
-import besiyata.YDate.Format;
-import java.util.Calendar;
-import java.util.TimeZone;
+package kapandaria.YDateAstro;
 
 /**
  *
  * @author Orr Dvori
  */
 public interface SunTimeEngine {
-    public enum RiseSetCalc
+    enum RiseSetCalc
     {
         RISE_ONLY,
         SET_ONLY,
         RISE_SET
     }
-    public static class RiseSet
+    class RiseSet
     {
         public RiseSet(){ rise=0;set=0;}
 		public double rise;
@@ -42,33 +37,15 @@ public interface SunTimeEngine {
      * @param latitude in degrees, North is positive.
      * @param longitude in degrees, East is positive.
      */
-    public void initEngine(double jd, double latitude, double longitude);
+    void initEngine(double jd, double latitude, double longitude);
 /**
  * 
  * @param SunAltitude Rise/Set Altitude (in degrees)
  * @param calc what to calculate?
  * @return time in hours UTC (can be negative)
  */
-    public RiseSet calculateSunRiseSet(double SunAltitude, RiseSetCalc calc);
+    RiseSet calculateSunRiseSet(double SunAltitude, RiseSetCalc calc);
     
-    public static String Format(double t)
-    {
-        while (t<0)
-            t+=1440;
-        return Format.TimeString(((int)t)/60, ((int)t)%60, ((int)(t*60))%60);
-    }
-    public static Date toDate(double t,int year,int mon, int day)
-    {
-        Calendar cal=Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-        cal.set(Calendar.DAY_OF_MONTH, day);
-        cal.set(Calendar.MONTH, mon-1);
-        cal.set(Calendar.YEAR, year);
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-        cal.add(Calendar.SECOND, (int)(t*60L));
-        return cal.getTime();
-    }
+
     
 }

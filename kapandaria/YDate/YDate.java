@@ -13,15 +13,12 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package besiyata.YDate;
+package kapandaria.YDate;
 
-import java.util.AbstractMap;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.TreeMap;
-import java.lang.ref.SoftReference;
 import java.util.TimeZone;
-import besiyata.GP.EventHandler;
+import kapandaria.GP.EventHandler;
 
 /**
  * YDate class contains both Jewish and Gregorian date objects, and let you manipulate them.
@@ -496,17 +493,7 @@ public class YDate {
         }
 
         public static boolean isLeap(int year) {
-            if (year % 400 == 0) {
-                return true;
-            }
-            else {
-                if (year % 4 == 0 && year % 100 != 0) {
-                    return true;
-                }
-                else {
-                    return false;
-                }
-            }
+            return ( (year % 400) == 0)||( (year % 4) == 0 && (year % 100) != 0);
         }
 
         public static int days_until_year(int year) {
@@ -782,7 +769,7 @@ public class YDate {
             MORID_HATAL,
             MASHIV_HARUACH_BECOME_MORID_HATAL,
             MORID_HATAL_BECOME_MASHIV_HARUACH
-        };
+        }
 
         /**
          * This method tells if we need to say Mashiv Ha'Ruah in the prayer or
@@ -1580,10 +1567,7 @@ public class YDate {
     }
 
     private static boolean commonRange(int days) {
-        if (days < JewishDate.DAYS_OF_6001 && days >= GregorianDate.DAYS_OF_1600) {
-            return true;
-        }
-        return false;
+        return (days < JewishDate.DAYS_OF_6001 && days >= GregorianDate.DAYS_OF_1600);
     }
 
     public boolean seekBy(int offset) {

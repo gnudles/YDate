@@ -1,2 +1,2 @@
 /** General Purpose code package */
-package besiyata.GP;
+package kapandaria.GP;

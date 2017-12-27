@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package besiyata.YDateQuery;
+package kapandaria.YDateQuery;
 
-import besiyata.YDate.YDate;
-import besiyata.YDate.YDatePreferences;
-import static besiyata.YDateQuery.YDateEvaluator.FALSE;
-import static besiyata.YDateQuery.YDateEvaluator.TRUE;
+import kapandaria.YDate.YDate;
+import kapandaria.YDate.YDatePreferences;
+import static kapandaria.YDateQuery.YDateEvaluator.FALSE;
+import static kapandaria.YDateQuery.YDateEvaluator.TRUE;
 
 import com.fathzer.soft.javaluator.AbstractVariableSet;
 import java.util.HashMap;

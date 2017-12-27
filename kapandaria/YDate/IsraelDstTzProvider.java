@@ -13,12 +13,12 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package besiyata.YDate;
+package kapandaria.YDate;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
-import besiyata.YDate.YDate.*;
+import kapandaria.YDate.YDate.*;
 
 /*
 

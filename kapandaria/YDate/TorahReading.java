@@ -14,9 +14,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package besiyata.YDate;
+package kapandaria.YDate;
 
-import besiyata.YDate.YDate.JewishDate;
+import kapandaria.YDate.YDate.JewishDate;
 
 public class TorahReading
 {
@@ -385,7 +385,7 @@ public class TorahReading
             }
             else
             {
-                lstr = ", ";
+                lstr += ", ";
             }
             if ((day_type & ROSH_HODESH) !=0)
             {
@@ -460,9 +460,9 @@ public class TorahReading
         }
         return lstr;
     }
-    static byte[][][] sidra_reading = new byte[2][JewishDate.N_YEAR_TYPES][];//[diaspora][year_type][shabbat]
+    static final byte[][][] sidra_reading = new byte[2][JewishDate.N_YEAR_TYPES][];//[diaspora][year_type][shabbat]
     //reverse access:
-    static byte[][][] sidra_to_shabbat = new byte[2][JewishDate.N_YEAR_TYPES][54];//[diaspora][year_type][sidra]
+    static final byte[][][] sidra_to_shabbat = new byte[2][JewishDate.N_YEAR_TYPES][54];//[diaspora][year_type][sidra]
 
     private static int getNextJoinPointer(byte joining, int jp)
     {

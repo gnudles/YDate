@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package besiyata.YDateQuery;
+package kapandaria.YDateQuery;
 
-import besiyata.YDate.YDate;
+import kapandaria.YDate.YDate;
 import java.lang.ref.SoftReference;
 import java.util.HashMap;
 import java.util.Map;

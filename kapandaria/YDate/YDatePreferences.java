@@ -13,7 +13,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package besiyata.YDate;
+package kapandaria.YDate;
 
 import java.util.Calendar;
 import java.util.TimeZone;
@@ -34,8 +34,8 @@ public class YDatePreferences
         timeZoneProvider=_timeZoneProvider;
         diaspora=_diaspora;
     }
-    public enum DiasporaType{ ErezIsrael,Diaspora,Both};
-    public enum HaftaraMinhag{ SFARADIM,ASHKENAZ,ITALKI,TEIMANI,CHABAD};
+    public enum DiasporaType{ ErezIsrael,Diaspora,Both}
+    public enum HaftaraMinhag{ SFARADIM,ASHKENAZ,ITALKI,TEIMANI,CHABAD}
     public double longitude;
     public double latitude;
     public double altitude;//in meters from MSL

@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package besiyata.YDateQuery;
+package kapandaria.YDateQuery;
 
-import besiyata.YDate.YDate;
+import kapandaria.YDate.YDate;
 import com.fathzer.soft.javaluator.AbstractEvaluator;
 import com.fathzer.soft.javaluator.BracketPair;
 import com.fathzer.soft.javaluator.Constant;

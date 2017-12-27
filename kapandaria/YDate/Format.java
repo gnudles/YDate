@@ -13,7 +13,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package besiyata.YDate;
+package kapandaria.YDate;
 
 
 public class Format
@@ -157,8 +157,8 @@ public class Format
             if (n==0 || a>10)
                 out+=" אלפים ";
         }
-        out+=HebIntSubString(n,true,true);
-        
+        if (n!=0)
+            out+=HebIntSubString(n,true,true);
         return out;
     }
     public static int getOnesDigit(int num)

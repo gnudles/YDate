@@ -14,14 +14,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package besiyata.YDate;
+package kapandaria.YDate;
 
-import java.lang.ref.PhantomReference;
 import java.lang.ref.SoftReference;
 import java.util.AbstractMap;
 import java.util.TreeMap;
 
-import besiyata.GP.EventHandler;
+import kapandaria.GP.EventHandler;
 
 /**
  * EventsMaintainer manages events for specific YDate object.
