@@ -562,6 +562,15 @@ public class YDate {
         public static final int M_ID_TAMMUZ = 11;
         public static final int M_ID_AV = 12;
         public static final int M_ID_ELUL = 13;
+        
+        public static final int S_ID_MERCURY = 0;
+        public static final int S_ID_MOON = 1;
+        public static final int S_ID_SATURN = 2;
+        public static final int S_ID_JUPITER = 3;
+        public static final int S_ID_MARS = 4;
+        public static final int S_ID_SUN = 5;
+        public static final int S_ID_VENUS = 6;
+        
 
         public static final int YEZIAT_MIZRAIM = 2449;
         public static final int MINIAN_SHTAROT = 3449;
@@ -728,7 +737,7 @@ public class YDate {
         public boolean TenTalVeMatar(boolean diaspora) {
             if (diaspora) {
                 //int day_tkufa=dayInTkufa();
-                int starting = getTkufaDay(0) + 59; // the sixty day from when Tkufat Tishrei begins (first day in count)
+                int starting = getTkufaOfYearDay(0) + 59; // the sixty day from when Tkufat Tishrei begins (first day in count)
                 if (daysSinceBeginning() < starting) {
                     return false;
                 }
@@ -853,10 +862,21 @@ public class YDate {
          * @param tkufa 0 -Tishrei, 1- Tevet, 2 - Nisan , 3- Tammuz
          * @return day since beginning for that tkufa in the current year.
          */
-        public int getTkufaDay(int tkufa)//0 -Tishrei, 1- Tevet, 2 - Nisan , 3- Tammuz
+        public int getTkufaOfYearDay(int tkufa)//0 -Tishrei, 1- Tevet, 2 - Nisan , 3- Tammuz
         {
             long tkufa_parts = (long) ((year - 4117) * 4 - 2 + tkufa) * TKUFA;
             return (int) (tkufa_parts / DAY) + DAYS_OF_TKUFA_CYCLE_4117;
+        }
+        /**
+         * 
+         * @param tkufa 0 -Tishrei, 1- Tevet, 2 - Nisan , 3- Tammuz
+         * @return tkufa parts from beginning
+         */
+        /*@untested*/
+        public long getTkufaOfYearParts(int tkufa)//0 -Tishrei, 1- Tevet, 2 - Nisan , 3- Tammuz
+        {
+            long tkufa_parts = (long) ((year - 4117) * 4 - 2 + tkufa) * TKUFA +(long) DAYS_OF_TKUFA_CYCLE_4117 * DAY;
+            return tkufa_parts;
         }
 
         public long MazalParts() {
@@ -885,6 +905,7 @@ public class YDate {
         }
 
         public String MazalName(boolean Heb) {
+            //TODO: make this return integer of mazal ID...
             int mazal = MazalType();
             if (Heb) {
                 return "מזל " + zodiac_names[0][mazal] + " (" + four_elements_names[0][mazal % 4] + ")";
@@ -929,6 +950,36 @@ public class YDate {
             //you can find out which tkufa by tkufa=TkufotCycle()*112/10227
             //and that tkufa started at tkufa*10227/112
             //which is actually 1461/16 or 16/1461
+        }
+        /**
+         * I heard that one said that if 3 Shvat falls on Friday, There will be a cold winter.
+         * @return if we will have a cold winter.
+         */
+        public boolean yearOfColdWinter()
+        {
+            return monthFirstDay(M_ID_SHEVAT)%7==WEDNESDAY;
+        }
+        /**
+         * based on gmara in eruvin
+         * @return 
+         */
+        /*@untested*/
+        public boolean TkufatNisanMeshaberetIlanot()
+        {
+            int tkufa_star=starForHour(getTkufaOfYearParts(2));
+            int molad_star= starForHour(MoladParts(monthFromID(M_ID_NISAN)));
+            return (tkufa_star==S_ID_JUPITER && (molad_star == S_ID_JUPITER || molad_star == S_ID_MOON));
+        }
+        /**
+         * based on gmara in eruvin
+         * @return 
+         */
+        /*@untested*/
+        public boolean TkufatTavetMeyabeshetZeraim()
+        {
+            int tkufa_star=starForHour(getTkufaOfYearParts(1));
+            int molad_star= starForHour(MoladParts(monthFromID(M_ID_TEVET)));
+            return (tkufa_star==S_ID_JUPITER && (molad_star == S_ID_JUPITER || molad_star == S_ID_MOON));
         }
 
         /**
@@ -999,13 +1050,91 @@ public class YDate {
         }
 
         public boolean mevarchinShabbat() {
-            return (day >= 23 && day < 30 && dayInWeek() == 7 && monthID() != M_ID_ELUL);
+            return (day >= 23 && day < 30 && dayInWeekEnum() == SATURDAY && monthID() != M_ID_ELUL);
         }//not mevarchin before Tishrei
-
+        /**
+         * shabbat before 17 Tammuz and 10 Tevet the Shliach Tzibur declares the upcoming taanit.
+         * 
+        */
+        /*@untested*/
+        public boolean hachrazatTaanit() {
+            int day_in_week=dayInWeekEnum();
+            return (day_in_week ==SATURDAY &&((monthID() == M_ID_TAMMUZ && (day<=17 && day>=11) ) ||
+                    (monthID() == M_ID_TEVET && (day<10 && day>=4) )));
+        }
+        /*@untested*/
         public boolean yomHakhel() {
-            return (day == 16 && monthID() == M_ID_TISHREI
+            int day_in_week=dayInWeekEnum(); // yom hakhel is nidcha (postponed) if it falls on saturday.
+            return (((day == 16 && day_in_week!=SATURDAY ) || (day == 17 && day_in_week==SUNDAY)) && monthID() == M_ID_TISHREI
                     && (ShmitaOrdinal() - 1) % 7 == 0);
         }// in the year after Shmita, after first day of Succot.
+        /*@untested*/
+        public boolean yomKippurQatan()
+        {
+            /* TISHREI = 0;
+               CHESHVAN = 1;
+               KISLEV = 0;
+               TEVET = 1;
+               SHEVAT = 1;
+               ADAR = 1;
+               ADAR_I = 1;
+               ADAR_II = 1;
+               NISAN = 0;
+               IYAR = 1;
+               SIVAN = 1;
+               TAMMUZ = 1;
+               AV = 1;
+               ELUL = 0;
+            */
+        //|   a   |   f   |   e   | 1
+        //|0 1 0 1|1 1 1 1|0 1 1 1|1 0
+            //final int months_mask=0x1efa;
+            final int months_mask = (1<<JewishDate.M_ID_CHESHVAN)|
+                   (1<<JewishDate.M_ID_TEVET)|
+                   (1<<JewishDate.M_ID_SHEVAT)|
+                   (1<<JewishDate.M_ID_ADAR)|
+                   (1<<JewishDate.M_ID_ADAR_I)|
+                   (1<<JewishDate.M_ID_ADAR_II)|
+                   (1<<JewishDate.M_ID_IYAR)|
+                   (1<<JewishDate.M_ID_SIVAN)|
+                   (1<<JewishDate.M_ID_TAMMUZ)|
+                   (1<<JewishDate.M_ID_AV);
+            int m_id=monthID();
+            int day_in_week=dayInWeekEnum();
+            if (((1<<m_id)&months_mask)!=0)
+            {
+               return ( (day == 29 && day_in_week!=SATURDAY && day_in_week!=FRIDAY)
+                       || ((day == 28 || day == 27) && day_in_week==THURSDAY));
+            }
+            return false;
+        }
+        /**
+         * remember that in this case the day starts from the night before, so it is not recommanded to 
+         * make a wedding or so in these days and in the night before them
+         */
+        public boolean isMisfortuneDayFromHaari()
+        {
+            //bad days to start new things from ha'ari
+            final int day_in_month_mask[/*14*/]=
+            {
+                (1<<6)|(1<<10)|(1<<28),//TISHREI
+                (1<<7)|(1<<11)|(1<<15)|(1<<21),//CHESHVAN
+                (1<<1)|(1<<8),//KISLEV
+                (1<<1)|(1<<2)|(1<<4)|(1<<6)|(1<<7)|(1<<11)|(1<<17)|(1<<20)|(1<<24)|(1<<25)|(1<<26)|(1<<27),//TEVET
+                (1<<9)|(1<<17)|(1<<18)|(1<<24)|(1<<25)|(1<<26),//SHEVAT
+                (1<<3)|(1<<15)|(1<<17)|(1<<18)|(1<<28),//ADAR
+                (1<<3)|(1<<15)|(1<<17)|(1<<18)|(1<<28),//ADAR_I
+                (1<<3)|(1<<15)|(1<<17)|(1<<18)|(1<<28),//ADAR_II
+                (1<<7)|(1<<9)|(1<<11)|(1<<16)|(1<<21)|(1<<24),//NISAN
+                (1<<5)|(1<<7)|(1<<15)|(1<<22),//IYAR
+                (1<<1)|(1<<6)|(1<<9)|(1<<26),//SIVAN
+                (1<<14)|(1<<15)|(1<<17)|(1<<20)|(1<<29),//TAMMUZ
+                (1<<9)|(1<<10)|(1<<19)|(1<<20)|(1<<22)|(1<<27),//AV
+                (1<<9)|(1<<17)|(1<<28)|(1<<29)//ELUL
+            };
+            int m_id=monthID();
+            return (day_in_month_mask[m_id]&(1<<dayInMonth()))!=0;
+        }
 
         public boolean shabbaton(YDatePreferences.DiasporaType diaspora) {
             if (diaspora == YDatePreferences.DiasporaType.Both) {
@@ -1075,6 +1204,7 @@ public class YDate {
         }
 
         public int MasechetAvotChapter(boolean AskenazTradition) {
+            //TODO:
             throw new UnsupportedOperationException("Not supported yet.");
         }
 
@@ -1090,9 +1220,24 @@ public class YDate {
             int hour = (int) ((parts / HOUR) % 7);
             return lang.getStarToken(hour);
         }
+        /**
+         * There are seven stars, each star controls different hour of the day in
+         * the following sequence: Saturn, Jupiter, Mars, Sun, Venus, Mercury, Moon.
+         * That sequence starts in the beginning of the Wednesday night (right after
+         * the stars comes out). So Sunday's night starts with Mercury.
+         * Also, according to the book of Yezira, each star is connected with a
+         * single day of the week (just as their names suggest).
+         * check the returned value against S_ID_MERCURY...
+         */
+        int starForHour(long parts) {
+            return (int) ((parts / HOUR) % 7);
+        }
 
         public long MoladParts() {
             return year_molad_parts + (month - 1) * MONTH;
+        }
+        public long MoladParts( int _month) {
+            return year_molad_parts + (_month - 1) * MONTH;
         }
 
         public Date partsToUTC(long parts) {
@@ -1182,14 +1327,20 @@ public class YDate {
         {
             return this.day;
         }
-
+        
+        public int dayInWeekEnum()//starts from zero
+        {
+            return daysSinceBeginning() % 7;
+        }
+        
         public int dayInWeek()//starts from one
         {
             return daysSinceBeginning() % 7 + 1;
         }
 
         public String dayInWeekName(boolean Heb) {
-            return day_names[Heb ? 0 : 1][daysSinceBeginning() % 7];
+            //TODO... make this multilingual...
+            return day_names[Heb ? 0 : 1][dayInWeekEnum()];
         }
 
         public int dayInYear()//starts from zero
@@ -1213,12 +1364,12 @@ public class YDate {
             return this.year_first_day;
         }
 
-        public int monthFirstDay() {
+        public int monthFirstDay() { //days since beginning
             int mo_year_t = mo_year_type(this.year_length);
             return this.year_first_day + months_days_offsets[mo_year_t][this.month - 1];
         }
 
-        public int monthFirstDay(int monthId) {
+        public int monthFirstDay(int monthId) { //days since beginning
             int mo_year_t = mo_year_type(this.year_length);
             return this.year_first_day + months_days_offsets[mo_year_t][monthFromID(monthId) - 1];
         }

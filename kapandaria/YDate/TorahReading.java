@@ -343,7 +343,14 @@ public class TorahReading
         if (pnum < 0)
         {
             pnum = -pnum;
-            lstr += "פרשת " + sidra[0][pnum] + ", " + sidra[0][pnum + 1];
+            if ((day_type & SHABBAT_DAY) !=0)
+            {
+                lstr += "פרשת " + sidra[0][pnum] + ", " + sidra[0][pnum + 1];
+            }
+            else
+            {//on monday and thursday we only read the first of two connected.
+                lstr += "פרשת " + sidra[0][pnum];
+            }
         }
         else
         {
@@ -659,4 +666,81 @@ public class TorahReading
             return -1;
         return YDate.getNext(YDate.SATURDAY, year_first_day) + sat_num * 7;
     }
+    
+    static class BibleIndex
+    {
+        enum BibleBook
+        {
+           Bereshit,
+           Shemot,
+           Vayikra,
+           Bamidbar,
+           Devarim,
+           Yehosuah,
+           Shoftim,
+           Shmuel_I,
+           Shmuel_II,
+           Melachim_I,
+           Melachim_II,
+           Yeshaayah,
+           Yirmiyah,
+           Yechezkel,
+           Hushea,
+           Yoel,
+           Amos,
+           Ovadiah,
+           Yonah,
+           Michah,
+           Nachum,
+           Chavakuk,
+           Tzefaniah,
+           Chagay,
+           Zechariah,
+           Malachi,
+           Tehilim,
+           Mishley,
+           Iyob,
+           ShirHashirim,
+           Ruth,
+           Eichah,
+           Kohelet,
+           Esther,
+           Daniel,
+           Ezra,
+           Nechemiah,
+           DivreyHayamim_I,
+           DivreyHayamim_II,
+        }
+        
+        public static int BibleIndex(BibleBook book,int chapter, int verse)
+        {
+            return book.ordinal() | (chapter & 0x3ff) << 6 | (verse) << 16;  
+        }
+        public static BibleBook getBook(int bible_index)
+        {
+            return BibleBook.values()[bible_index&0x3f];
+        }
+        public static int getChapter(int bible_index)
+        {
+            return (bible_index>>6)&0x3ff;
+        }
+        public static int getVerse(int bible_index)
+        {
+            return (bible_index>>16);
+        }
+        //TODO: add formating of verses.
+    }
+    class BibleParagraph
+    {
+        int m_start_index;
+        int m_end_index;
+        String m_name;
+        public BibleParagraph(String name, int start, int end)
+        {
+            m_name=name;
+            m_start_index=start;
+            m_end_index=end;
+        }
+    }
+    
 }
