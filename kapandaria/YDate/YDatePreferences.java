@@ -29,7 +29,7 @@ public class YDatePreferences
         else
             diaspora=DiasporaType.Diaspora;
     }
-    public YDatePreferences(YDate.TimeZoneProvider _timeZoneProvider, DiasporaType _diaspora)
+    public YDatePreferences(TimeZoneProvider _timeZoneProvider, DiasporaType _diaspora)
     {
         timeZoneProvider=_timeZoneProvider;
         diaspora=_diaspora;
@@ -40,5 +40,5 @@ public class YDatePreferences
     public double latitude;
     public double altitude;//in meters from MSL
     public DiasporaType diaspora;
-    public YDate.TimeZoneProvider timeZoneProvider;
+    public TimeZoneProvider timeZoneProvider;
 }

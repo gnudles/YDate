@@ -21,14 +21,14 @@ package kapandaria.YDate;
  */
 public class YDateLangEnglish extends YDateLanguage
 {
-    static final String WeekTokens []={"Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"};
-    static final String HebMonthTokens []={"Tishrei", "Cheshvan", "Kislev", "Tevet",
+    static final String [] WeekTokens={"Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"};
+    static final String [] HebMonthTokens={"Tishrei", "Cheshvan", "Kislev", "Tevet",
                 "Shevat", "Adar",
                 "Adar I",
                 "Adar II",
                 "Nisan", "Iyar",
                 "Sivan", "Tammuz", "Av", "Elul"};
-    static final String GregMonthTokens []=
+    static final String [] GregMonthTokens=
     {"January", 
                  "February",
                  "March",
@@ -41,7 +41,7 @@ public class YDateLangEnglish extends YDateLanguage
                  "October",
                  "November",
                  "December"};
-    static final String ShortGregMonthTokens []=
+    static final String [] ShortGregMonthTokens=
     {"Jan", 
                  "Feb",
                  "Mar",

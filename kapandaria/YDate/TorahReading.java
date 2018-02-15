@@ -16,6 +16,8 @@
 
 package kapandaria.YDate;
 
+import java.util.LinkedList;
+import java.util.List;
 import kapandaria.YDate.YDate.JewishDate;
 
 public class TorahReading
@@ -730,17 +732,47 @@ public class TorahReading
         }
         //TODO: add formating of verses.
     }
+    
     class BibleParagraph
     {
         int m_start_index;
         int m_end_index;
-        String m_name;
-        public BibleParagraph(String name, int start, int end)
+        
+        public BibleParagraph(int start, int end)
         {
-            m_name=name;
             m_start_index=start;
             m_end_index=end;
         }
+    }
+    class BibleText
+    {
+        String m_name;
+        List<BibleParagraph> m_paragraphs;
+        public BibleText(String name)
+        {
+            m_name=name;
+            m_paragraphs =new LinkedList<>();
+        }
+        public BibleText(String name, BibleParagraph p)
+        {
+            m_name=name;
+            m_paragraphs =new LinkedList<>();
+            m_paragraphs.add(p);
+        }
+        public void append(BibleParagraph p)
+        {
+            m_paragraphs.add(p);
+        }
+        public void prepend(BibleParagraph p)
+        {
+            m_paragraphs.add(0,p);
+        }
+        
+    }
+    
+    BibleText getHaftara(YDatePreferences.HaftaraMinhag minhag)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
     
 }

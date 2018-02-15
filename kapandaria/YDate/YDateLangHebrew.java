@@ -22,14 +22,14 @@ package kapandaria.YDate;
 public class YDateLangHebrew extends YDateLanguage
 {
 
-    static final String WeekTokens []={"ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"};
-    static final String HebMonthTokens []={"תשרי", "חשוון", "כסלו", "טבת",
+    static final String [] WeekTokens = {"ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"};
+    static final String [] HebMonthTokens = {"תשרי", "חשוון", "כסלו", "טבת",
                 "שבט", "אדר",
                 "אדר א'",
                 "אדר ב'",
                 "ניסן", "אייר",
                 "סיוון", "תמוז", "אב", "אלול"};
-    static final String GregMonthTokens []=
+    static final String [] GregMonthTokens=
     {"ינואר", "פברואר", "מרס", 
                  "אפריל", "מאי", "יוני", "יולי", 
                  "אוגוסט", "ספטמבר", "אוקטובר", 

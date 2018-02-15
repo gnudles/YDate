@@ -23,7 +23,7 @@ import java.util.TimeZone;
  * Created by Orr Dvori on 7/11/2017.
  */
 
-public class NativeTzProvider implements YDate.TimeZoneProvider {
+public class NativeTzProvider implements TimeZoneProvider {
     TimeZone tz;
     public NativeTzProvider()
     {

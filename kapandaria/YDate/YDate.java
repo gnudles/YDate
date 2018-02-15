@@ -27,15 +27,6 @@ import kapandaria.GP.EventHandler;
  */
 public class YDate {
 
-    public interface TimeZoneProvider {
-
-        /**
-         * returns offset in hours for specific TimeZone.
-         * @param d Date object to get TimeZone offset for.
-         * @return offset in hours from UTC.
-         */
-        float getOffset(Date d); //offset in hours from UTC
-    }
     /**
      * The day of the unix epoch (Jan. 1 1970). It measured by the "beginning
      * count".
@@ -160,7 +151,7 @@ public class YDate {
         /**
          * Simple copy constructor.
          */
-        GregorianDate(GregorianDate o) {
+        public GregorianDate(GregorianDate o) {
             this.valid = o.valid;
             this.year = o.year;
             this.month = o.month;
@@ -178,10 +169,22 @@ public class YDate {
          * denotes February .. 12 denotes December).
          * @param day Gregorian day in month (range 1..31).
          */
-        GregorianDate(int year, int month, int day) {
+        public GregorianDate(int year, int month, int day) {
             valid = setByYearMonthDay(year, month, day);
         }
 
+        /**
+         * Constructs a date object by a day in the "beginning count". The
+         * "beginning count" starts in the extrapolated creation day according
+         * to the jewish tradition.
+         *
+         * @param days number of days since the beginning to construct the date
+         * object from it.
+         */
+        public GregorianDate(int days) {
+            valid = setByDaysDemystified(days);
+        }
+        
         /**
          * Set the members of the class by day, month and year.
          *
@@ -324,17 +327,10 @@ public class YDate {
                 return false;
             }
         }
-
-        /**
-         * Constructs a date object by a day in the "beginning count". The
-         * "beginning count" starts in the extrapolated creation day according
-         * to the jewish tradition.
-         *
-         * @param days number of days since the beginning to construct the date
-         * object from it.
-         */
-        public GregorianDate(int days) {
-            valid = setByDaysDemystified(days);
+        
+        public boolean isValid()
+        {
+            return valid;
         }
 
         /**
@@ -394,14 +390,20 @@ public class YDate {
         }
 
         /**
-         * see YDate.GregorianDate.yearFirstDay for more information
+         * see {@link YDate.GregorianDate#yearFirstDay } for more information
          * @return The number of days in the "beginning count" to the first day in the current month.
          */
         public int monthFirstDay() {
             return year_first_day + day_in_year - day + 1;
         }
+        public int monthLength()
+        {
+            int mo_year_t = year_length - 365;
+            return months_days_offsets[mo_year_t][month] - months_days_offsets[mo_year_t][month - 1];
+        }
 
-        public int previousMonthLength() {
+        public int previousMonthLength()
+        {
             if (this.month == 1)//December is always 31 days
             {
                 return 31;
@@ -410,43 +412,20 @@ public class YDate {
             return months_days_offsets[mo_year_t][month - 1] - months_days_offsets[mo_year_t][month - 2];
         }
 
+        public int yearLength() {
+            return this.year_length;
+        }
+
+        public static boolean isLeap(int year) {
+            return ( (year % 400) == 0)||( (year % 4) == 0 && (year % 100) != 0);
+        }
+        
+
         public double JulianDay() {
             return daysSinceBeginning() + JULIAN_DAY_OFFSET - 0.5;
         }
 
         public String monthName(YDateLanguage.Language language) {
-            /*
-            final String[][] months =
-            {
-                {"ינואר", "פברואר", "מרס", 
-                 "אפריל", "מאי", "יוני", "יולי", 
-                 "אוגוסט", "ספטמבר", "אוקטובר", 
-                 "נובמבר", "דצמבר"},
-                {"January", 
-                 "February",
-                 "March",
-                 "April",
-                 "May",
-                 "June",
-                 "July",
-                 "August",
-                 "September",
-                 "October",
-                 "November",
-                 "December"},
-                {"Jan", 
-                 "Feb",
-                 "Mar",
-                 "Apr",
-                 "May",
-                 "Jun",
-                 "Jul",
-                 "Aug",
-                 "Sep",
-                 "Oct",
-                 "Nov",
-                 "Dec"},
-            };*/
             return YDateLanguage.getLanguageEngine(language).getGregMonthToken(this.month - 1);
         }
         private static final int[][] months_days_offsets
@@ -481,19 +460,6 @@ public class YDate {
 
         public static int calculateDayInYear(boolean leap_year, int month, int day) {
             return months_days_offsets[leap_year ? 1 : 0][month - 1] + day - 1;
-        }
-
-        public int monthLength() {
-            int mo_year_t = year_length - 365;
-            return months_days_offsets[mo_year_t][month] - months_days_offsets[mo_year_t][month - 1];
-        }
-
-        public int yearLength() {
-            return this.year_length;
-        }
-
-        public static boolean isLeap(int year) {
-            return ( (year % 400) == 0)||( (year % 4) == 0 && (year % 100) != 0);
         }
 
         public static int days_until_year(int year) {
@@ -727,6 +693,11 @@ public class YDate {
         public String dayString(YDateLanguage.Language lang) {
             return YDateLanguage.getLanguageEngine(lang).FormatJewishDate(day, monthID(), year);
         }
+        
+        public boolean isValid()
+        {
+            return valid;
+        }
 
         public int NumberOfShabbats() {
             int year_diw = year_first_day % 7;
@@ -736,7 +707,6 @@ public class YDate {
 
         public boolean TenTalVeMatar(boolean diaspora) {
             if (diaspora) {
-                //int day_tkufa=dayInTkufa();
                 int starting = getTkufaOfYearDay(0) + 59; // the sixty day from when Tkufat Tishrei begins (first day in count)
                 if (daysSinceBeginning() < starting) {
                     return false;
@@ -765,7 +735,7 @@ public class YDate {
          * @return true if we need to say Mashiv Ha'Ruah
          */
         public boolean MashivHaruah(boolean MusafAndAfter) {
-            int shmini_azeret = 21;
+            final int shmini_azeret = 21;
             if ((day_in_year == shmini_azeret && !MusafAndAfter) || day_in_year < shmini_azeret) {
                 return false;
             }
@@ -787,7 +757,7 @@ public class YDate {
          *
          */
         public Gvurot getPrayerGvurot() {
-            int shmini_azeret = 21;
+            final int shmini_azeret = 21;
             if (day_in_year == shmini_azeret) {
                 return Gvurot.MORID_HATAL_BECOME_MASHIV_HARUACH;
             }
@@ -1115,7 +1085,7 @@ public class YDate {
         public boolean isMisfortuneDayFromHaari()
         {
             //bad days to start new things from ha'ari
-            final int day_in_month_mask[/*14*/]=
+            final int [/*14*/] day_in_month_mask=
             {
                 (1<<6)|(1<<10)|(1<<28),//TISHREI
                 (1<<7)|(1<<11)|(1<<15)|(1<<21),//CHESHVAN
@@ -1728,7 +1698,7 @@ public class YDate {
 
     public boolean setByDays(int days) {
         if (commonRange(days)) {
-            gd.setByDays(days);
+            gd.setByDaysDemystified(days);
             hd.setByDays(days);
             notifyDateChanged();
             return true;
@@ -1820,7 +1790,7 @@ public class YDate {
         int days = new_hd.daysSinceBeginning();
         if (commonRange(days) && new_hd.valid) {
             hd = new_hd;
-            gd.setByDays(days);
+            gd.setByDaysDemystified(days);
             notifyDateChanged();
             return true;
         }
@@ -1851,19 +1821,18 @@ public class YDate {
     }
 
     private static final byte INIT_JD = 0;
-    private static final byte INIT_JD_MID = 1;
+    private static final byte INIT_JD_MID = 1;// by month id
     private static final byte INIT_GD = 2;
 
     private YDate(short year, byte mon, byte day, byte init) {
         switch (init) {
             case INIT_JD:
                 hd = new JewishDate(year, mon, day);
-            case INIT_JD_MID:
-                if (init == INIT_JD_MID) {
-                    hd = new JewishDate(year, JewishDate.monthFromIDByYear(year, mon), day);
-                }
                 gd = new GregorianDate(hd.daysSinceBeginning());
                 break;
+            case INIT_JD_MID:
+                hd = new JewishDate(year, JewishDate.monthFromIDByYear(year, mon), day);
+                gd = new GregorianDate(hd.daysSinceBeginning());
             default:
                 gd = new GregorianDate(year, mon, day);
                 hd = new JewishDate(gd.daysSinceBeginning());

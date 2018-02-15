@@ -18,9 +18,9 @@ package kapandaria.YDate;
 
 public class YDateLangFrench extends YDateLangEnglish
 {
-    static final String WeekTokens []={"Dimanche","Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"};
+    static final String [] WeekTokens={"Dimanche","Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"};
 
-    static final String GregMonthTokens []=
+    static final String [] GregMonthTokens=
     {"Janvier", 
                  "Février",
                  "Mars",

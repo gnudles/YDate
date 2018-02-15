@@ -160,10 +160,10 @@ public class IsraelDstTzProvider implements TimeZoneProvider
             {
                 int diy = GregorianDate.calculateDayInYear(GregorianDate.isLeap(_yd.gd.year()), 3, 31);
                 int lastsunday = YDate.getPrevious(YDate.SUNDAY, diy + _yd.gd.yearFirstDay());
-                summer_beginning = YDate.toDate(lastsunday - 2, 0);//friday
+                summer_beginning = YDate.toDate(lastsunday - 2, 0);//friday -dst changes at 2:00AM in localtime wich is 00:00AM at UTC.
                 diy = GregorianDate.calculateDayInYear(GregorianDate.isLeap(_yd.gd.year()), 10, 31);
                 lastsunday = YDate.getPrevious(YDate.SUNDAY, diy + _yd.gd.yearFirstDay());
-                summer_end = YDate.toDate(lastsunday - 1, 23);
+                summer_end = YDate.toDate(lastsunday - 1, 23); //dst changes at 2:00AM in localtime wich is 23:00PM at UTC.
             }
         }
 
