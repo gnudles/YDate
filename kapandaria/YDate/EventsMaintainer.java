@@ -50,7 +50,11 @@ public class EventsMaintainer {
         m_YDate.registerOnDateChanged(dateChangedListener);
         setMaintainEvents();
     }
-
+    public EventHandler.Listener dateListener()
+    {
+        return dateChangedListener;
+    }
+    
     private static YDateAnnual getAnnualFromCache(int hd_year,int hd_year_length, int hd_year_first_day,boolean diaspora)
     {
         AbstractMap<Integer ,SoftReference<YDateAnnual> > cache;
