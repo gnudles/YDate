@@ -1,7 +1,17 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/* This is free and unencumbered software released into the public domain.
+ *
+ * THIS SOFTWARE IS PROVIDED THE CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY 
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; BUSINESS
+ * INTERRUPTION; OR ANY SPIRITUAL DAMAGE) HOWEVER CAUSED
+ * AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
  */
 package kapandaria.YDate;
 
@@ -13,7 +23,7 @@ import java.util.TimeZone;
  *
  * @author Orr Dvori
  */
-public class JewishDate extends ADMYDate
+public final class JewishDate extends ADMYDate
 {
     static final int DAYS_OF_4119 = 1504084;
     static final int DAYS_OF_TKUFA_CYCLE_4117 = 1503540;
@@ -132,6 +142,10 @@ public class JewishDate extends ADMYDate
         this.m_yearLength = o.m_yearLength;
         this.m_dayInYear = o.m_dayInYear;
     }
+    public static JewishDate create(int year, int monthId, int day)
+    {
+        return new JewishDate(year,monthFromIDByYear(year,monthId),day);
+    }
 
     private JewishDate(int year, int month, int day) {
         if (year >= 4119 && year < 7001) {
@@ -153,8 +167,8 @@ public class JewishDate extends ADMYDate
         this.m_yearLength = days_until_year(m_year + 1, parts_since_beginning(m_year + 1)) - this.m_yearFirstDay;
     }
 
-    private void setByYearMonthIdDay(int year, int month_id, int day) {
-        if (year >= 4119 && year < 7001) {
+    public boolean setByYearMonthIdDay(int year, int month_id, int day) {
+        if (year >= 4119 && year < 6001) {
             this.m_valid = true;
             if (this.m_year != year) {
                 this.m_year = year;
@@ -164,11 +178,66 @@ public class JewishDate extends ADMYDate
             int month_length = monthLength();
             this.m_day = Math.min(month_length, day);
             this.m_dayInYear = calculateDayInYear(this.m_yearLength, this.m_month, this.m_day);
+            int gdn=GDN();
+            stateChanged();
+            return gdn==GDN();
+        }
+        return false;
+    }
+
+    @Override
+    public boolean setByGDN(int gdn) {
+        boolean result=setByDays(gdn);
+        stateChanged();
+        return result && (gdn == GDN());
+    }
+
+    public JewishDate(int gdn) {
+        m_valid = setByDays(gdn);
+    }
+
+    /**
+     * Gives a cloned object with the next date.
+     * That is useful to get the correct date if you are after twilight.
+     * @return a cloned object of the next day.
+     */
+    public JewishDate getDayAfterTwilight() {
+        if (m_dayInYear + 1 == m_yearLength)// we reached the end of the year.
+        {
+            return new JewishDate(m_year + 1, 1, 1);//we must recalculate the year variables.
+        }
+        else {
+            JewishDate cln = new JewishDate(this);
+            cln.m_dayInYear++;
+            if (cln.m_day == cln.monthLength())// we reached the end of the month.
+            {
+                cln.m_day = 1;
+                cln.m_month++;
+            }
+            else {
+                cln.m_day++;
+            }
+            return cln;
         }
     }
 
-    private boolean setByDays(int days) {
-        
+    public String dayString(YDateLanguage.Language lang) {
+        return YDateLanguage.getLanguageEngine(lang).FormatJewishDate(m_day, monthID(), m_year);
+    }
+
+    @Override
+    public boolean isValid()
+    {
+        return m_valid;
+    }
+    /**
+     * use setByGDN
+     * @param gdn
+     * @return
+     * 
+     */
+    private boolean setByDays(int days)
+    {
         if (!checkBounds(days)) {
             return false;
         }
@@ -215,50 +284,6 @@ public class JewishDate extends ADMYDate
         return true;
     }
 
-    public JewishDate(int days) {
-        m_valid = setByDays(days);
-    }
-
-    /**
-     * Gives a cloned object with the next date.
-     * That is useful to get the correct date if you are after twilight.
-     * @return a cloned object of the next day.
-     */
-    public JewishDate getDayAfterTwilight() {
-        if (m_dayInYear + 1 == m_yearLength)// we reached the end of the year.
-        {
-            return new JewishDate(m_year + 1, 1, 1);//we must recalculate the year variables.
-        }
-        else {
-            JewishDate cln = new JewishDate(this);
-            cln.m_dayInYear++;
-            if (cln.m_day == cln.monthLength())// we reached the end of the month.
-            {
-                cln.m_day = 1;
-                cln.m_month++;
-            }
-            else {
-                cln.m_day++;
-            }
-            return cln;
-        }
-    }
-
-    public String dayString(YDateLanguage.Language lang) {
-        return YDateLanguage.getLanguageEngine(lang).FormatJewishDate(m_day, monthID(), m_year);
-    }
-
-    @Override
-    public boolean isValid()
-    {
-        return m_valid;
-    }
-        @Override
-    public boolean setByGDN(int gdn)
-    {
-        return setByDays(gdn);
-    }
-
     @Override
     public int GDN()
     {
@@ -291,7 +316,7 @@ public class JewishDate extends ADMYDate
 
     public int NumberOfShabbats() {
         int year_diw = m_yearFirstDay % 7;
-        int diy = YDate.getNext(YDate.SATURDAY, year_diw) - year_diw;
+        int diy = getNext(SATURDAY, year_diw) - year_diw;
         return (m_yearLength - (diy) + 6) / 7;
     }
 
@@ -553,7 +578,7 @@ public class JewishDate extends ADMYDate
     public int taanitBetHehBetForCheshvan() {
         /* 1 in tishrey is day 0. tishrey has 30 days. so 30 in tishrey is day 29. and 1 cheshvan is day 30.
          */
-        return YDate.getNext(YDate.SATURDAY, m_yearFirstDay + 31);
+        return getNext(SATURDAY, m_yearFirstDay + 31);
     }
 
     /**
@@ -564,7 +589,7 @@ public class JewishDate extends ADMYDate
      * monday.
      */
     public int taanitBetHehBetForIyar() {
-        return YDate.getNext(YDate.SATURDAY, monthFirstDay(M_ID_IYAR) + 1);//+2 to get first monday, +5 to get thursday, and +9 to get the last monday.
+        return getNext(SATURDAY, monthFirstDay(M_ID_IYAR) + 1);//+2 to get first monday, +5 to get thursday, and +9 to get the last monday.
     }
 
     public static final int[][] possibleMonthDay = {
@@ -617,6 +642,7 @@ public class JewishDate extends ADMYDate
     /**
      * shabbat before 17 Tammuz and 10 Tevet the Shliach Tzibur declares the upcoming taanit.
      * 
+     * @return 
     */
     /*@untested*/
     public boolean hachrazatTaanit() {
@@ -673,6 +699,7 @@ public class JewishDate extends ADMYDate
     /**
      * remember that in this case the day starts from the night before, so it is not recommanded to 
      * make a wedding or so in these days and in the night before them
+     * @return true if this is a misfortune day. 
      */
     public boolean isMisfortuneDayFromHaari()
     {
@@ -727,10 +754,16 @@ public class JewishDate extends ADMYDate
         }
         throw new UnsupportedOperationException("Not supported yet.");
     }
+    public boolean shovavimDays() {
+
+        int first_sunday_of_shovavim = TorahReading.getShabbatBereshit(yearLength(), yearFirstDay()) + 12 * 7 - 6;
+        int shovavim_tat_len = isLeapYear(m_year) ? 8 : 6;
+        return (GDN()>=first_sunday_of_shovavim && GDN()<first_sunday_of_shovavim+shovavim_tat_len*7);
+    }
 
     public int dayOfChanukkah() {
         int diy = dayInYear();
-        int chnkday = YDate.JewishDate.calculateDayInYearByMonthId(m_yearLength, M_ID_KISLEV, 25);
+        int chnkday = calculateDayInYearByMonthId(m_yearLength, M_ID_KISLEV, 25);
         return (diy >= chnkday && diy < chnkday + 8) ? diy - chnkday + 1 : -1;
     }
 
@@ -743,7 +776,7 @@ public class JewishDate extends ADMYDate
      * @return the day in year of the nine av fast day
      */
     public int nineAvDayInYear() {
-        int nine_av = YDate.JewishDate.calculateDayInYearByMonthId(m_yearLength, M_ID_AV, 9); // 9 in Av.
+        int nine_av = calculateDayInYearByMonthId(m_yearLength, M_ID_AV, 9); // 9 in Av.
         if ((nine_av + m_yearFirstDay) % 7 == SATURDAY) {
             ++nine_av;
         }
@@ -886,6 +919,7 @@ public class JewishDate extends ADMYDate
         return lstr;
     }
 
+    @Override
     public int dayInMonth()//starts from one
     {
         return this.m_day;
@@ -906,25 +940,41 @@ public class JewishDate extends ADMYDate
         return day_names[Heb ? 0 : 1][dayInWeekEnum()];
     }
 
+    @Override
     public int dayInYear()//starts from zero
     {
         return this.m_dayInYear;
     }
 
+    /**
+     * the ordinal month in year. in regular year the range is 1..12, 
+     * and in a leap year the range is 1..13.
+     * to get the month ID (eg. TISHREI,CHESHVAN... ADAR_I,ADAR_II...) see 
+     * {@link #monthID() }.
+     * @return the month of the year of the object's date.
+     */
     @Override
     public int month()
     {
         return monthInYear();
     }
-    
+    /**
+     * the ordinal month in year. in regular year the range is 1..12, 
+     * and in a leap year the range is 1..13.
+     * to get the month ID (eg. TISHREI,CHESHVAN... ADAR_I,ADAR_II...) see 
+     * {@link #monthID() }.
+     * @return the month of the year of the object's date.
+     */
     public int monthInYear() {
         return this.m_month;
     }
 
+    @Override
     public int year() {
         return this.m_year;
     }
 
+    @Override
     public int yearLength() {
         return this.m_yearLength;
     }
@@ -1126,30 +1176,32 @@ public class JewishDate extends ADMYDate
         return calculateDayInYear(year_length, month, day);
     }
 
-    public void stepMonthForward(boolean cyclic) {
+    public boolean stepMonthForward(boolean cyclic) {
         int months_in_year = calculateYearMonths(m_year);
         if (m_month == months_in_year) {
-            setByYearMonthIdDay(m_year + (cyclic ? 0 : 1), M_ID_TISHREI, m_day);
+            return setByYearMonthIdDay(m_year + (cyclic ? 0 : 1), M_ID_TISHREI, m_day);
         }
         else {
-            setByYearMonthIdDay(m_year, monthID(months_in_year, m_month + 1), m_day);
+            return setByYearMonthIdDay(m_year, monthID(months_in_year, m_month + 1), m_day);
         }
     }
 
-    public void stepMonthBackward(boolean cyclic) {
+    public boolean stepMonthBackward(boolean cyclic) {
         if (m_month == 1) {
-            setByYearMonthIdDay(m_year - (cyclic ? 0 : 1), M_ID_ELUL, m_day);
+            return setByYearMonthIdDay(m_year - (cyclic ? 0 : 1), M_ID_ELUL, m_day);
         }
         else {
             int months_in_year = calculateYearMonths(m_year);
-            setByYearMonthIdDay(m_year, monthID(months_in_year, m_month - 1), m_day);
+            return setByYearMonthIdDay(m_year, monthID(months_in_year, m_month - 1), m_day);
         }
     }
 
+    @Override
     public int monthLength() {
         return monthLengthInYear(this.m_yearLength, this.m_month);
     }
 
+    @Override
     public int previousMonthLength() {
         if (this.m_month == 1)//Elul is always 29 days
         {

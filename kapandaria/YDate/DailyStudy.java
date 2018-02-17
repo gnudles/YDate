@@ -15,7 +15,6 @@
  */
 package kapandaria.YDate;
 
-import kapandaria.YDate.YDate.JewishDate;
 
 public class DailyStudy {
 

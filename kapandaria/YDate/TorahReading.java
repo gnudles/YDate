@@ -18,7 +18,6 @@ package kapandaria.YDate;
 
 import java.util.LinkedList;
 import java.util.List;
-import kapandaria.YDate.YDate.JewishDate;
 
 public class TorahReading
 {
@@ -59,7 +58,7 @@ public class TorahReading
     * you can obtain the joining in israel by copying the joining outside IL and removing Chukat Balak joining.
     * except year type 4,11,12 where you should remove Behar Bechukotai in year type 4 and Matot Mas'ei in year types 11,12
     */
-    final static byte[][] SidraJoin =
+    final static byte[][] SIDRA_JOIN =
     {//lsb to msb : 22, 27, 29, 32, 39, 42, 51
         { //Diaspora
                 0x6f //1, 1, 1, 1, 0, 1, 1
@@ -181,55 +180,55 @@ public class TorahReading
     private static final int SHABAT_NACHAMU = 6;
     private static final int SHABAT_TSHUVA = 7;
 
-    public static String parshiot4(YDate h, YDateLanguage lang)
+    public static String parshiot4(JewishDate h, YDateLanguage lang)
     {
-        YDate tweaked = YDate.createFrom(h);
-        if (getShabbatBereshit(h.hd.yearLength(), h.hd.yearFirstDay()) + 15 * 7 == h.hd.daysSinceBeginning())
+        JewishDate tweaked = new JewishDate(h);
+        if (getShabbatBereshit(h.yearLength(), h.yearFirstDay()) + 15 * 7 == h.daysSinceBeginning())
         {
             return lang.getSpecialShabbat(SHABAT_SHIRA);
         }
-        if (h.hd.dayInWeek() == 7)
+        if (h.dayInWeek() == 7)
         {
             tweaked.seekBy(6);
-            if (tweaked.hd.monthID() == YDate.JewishDate.M_ID_NISAN) //maybe shabat hachodesh or shabat hagadol
+            if (tweaked.monthID() == JewishDate.M_ID_NISAN) //maybe shabat hachodesh or shabat hagadol
             {
-                if (tweaked.hd.dayInMonth() <= 7)
+                if (tweaked.dayInMonth() <= 7)
                 {
                     return lang.getSpecialShabbat(SHABAT_HACHODESH);
                 }
-                if (h.hd.dayInMonth() < 15 && h.hd.dayInMonth() > 7)
+                if (h.dayInMonth() < 15 && h.dayInMonth() > 7)
                 {
                     return lang.getSpecialShabbat(SHABAT_HAGADOL);
                 }
             }
-            if (tweaked.hd.monthID() == YDate.JewishDate.M_ID_ADAR
-                || tweaked.hd.monthID() == YDate.JewishDate.M_ID_ADAR_II)//adar or adar II
+            if (tweaked.monthID() == JewishDate.M_ID_ADAR
+                || tweaked.monthID() == JewishDate.M_ID_ADAR_II)//adar or adar II
             {
-                if (tweaked.hd.dayInMonth() <= 7)
+                if (tweaked.dayInMonth() <= 7)
                 {
                     return lang.getSpecialShabbat(SHABAT_SHKALIM);
                 }
-                if (h.hd.dayInMonth() < 14 && h.hd.dayInMonth() > 7)
+                if (h.dayInMonth() < 14 && h.dayInMonth() > 7)
                 {
                     return lang.getSpecialShabbat(SHABAT_ZAKHOR);
                 }
-                if (h.hd.dayInMonth() > 16)
+                if (h.dayInMonth() > 16)
                 {
                     return lang.getSpecialShabbat(SHABAT_PARA);
                 }
             }
-            int shabbat_nachamu = h.hd.yearFirstDay();
-            shabbat_nachamu += YDate.JewishDate.calculateDayInYearByMonthId(h.hd.yearLength(), JewishDate.M_ID_AV, 10);
-            shabbat_nachamu = YDate.getNext(YDate.SATURDAY, shabbat_nachamu);
+            int shabbat_nachamu = h.yearFirstDay();
+            shabbat_nachamu += JewishDate.calculateDayInYearByMonthId(h.yearLength(), JewishDate.M_ID_AV, 10);
+            shabbat_nachamu = ADate.getNext(ADate.SATURDAY, shabbat_nachamu);
 
-            if (h.hd.daysSinceBeginning() == shabbat_nachamu)
+            if (h.daysSinceBeginning() == shabbat_nachamu)
             {
                 return lang.getSpecialShabbat(SHABAT_NACHAMU);
             }
-            int shabbat_tshuva = h.hd.yearFirstDay();
-            shabbat_tshuva += YDate.JewishDate.calculateDayInYearByMonthId(h.hd.yearLength(), JewishDate.M_ID_TISHREI, 9);
-            shabbat_tshuva = YDate.getPrevious(YDate.SATURDAY, shabbat_tshuva);
-            if (h.hd.daysSinceBeginning() == shabbat_tshuva)
+            int shabbat_tshuva = h.yearFirstDay();
+            shabbat_tshuva += JewishDate.calculateDayInYearByMonthId(h.yearLength(), JewishDate.M_ID_TISHREI, 9);
+            shabbat_tshuva = ADate.getPrevious(ADate.SATURDAY, shabbat_tshuva);
+            if (h.daysSinceBeginning() == shabbat_tshuva)
             {
                 return lang.getSpecialShabbat(SHABAT_TSHUVA);
             }
@@ -295,7 +294,7 @@ public class TorahReading
         int ydiw = h.yearFirstDay() % 7;
         int day_type = getDayType(h);
         int diw = (diy + ydiw) % 7;
-        return  (  ((day_type & PURIM) != 0 && MukafHoma && diw == YDate.FRIDAY)//purim meshulash
+        return  (  ((day_type & PURIM) != 0 && MukafHoma && diw == ADate.FRIDAY)//purim meshulash
             ||((day_type & PURIM) != 0 && (!MukafHoma))
             ||((day_type & SHOSHAN_PURIM) != 0 && MukafHoma));
     }
@@ -328,7 +327,7 @@ public class TorahReading
                 }
                 else
                 {
-                    int sat = YDate.getNext(YDate.SATURDAY, diy + ydiw) - ydiw;
+                    int sat = ADate.getNext(ADate.SATURDAY, diy + ydiw) - ydiw;
                     while (pnum == 0)
                     {
                         pnum = sidra_array[sat / 7];
@@ -440,7 +439,7 @@ public class TorahReading
                 }
                 else
                 {
-                    int sat = YDate.getNext(YDate.SATURDAY, diy + ydiw) - ydiw;// get the day in year of next saturday.
+                    int sat = ADate.getNext(ADate.SATURDAY, diy + ydiw) - ydiw;// get the day in year of next saturday.
                     while (pnum == 0)
                     {
                         pnum = sidra_array[sat / 7];
@@ -509,23 +508,22 @@ public class TorahReading
         int year_diw = year_first_day % 7; // can be only 1(+1=MON) 2(+1=TUE) 4(+1=THU) 6(+1=SAT) 
         
         
-        int ldt = YDate.JewishDate.ld_year_type(year_length, year_diw + 1);//the year type out of 14 possible types ( the method gives us range of 1..14)
+        int ldt = JewishDate.ld_year_type(year_length, year_diw + 1);//the year type out of 14 possible types ( the method gives us range of 1..14)
         if (sidra_reading[diaspora ? 0 : 1][ldt - 1] != null)
         {
             return sidra_reading[diaspora ? 0 : 1][ldt - 1];
         }
-        byte joining = SidraJoin[diaspora ? 0 : 1][ldt - 1];
+        byte joining = SIDRA_JOIN[diaspora ? 0 : 1][ldt - 1];
 
         int s = 0;
 
-        int diy = YDate.getNext(YDate.SATURDAY, year_diw) - year_diw;
+        int diy = ADate.getNext(ADate.SATURDAY, year_diw) - year_diw;
         int shabats = (year_length - (diy) + 6) / 7;//number of shabbats in the given year.
         shabats++; // one for the next year
         byte[] reading = new byte[shabats];
         sidra_reading[diaspora ? 0 : 1][ldt - 1] = reading;
-        //the following if is like if (year_diw  == YDate.MONDAY || year_diw  == YDate.TUESDAY)
-        // or like doing if (year_diw > 2)
-        if ((year_diw >> 2) == 0) //if the year started in monday or tuesday - pat bag
+        //the following if is like if (year_diw  == ADate.MONDAY || year_diw  == ADate.TUESDAY)
+        if (year_diw <= 2 ) //if the year started in monday or tuesday - pat bag
         {
             reading[s] = 52;//Vayelech
             ++s;
@@ -537,7 +535,7 @@ public class TorahReading
         }
         else
         {
-            if (year_diw == YDate.SATURDAY)
+            if (year_diw == ADate.SATURDAY)
             {
                 reading[s] = 0;//none
                 ++s;
@@ -551,7 +549,7 @@ public class TorahReading
             ++s;
             diy += 21;
         }
-        int pesah_day = YDate.JewishDate.calculateDayInYearByMonthId(year_length, JewishDate.M_ID_NISAN, 15); // day in year of pessach night.
+        int pesah_day = JewishDate.calculateDayInYearByMonthId(year_length, JewishDate.M_ID_NISAN, 15); // day in year of pessach night.
         int pesah_length = diaspora ? 8 : 7;//how much days in pessach?
         int azeret_day = 50 + pesah_day;//SHAVOUT day in year.
         int azeret_length = diaspora ? 2 : 1;
@@ -594,7 +592,7 @@ public class TorahReading
     private static byte[] generateSidraToShabbatArray(int year_length, int year_first_day, boolean diaspora)
     {
         int year_diw = year_first_day % 7; // can be only 1 2 4 6 (+1 = 2 3 5 7)
-        int ldt = YDate.JewishDate.ld_year_type(year_length, year_diw + 1);
+        int ldt = JewishDate.ld_year_type(year_length, year_diw + 1);
         byte[] reading = calculateSidraArray(year_length, year_first_day, diaspora);
         byte[] rev_access = sidra_to_shabbat[diaspora ? 0 : 1][ldt - 1];
         if (rev_access[0]!=0)
@@ -615,12 +613,17 @@ public class TorahReading
         }
         return rev_access;        
     }
-    
+    /**
+     * get the GDN of Shabbat Bereshit of a certain year.
+     * @param year_length
+     * @param year_first_day
+     * @return 
+     */
     public static int getShabbatBereshit(int year_length, int year_first_day)
     {
         int bereshit_saturday = year_first_day;
-        bereshit_saturday += YDate.JewishDate.calculateDayInYearByMonthId(year_length, JewishDate.M_ID_TISHREI, 23);
-        bereshit_saturday = YDate.getNext(YDate.SATURDAY, bereshit_saturday);
+        bereshit_saturday += JewishDate.calculateDayInYearByMonthId(year_length, JewishDate.M_ID_TISHREI, 23);
+        bereshit_saturday = ADate.getNext(ADate.SATURDAY, bereshit_saturday);
         return bereshit_saturday;
     }
     /**
@@ -638,9 +641,9 @@ public class TorahReading
         int year_diw= (year_first_day)%7;
         if ((year_diw >> 2) == 0) //if the year starts in monday or tuesday - pat bag
         {
-            return YDate.getNext(YDate.SATURDAY, year_first_day);
+            return ADate.getNext(ADate.SATURDAY, year_first_day);
         }
-        return YDate.getPrevious(YDate.SATURDAY, year_first_day - 1);
+        return ADate.getPrevious(ADate.SATURDAY, year_first_day - 1);
     }
     /**
      * UNTESTED. should give you day in "beginning count" for specific sidra.
@@ -666,7 +669,7 @@ public class TorahReading
         int sat_num = generateSidraToShabbatArray(year_length,year_first_day,diaspora)[sidra-1];
         if (sat_num<0)
             return -1;
-        return YDate.getNext(YDate.SATURDAY, year_first_day) + sat_num * 7;
+        return ADate.getNext(ADate.SATURDAY, year_first_day) + sat_num * 7;
     }
     
     static class BibleIndex

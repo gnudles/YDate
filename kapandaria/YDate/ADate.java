@@ -1,9 +1,21 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/* This is free and unencumbered software released into the public domain.
+ *
+ * THIS SOFTWARE IS PROVIDED THE CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY 
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; BUSINESS
+ * INTERRUPTION; OR ANY SPIRITUAL DAMAGE) HOWEVER CAUSED
+ * AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
  */
 package kapandaria.YDate;
+
+import kapandaria.GP.EventHandler;
 
 
 /**
@@ -17,7 +29,7 @@ public abstract class ADate
      * The day of the unix epoch (Jan. 1 1970). It measured by the "beginning
      * count".
      */
-    static final int EPOCH_DAY = 2092591;//1.1.1970
+    static final int EPOCH_DAY = 2092591;//1.1.1970 - in gdn
 
     static final int SUNDAY = 0;//Sun - Sunne in old english
     static final int MONDAY = 1;//Moon - Mōna in old english
@@ -27,18 +39,22 @@ public abstract class ADate
     static final int FRIDAY = 5;//Venus - frig in old english
     static final int SATURDAY = 6;//Saturn - Sætern in old english
     /**
-     * The difference between the "beginning count" and the Julian count. (the
+     * The difference between the GDN and the Julian count. (the
      * Julian count start earlier)
      */
-    static final int JULIAN_DAY_OFFSET = 347997;
+    static final int JULIAN_DAY_OFFSET = 347997; // offset between gdn and jdn.
     
-    DateSyncGroup m_syncGroup;
+    private DateSyncGroup m_syncGroup;
+    private final EventHandler m_dateChanged = new EventHandler();
     /**
      * set the date object by GDN.
      * @param gdn
      * @return true if the gdn is in bounds.
      */
     public abstract boolean setByGDN(int gdn);
+    public boolean seekBy(int offset) {
+        return setByGDN(GDN()+offset);
+    }
     /**
      * Genesis Day Number is an ordinal day count from the estimated genesis.
      * it is equivalent to days since the beginning.
@@ -64,6 +80,14 @@ public abstract class ADate
     public abstract int lowerBound();
     public abstract boolean isValid();
     /**
+     * Register a listner for a date change event.
+     * The listner will recieve as a sender the date object.
+     * @param listener 
+     */
+    public void registerOnDateChanged(EventHandler.Listener listener) {
+        m_dateChanged.addListener(listener);
+    }
+    /**
      * Method to be called on each change, in order to update the sync group.
      * The state might change again if clipping occurs. 
      * If there is no sync group, clipping will be still active.
@@ -71,6 +95,7 @@ public abstract class ADate
      */
     protected boolean stateChanged()
     {
+        m_dateChanged.trigger(this);
         if (m_syncGroup!=null)
             return m_syncGroup.syncBy(this);
         return !clip();
@@ -100,5 +125,22 @@ public abstract class ADate
     public boolean checkBounds(int gdn)
     {
         return (gdn >= lowerBound() && gdn < upperBound());
+    }
+    
+    /**
+     * Return the upcoming day in week, or the current day if it is that certain day in week.
+     * 
+     * @param diw day in week. un range 0..6
+     * @param days day in "beginning count" or other count that day 0 is sunday
+     * @return days + x (6 &gt; = x &gt; = 0). that gives that certain day in week. 
+     */
+    public static int getNext(int diw, int days) // return the upcoming diw (or today if it's that diw)
+    {
+        int diff = (diw - days % 7 + 7) % 7;
+        return (days + diff);
+    }
+
+    public static int getPrevious(int diw, int days) {
+        return getNext(diw, days - 6);
     }
 }
