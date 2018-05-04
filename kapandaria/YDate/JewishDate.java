@@ -122,6 +122,10 @@ public final class JewishDate extends ADMYDate
     private int m_dayInYear; // days after year beginning. first day in year  is 0
     private boolean m_valid;
 
+    /**
+    * empty constructor.
+    * constructs empty invalid object.
+    */
     public JewishDate() {
         this.m_valid = false;
         this.m_year = 1;
@@ -132,6 +136,11 @@ public final class JewishDate extends ADMYDate
         this.m_yearLength = 354;
         this.m_dayInYear = 0;
     }
+    /**
+    * Simple copy constructor.
+    * event handler and sync group are not cloned.
+    * @param o object to be cloned.
+    */
     public JewishDate(JewishDate o) {
         this.m_valid = o.m_valid;
         this.m_year = o.m_year;
@@ -141,6 +150,22 @@ public final class JewishDate extends ADMYDate
         this.m_yearFirstDay = o.m_yearFirstDay;
         this.m_yearLength = o.m_yearLength;
         this.m_dayInYear = o.m_dayInYear;
+    }
+    /**
+    * Copy date from a given object to this. 
+    * event handler and sync group are not cloned.
+    * @param o object to copy from.
+    */
+    public boolean MimicDate(JewishDate o) {
+        this.m_valid = o.m_valid;
+        this.m_year = o.m_year;
+        this.m_month = o.m_month;
+        this.m_day = o.m_day;
+        this.m_yearGParts = o.m_yearGParts;
+        this.m_yearFirstDay = o.m_yearFirstDay;
+        this.m_yearLength = o.m_yearLength;
+        this.m_dayInYear = o.m_dayInYear;
+        return stateChanged();
     }
     public static JewishDate create(int year, int monthId, int day)
     {
@@ -178,9 +203,7 @@ public final class JewishDate extends ADMYDate
             int month_length = monthLength();
             this.m_day = Math.min(month_length, day);
             this.m_dayInYear = calculateDayInYear(this.m_yearLength, this.m_month, this.m_day);
-            int gdn=GDN();
-            stateChanged();
-            return gdn==GDN();
+            return stateChanged();
         }
         return false;
     }
@@ -191,6 +214,12 @@ public final class JewishDate extends ADMYDate
         stateChanged();
         return result && (gdn == GDN());
     }
+    @Override
+    public boolean seekBy(int offset) {
+        int days = daysSinceBeginning() + offset;
+        return setByGDN(days);
+    }
+    
 
     public JewishDate(int gdn) {
         m_valid = setByDays(gdn);
@@ -231,7 +260,7 @@ public final class JewishDate extends ADMYDate
         return m_valid;
     }
     /**
-     * use setByGDN
+     * don't use that, use setByGDN instead
      * @param gdn
      * @return
      * 

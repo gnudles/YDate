@@ -91,9 +91,23 @@ public class GregorianDate extends ADMYDate
     private boolean m_valid;
 
     /**
+    * empty constructor.
+    * constructs empty invalid object.
+    */
+    public GregorianDate() {
+       this.m_valid = false;
+       this.m_year = 1;
+       this.m_month = 1;
+       this.m_day = 1;
+       this.m_yearFirstDay = 0;
+       this.m_yearLength = 365;
+       this.m_dayInYear = 0;
+    }
+    
+    /**
     * Simple copy constructor.
     * event handler and sync group are not cloned.
-     * @param o object to be cloned.
+    * @param o object to be cloned.
     */
     public GregorianDate(GregorianDate o) {
        this.m_valid = o.m_valid;
@@ -104,6 +118,23 @@ public class GregorianDate extends ADMYDate
        this.m_yearLength = o.m_yearLength;
        this.m_dayInYear = o.m_dayInYear;
     }
+    
+    /**
+    * Copy date from a given object to this. 
+    * event handler and sync group are not cloned.
+    * @param o object to copy from.
+    */
+    public boolean MimicDate(GregorianDate o) {
+       this.m_valid = o.m_valid;
+       this.m_year = o.m_year;
+       this.m_month = o.m_month;
+       this.m_day = o.m_day;
+       this.m_yearFirstDay = o.m_yearFirstDay;
+       this.m_yearLength = o.m_yearLength;
+       this.m_dayInYear = o.m_dayInYear;
+       return stateChanged();
+    }
+
 
     /**
     * Constructs a date object by day, month and year.
@@ -126,7 +157,7 @@ public class GregorianDate extends ADMYDate
     * object from it.
     */
     public GregorianDate(int days) {
-       m_valid = setByDaysDemystified(days);
+       m_valid = setByDays(days);
     }
 
     /**
@@ -135,7 +166,7 @@ public class GregorianDate extends ADMYDate
     * @return true if that date can be calculated properly and false
     * otherwise.
     */
-    private boolean setByYearMonthDay(int year, int month, int day) {
+    public boolean setByYearMonthDay(int year, int month, int day) {
         
        if (year >= 1600 && year < 2300) {
            boolean desired=true;
@@ -168,9 +199,7 @@ public class GregorianDate extends ADMYDate
 
            this.m_day = day;
            this.m_dayInYear = calculateDayInYear(this.m_yearLength, this.m_month, this.m_day);
-           int desired_gdn = GDN();
-           stateChanged();
-           return (GDN()==desired_gdn) && desired;
+           return desired && stateChanged();
        }
        else {
            return false;
@@ -182,8 +211,8 @@ public class GregorianDate extends ADMYDate
        GregorianDate gd2 = new GregorianDate(1600, 1, 1);
        int i;
        for (i = DAYS_OF_1600; i < DAYS_OF_2300; ++i) {
-           gd1.setByDaysDemystified(i);
-           gd2.setByDays(i);
+           gd1.setByDays(i);
+           gd2.setByDaysOrig(i);
            if (gd1.m_year != gd2.m_year) {
                break;
            }
@@ -202,7 +231,7 @@ public class GregorianDate extends ADMYDate
        }
        return i;
     }
-    private boolean setByDaysDemystified(int days) {
+    private boolean setByDays(int days) {
        if (days >= DAYS_OF_1600 && days < DAYS_OF_2300) {
 
            int gd_year;
@@ -226,14 +255,14 @@ public class GregorianDate extends ADMYDate
            setMonthDay(days);
            this.m_yearFirstDay = gd_year_first_day;
            this.m_yearLength = isLeap(this.m_year) ? 366 : 365;
-           return true;
+           return (GDN() == days) && stateChanged();
        }
        else {
            return false;
        }
     }
 
-    private boolean setByDays(int days) {
+    private boolean setByDaysOrig(int days) {
        if (days >= DAYS_OF_1600 && days < DAYS_OF_2300) {
            int gd_day;
            int gd_month;
@@ -260,7 +289,7 @@ public class GregorianDate extends ADMYDate
            this.m_yearLength = isLeap(this.m_year) ? 366 : 365;
            this.m_dayInYear = calculateDayInYear(this.m_yearLength, this.m_month, this.m_day);
            this.m_yearFirstDay = days - this.m_dayInYear; //previously it was days_until_year(this.year);
-           return true;
+           return (GDN() == days) && stateChanged();
        }
        else {
            return false;
@@ -471,9 +500,8 @@ public class GregorianDate extends ADMYDate
     @Override
     public boolean setByGDN(int gdn)
     {
-        boolean result=setByDays(gdn);
-        stateChanged();
-        return result && (gdn == GDN());
+        boolean result = setByDays(gdn);
+        return result && stateChanged();
     }
 
     @Override

@@ -5,7 +5,7 @@
  */
 package kapandaria.YDateQuery;
 
-import kapandaria.YDate.YDate;
+import kapandaria.YDate.MYDate;
 import kapandaria.YDate.YDatePreferences;
 import static kapandaria.YDateQuery.YDateEvaluator.FALSE;
 import static kapandaria.YDateQuery.YDateEvaluator.TRUE;
@@ -20,10 +20,10 @@ import java.util.Map;
  */
 public class YDateVariableSet implements AbstractVariableSet<Integer>
 {
-        YDate m_ydate;
+        MYDate m_ydate;
         YDatePreferences.DiasporaType m_diaspora;
         static private interface LambdaQuery {
-            int get(YDate ydate, YDatePreferences.DiasporaType diaspora);
+            int get(MYDate ydate, YDatePreferences.DiasporaType diaspora);
         }
         public static final int M_ID_TISHREI = 0;
         public static final int M_ID_CHESHVAN = 1;
@@ -61,47 +61,47 @@ public class YDateVariableSet implements AbstractVariableSet<Integer>
             lambdas = new HashMap<>();
             lambdas.put("dsb", ((ydate, diaspora) ->
             {
-                return ydate.hd.daysSinceBeginning();
+                return ydate.hebrewDate().daysSinceBeginning();
             }));
             lambdas.put("weekday", ((ydate, diaspora) ->
             {
-                return ydate.hd.dayInWeek();
+                return ydate.hebrewDate().dayInWeek();
             }));
             lambdas.put("month_id", ((ydate, diaspora) ->
             {
-                return ydate.hd.monthID();
+                return ydate.hebrewDate().monthID();
             }));
             lambdas.put("day_in_month", ((ydate, diaspora) ->
             {
-                return ydate.hd.dayInMonth();
+                return ydate.hebrewDate().dayInMonth();
             }));
             lambdas.put("day_in_year", ((ydate, diaspora) ->
             {
-                return ydate.hd.dayInYear();
+                return ydate.hebrewDate().dayInYear();
             }));
             lambdas.put("year", ((ydate, diaspora) ->
             {
-                return ydate.hd.year();
+                return ydate.hebrewDate().year();
             }));
             lambdas.put("shabbaton", ((ydate, diaspora) ->
             {
-                return ydate.shabbaton(diaspora)?TRUE:FALSE; //shabbat or yom-tov
+                return ydate.hebrewDate().shabbaton(diaspora)?TRUE:FALSE; //shabbat or yom-tov
             }));
             LambdaQuery rosh_chodesh=((ydate, diaspora) ->
             {
-                return ydate.hd.roshChodesh()?TRUE:FALSE;
+                return ydate.hebrewDate().roshChodesh()?TRUE:FALSE;
             });
             lambdas.put("rosh_chodesh", rosh_chodesh);
             lambdas.put("rosh_hodesh", rosh_chodesh);
             LambdaQuery chanukkah=((ydate, diaspora) ->
             {
-                return (ydate.hd.dayOfChanukkah()>0)?TRUE:FALSE;
+                return (ydate.hebrewDate().dayOfChanukkah()>0)?TRUE:FALSE;
             });
             lambdas.put("chanukkah", chanukkah);
             lambdas.put("hanukkah", chanukkah);
         }
 
-        public YDateVariableSet(YDate ydate,YDatePreferences.DiasporaType diaspora)
+        public YDateVariableSet(MYDate ydate,YDatePreferences.DiasporaType diaspora)
         {
             m_ydate=ydate;
             m_diaspora=diaspora;

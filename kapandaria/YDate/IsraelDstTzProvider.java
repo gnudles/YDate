@@ -18,7 +18,7 @@ package kapandaria.YDate;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
-import kapandaria.YDate.YDate.*;
+
 
 /*
 
@@ -123,8 +123,8 @@ public class IsraelDstTzProvider implements TimeZoneProvider
     static public float GetDSTAtIL(Date d)//d in UTC.
     {
 
-        YDate _yd = YDate.createFrom(d);
-        if (_yd.gd.year() < 2005)
+        MYDate _yd = MYDate.createFrom(d);
+        if (_yd.gregorianDate().year() < 2005)
         {
             final int BC=0;
             final int AD=1;
@@ -141,29 +141,29 @@ public class IsraelDstTzProvider implements TimeZoneProvider
                     )/1000L)/3600.0f;
         }
 
-        if (_yd.gd.year() != year)
+        if (_yd.gregorianDate().year() != year)
         {
-            year = _yd.gd.year();
+            year = _yd.gregorianDate().year();
 
-            if (_yd.gd.year() < 2013)
+            if (_yd.gregorianDate().year() < 2013)
             {
-                int diy = GregorianDate.calculateDayInYear(GregorianDate.isLeap(_yd.gd.year()), 4, 1);
-                int lastfriday = YDate.getPrevious(YDate.FRIDAY, diy + _yd.gd.yearFirstDay());
-                summer_beginning = YDate.toDate(lastfriday, 0);
-                _yd.setByDays(lastfriday + 200);
+                int diy = GregorianDate.calculateDayInYear(GregorianDate.isLeap(_yd.gregorianDate().year()), 4, 1);
+                int lastfriday = ADate.getPrevious(ADate.FRIDAY, diy + _yd.gregorianDate().yearFirstDay());
+                summer_beginning = ADate.toDate(lastfriday, 0);
+                _yd.hebrewDate().setByGDN(lastfriday + 200);
 
-                diy = JewishDate.calculateDayInYearByMonthId(_yd.hd.yearLength(), JewishDate.M_ID_TISHREI, 9);
-                int lastsunday = YDate.getPrevious(YDate.SUNDAY, diy + _yd.hd.yearFirstDay());
-                summer_end = YDate.toDate(lastsunday - 1, 23);
+                diy = JewishDate.calculateDayInYearByMonthId(_yd.hebrewDate().yearLength(), JewishDate.M_ID_TISHREI, 9);
+                int lastsunday = ADate.getPrevious(ADate.SUNDAY, diy + _yd.hebrewDate().yearFirstDay());
+                summer_end = ADate.toDate(lastsunday - 1, 23);
             }
             else
             {
-                int diy = GregorianDate.calculateDayInYear(GregorianDate.isLeap(_yd.gd.year()), 3, 31);
-                int lastsunday = YDate.getPrevious(YDate.SUNDAY, diy + _yd.gd.yearFirstDay());
-                summer_beginning = YDate.toDate(lastsunday - 2, 0);//friday -dst changes at 2:00AM in localtime wich is 00:00AM at UTC.
-                diy = GregorianDate.calculateDayInYear(GregorianDate.isLeap(_yd.gd.year()), 10, 31);
-                lastsunday = YDate.getPrevious(YDate.SUNDAY, diy + _yd.gd.yearFirstDay());
-                summer_end = YDate.toDate(lastsunday - 1, 23); //dst changes at 2:00AM in localtime wich is 23:00PM at UTC.
+                int diy = GregorianDate.calculateDayInYear(GregorianDate.isLeap(_yd.gregorianDate().year()), 3, 31);
+                int lastsunday = ADate.getPrevious(ADate.SUNDAY, diy + _yd.gregorianDate().yearFirstDay());
+                summer_beginning = ADate.toDate(lastsunday - 2, 0);//friday -dst changes at 2:00AM in localtime wich is 00:00AM at UTC.
+                diy = GregorianDate.calculateDayInYear(GregorianDate.isLeap(_yd.gregorianDate().year()), 10, 31);
+                lastsunday = ADate.getPrevious(ADate.SUNDAY, diy + _yd.gregorianDate().yearFirstDay());
+                summer_end = ADate.toDate(lastsunday - 1, 23); //dst changes at 2:00AM in localtime wich is 23:00PM at UTC.
             }
         }
 

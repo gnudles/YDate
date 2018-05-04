@@ -29,7 +29,7 @@ import kapandaria.GP.EventHandler;
 
 public class EventsMaintainer {
 
-    YDate m_YDate;
+    JewishDate m_hd;
     private boolean m_diaspora;
     private YDateAnnual events_previous=null;
     private YDateAnnual events_current=null;
@@ -43,11 +43,11 @@ public class EventsMaintainer {
             updateEvents();
         }
     };
-    public EventsMaintainer(YDate ydate, boolean diaspora)
+    public EventsMaintainer(JewishDate hd, boolean diaspora)
     {
-        m_YDate = ydate;
+        m_hd = hd;
         m_diaspora = diaspora;
-        m_YDate.registerOnDateChanged(dateChangedListener);
+        m_hd.registerOnDateChanged(dateChangedListener);
         setMaintainEvents();
     }
     public EventHandler.Listener dateListener()
@@ -76,22 +76,22 @@ public class EventsMaintainer {
         cache.put(hd_year,new SoftReference<>(annual));
         return annual;
     }
-    public void setMaintainEvents()
+    public final void setMaintainEvents()
     {
         if (events_current==null)
         {
-            events_current=getAnnualFromCache(m_YDate.hd.year(),m_YDate.hd.yearLength(),m_YDate.hd.yearFirstDay(),m_diaspora);
+            events_current=getAnnualFromCache(m_hd.year(),m_hd.yearLength(),m_hd.yearFirstDay(),m_diaspora);
 
-            events_next=getAnnualFromCache(m_YDate.hd.year()+1, YDate.JewishDate.calculateYearLength(m_YDate.hd.year()+1),m_YDate.hd.yearFirstDay()+m_YDate.hd.yearLength(),m_diaspora);
+            events_next=getAnnualFromCache(m_hd.year()+1, JewishDate.calculateYearLength(m_hd.year()+1),m_hd.yearFirstDay()+m_hd.yearLength(),m_diaspora);
 
-            events_previous=getAnnualFromCache(m_YDate.hd.year()-1, YDate.JewishDate.calculateYearLength(m_YDate.hd.year()-1), YDate.JewishDate.calculateYearFirstDay(m_YDate.hd.year()-1),m_diaspora);
+            events_previous=getAnnualFromCache(m_hd.year()-1, JewishDate.calculateYearLength(m_hd.year()-1), JewishDate.calculateYearFirstDay(m_hd.year()-1),m_diaspora);
         }
     }
     public YDateAnnual yearEvents(){ return events_current;}
 
     public byte getEvent()
     {
-        return getEvent(m_YDate.hd.dayInYear());
+        return getEvent(m_hd.dayInYear());
     }
     public byte getEvent(int day_in_year)
     {
@@ -109,7 +109,7 @@ public class EventsMaintainer {
     {
         if (events_current!=null)
         {
-            if (events_current.year()!=m_YDate.hd.year())
+            if (events_current.year()!=m_hd.year())
             {
                 events_current=null;
                 setMaintainEvents();

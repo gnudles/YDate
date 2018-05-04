@@ -5,7 +5,7 @@
  */
 package kapandaria.YDateQuery;
 
-import kapandaria.YDate.YDate;
+
 import com.fathzer.soft.javaluator.AbstractEvaluator;
 import com.fathzer.soft.javaluator.BracketPair;
 import com.fathzer.soft.javaluator.Constant;

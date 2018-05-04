@@ -14,7 +14,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 package kapandaria.YDate;
-import kapandaria.YDate.YDate.JewishDate;
+
 import java.util.Arrays;
 public class YDateAnnual
 {
@@ -328,13 +328,13 @@ public class YDateAnnual
         //Holocaust day
         if (year >= 5718)//1958
         {
-            int day_in_year = YDate.JewishDate.calculateDayInYearByMonthId(year_length, JewishDate.M_ID_NISAN, 27);
+            int day_in_year = JewishDate.calculateDayInYearByMonthId(year_length, JewishDate.M_ID_NISAN, 27);
             int dayweek = (day_in_year + year_first_day) % 7;
-            if (dayweek == YDate.FRIDAY)//friday
+            if (dayweek == ADate.FRIDAY)//friday
             {
                 day_in_year--;
             }
-            else if (dayweek == YDate.SUNDAY)//sunday
+            else if (dayweek == ADate.SUNDAY)//sunday
             {
 
                 day_in_year++;
@@ -344,20 +344,20 @@ public class YDateAnnual
         //Yom Azma'ut and Yom HaZikaron
         if (year >= 5708)//1948
         {
-            int day_in_year = YDate.JewishDate.calculateDayInYearByMonthId(year_length, JewishDate.M_ID_IYAR, 5);
+            int day_in_year = JewishDate.calculateDayInYearByMonthId(year_length, JewishDate.M_ID_IYAR, 5);
             int dayweek = (day_in_year + year_first_day) % 7;
 
-            if (dayweek == YDate.SATURDAY)//on saturday
+            if (dayweek == ADate.SATURDAY)//on saturday
             {
                 day_in_year -= 2;
 
             }
-            else if (dayweek == YDate.FRIDAY)//on friday
+            else if (dayweek == ADate.FRIDAY)//on friday
             {
                 day_in_year -= 1;
 
             }
-            else if (dayweek == YDate.MONDAY && year >= 5764)//on monday (2004) then Yom HaZikaron is on sunday, and that's no good...
+            else if (dayweek == ADate.MONDAY && year >= 5764)//on monday (2004) then Yom HaZikaron is on sunday, and that's no good...
             {
                 day_in_year += 1;
 
@@ -368,21 +368,21 @@ public class YDateAnnual
         //Jerusalem day
         if (year >= 5728)//1968
 	{
-            int day_in_year = YDate.JewishDate.calculateDayInYearByMonthId(year_length, JewishDate.M_ID_IYAR, 28);
+            int day_in_year = JewishDate.calculateDayInYearByMonthId(year_length, JewishDate.M_ID_IYAR, 28);
             year_events[day_in_year] = 48;
 	}
         //Family day
         if (year >= 5733)//1973
 	{
-            int day_in_year = YDate.JewishDate.calculateDayInYearByMonthId(year_length, JewishDate.M_ID_SHEVAT, 30);
+            int day_in_year = JewishDate.calculateDayInYearByMonthId(year_length, JewishDate.M_ID_SHEVAT, 30);
             year_events[day_in_year] = 49;
 	}
         //Rabin's Day   
         if (year >= 5758)//cheshvan 1997
         {
-            int day_in_year = YDate.JewishDate.calculateDayInYearByMonthId(year_length, JewishDate.M_ID_CHESHVAN, 12);
+            int day_in_year = JewishDate.calculateDayInYearByMonthId(year_length, JewishDate.M_ID_CHESHVAN, 12);
             int dayweek = (day_in_year + year_first_day) % 7;
-            if (dayweek == YDate.FRIDAY)
+            if (dayweek == ADate.FRIDAY)
             {
                 day_in_year--;
             }
@@ -472,7 +472,7 @@ public class YDateAnnual
             {
                 if (evdb[ev][IDX_JMP] != 0)// dhia
                 {
-                    if ((year_first_day + diy) % 7 == YDate.SATURDAY)
+                    if ((year_first_day + diy) % 7 == ADate.SATURDAY)
                     {
                         diy += evdb[ev][IDX_JMP];
                         if (dhia!=null)

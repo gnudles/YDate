@@ -15,6 +15,9 @@
  */
 package kapandaria.YDate;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 import kapandaria.GP.EventHandler;
 
 
@@ -46,6 +49,7 @@ public abstract class ADate
     
     private DateSyncGroup m_syncGroup;
     private final EventHandler m_dateChanged = new EventHandler();
+    private boolean m_muteTriggers = false;
     /**
      * set the date object by GDN.
      * @param gdn
@@ -58,7 +62,7 @@ public abstract class ADate
     /**
      * Genesis Day Number is an ordinal day count from the estimated genesis.
      * it is equivalent to days since the beginning.
-     * day 0 is the estimated sunday of genesis.
+     * day 0 is the estimated sunday of Genesis.
      * @return the Genesis Day Number of the current date.
      */
     public abstract int GDN();
@@ -91,15 +95,46 @@ public abstract class ADate
      * Method to be called on each change, in order to update the sync group.
      * The state might change again if clipping occurs. 
      * If there is no sync group, clipping will be still active.
-     * @return true if no clipping occurs and the date is valid. false otherwise.
+     * @return true if no clipping occured and the date is valid. false otherwise.
      */
     protected boolean stateChanged()
     {
-        m_dateChanged.trigger(this);
-        if (m_syncGroup!=null)
-            return m_syncGroup.syncBy(this);
-        return !clip();
+        boolean inBounds = checkBounds(GDN());
+        if (!m_muteTriggers)
+        {
+            if (m_syncGroup!=null)
+                return m_syncGroup.syncBy(this);
+            else
+            {
+                
+                if (!inBounds)
+                {
+                    muteTriggers();
+                    clip();
+                    unmuteTriggers();
+                }
+                triggerEvents();
+                
+            }
+        }
+        return inBounds;
     }
+    
+    protected void muteTriggers()
+    {
+        m_muteTriggers = true;
+    }
+    
+    protected void unmuteTriggers()
+    {
+        m_muteTriggers = false;
+    }
+    
+    public void triggerEvents()
+    {
+        m_dateChanged.trigger(this);
+    }
+    
     public void setSyncGroup(DateSyncGroup syncGroup)
     {
         m_syncGroup = syncGroup;
@@ -142,5 +177,33 @@ public abstract class ADate
 
     public static int getPrevious(int diw, int days) {
         return getNext(diw, days - 6);
+    }
+    
+    public static Date toDate(int days, float hour)//hour in utc
+    {
+        long millis = (long) (days - ADate.EPOCH_DAY) * 3600L * 24 * 1000L;
+        millis += (hour * 3600L * 1000L);
+        return new Date(millis);
+    }
+
+    public static int JdToDays(double jd)//hour in utc
+    {
+        return (int) (jd + 0.5001 - ADate.JULIAN_DAY_OFFSET);
+    }
+    public static double DaysToJd(int days) {
+            return days + ADate.JULIAN_DAY_OFFSET - 0.5;
+        }
+
+    public static String getTimeString(Date d, TimeZone tz, boolean seconds) {
+        Calendar cal = Calendar.getInstance(tz);
+        cal.setTime(d);
+
+        int hour = cal.get(Calendar.HOUR_OF_DAY);
+        int min = cal.get(Calendar.MINUTE);
+        int sec = cal.get(Calendar.SECOND);
+        if (seconds) {
+            return Format.TimeString(hour, min, sec);
+        }
+        return Format.TimeString(hour, min);
     }
 }

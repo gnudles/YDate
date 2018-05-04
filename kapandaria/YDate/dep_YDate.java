@@ -25,7 +25,7 @@ import kapandaria.GP.EventHandler;
  * @author Orr Dvori &lt;dvoreader@gmail.com&gt;
  * @version 4.0.5
  */
-public class YDate {
+public class dep_YDate {
 
     /**
      * The day of the unix epoch (Jan. 1 1970). It measured by the "beginning
@@ -701,7 +701,7 @@ public class YDate {
 
         public int NumberOfShabbats() {
             int year_diw = year_first_day % 7;
-            int diy = YDate.getNext(YDate.SATURDAY, year_diw) - year_diw;
+            int diy = dep_YDate.getNext(dep_YDate.SATURDAY, year_diw) - year_diw;
             return (year_length - (diy) + 6) / 7;
         }
 
@@ -961,7 +961,7 @@ public class YDate {
         public int taanitBetHehBetForCheshvan() {
             /* 1 in tishrey is day 0. tishrey has 30 days. so 30 in tishrey is day 29. and 1 cheshvan is day 30.
              */
-            return YDate.getNext(YDate.SATURDAY, year_first_day + 31);
+            return dep_YDate.getNext(dep_YDate.SATURDAY, year_first_day + 31);
         }
 
         /**
@@ -972,7 +972,7 @@ public class YDate {
          * monday.
          */
         public int taanitBetHehBetForIyar() {
-            return YDate.getNext(YDate.SATURDAY, monthFirstDay(M_ID_IYAR) + 1);//+2 to get first monday, +5 to get thursday, and +9 to get the last monday.
+            return dep_YDate.getNext(dep_YDate.SATURDAY, monthFirstDay(M_ID_IYAR) + 1);//+2 to get first monday, +5 to get thursday, and +9 to get the last monday.
         }
 
         public static final int[][] possibleMonthDay = {
@@ -1138,7 +1138,7 @@ public class YDate {
 
         public int dayOfChanukkah() {
             int diy = dayInYear();
-            int chnkday = YDate.JewishDate.calculateDayInYearByMonthId(year_length, M_ID_KISLEV, 25);
+            int chnkday = dep_YDate.JewishDate.calculateDayInYearByMonthId(year_length, M_ID_KISLEV, 25);
             return (diy >= chnkday && diy < chnkday + 8) ? diy - chnkday + 1 : -1;
         }
 
@@ -1151,7 +1151,7 @@ public class YDate {
          * @return the day in year of the nine av fast day
          */
         public int nineAvDayInYear() {
-            int nine_av = YDate.JewishDate.calculateDayInYearByMonthId(year_length, M_ID_AV, 9); // 9 in Av.
+            int nine_av = dep_YDate.JewishDate.calculateDayInYearByMonthId(year_length, M_ID_AV, 9); // 9 in Av.
             if ((nine_av + year_first_day) % 7 == SATURDAY) {
                 ++nine_av;
             }
@@ -1824,7 +1824,7 @@ public class YDate {
     private static final byte INIT_JD_MID = 1;// by month id
     private static final byte INIT_GD = 2;
 
-    private YDate(short year, byte mon, byte day, byte init) {
+    private dep_YDate(short year, byte mon, byte day, byte init) {
         switch (init) {
             case INIT_JD:
                 hd = new JewishDate(year, mon, day);
@@ -1839,56 +1839,56 @@ public class YDate {
         }
     }
 
-    private YDate(JewishDate hd, GregorianDate gd) {
+    private dep_YDate(JewishDate hd, GregorianDate gd) {
         this.gd = new GregorianDate(gd);
         this.hd = new JewishDate(hd);
     }
 
-    private YDate(int days) {
+    private dep_YDate(int days) {
         gd = new GregorianDate(days);
         hd = new JewishDate(days);
     }
 
-    public static YDate createFrom(YDate other) {
-        return new YDate(other.hd, other.gd);
+    public static dep_YDate createFrom(dep_YDate other) {
+        return new dep_YDate(other.hd, other.gd);
     }
 
-    public static YDate createFrom(int days) {
-        return new YDate(days);
+    public static dep_YDate createFrom(int days) {
+        return new dep_YDate(days);
     }
 
-    public static YDate createFrom(Date d, Calendar cal) {
+    public static dep_YDate createFrom(Date d, Calendar cal) {
         cal.setTime(d);
         int gd_day = cal.get(Calendar.DAY_OF_MONTH);
         int gd_mon = cal.get(Calendar.MONTH) + 1;
         int gd_year = cal.get(Calendar.YEAR);
         //long t = d.getTime(); //milliseconds since 1.1.70 00:00 GMT+
-        return new YDate((short) gd_year, (byte) gd_mon, (byte) gd_day, INIT_GD);
+        return new dep_YDate((short) gd_year, (byte) gd_mon, (byte) gd_day, INIT_GD);
     }
 
-    public static YDate createFrom(Date d, TimeZone tz) {
+    public static dep_YDate createFrom(Date d, TimeZone tz) {
         Calendar cal = Calendar.getInstance(tz);
         return createFrom(d, cal);
     }
 
-    public static YDate createFrom(Date d) {
+    public static dep_YDate createFrom(Date d) {
         Calendar cal = Calendar.getInstance();
         return createFrom(d, cal);
     }
 
-    public static YDate createFromJewishMonthId(int year, int month_id, int day) {
-        return new YDate((short) year, (byte) month_id, (byte) day, INIT_JD_MID);
+    public static dep_YDate createFromJewishMonthId(int year, int month_id, int day) {
+        return new dep_YDate((short) year, (byte) month_id, (byte) day, INIT_JD_MID);
     }
 
-    public static YDate createFromJewish(int year, int month, int day) {
-        return new YDate((short) year, (byte) month, (byte) day, INIT_JD);
+    public static dep_YDate createFromJewish(int year, int month, int day) {
+        return new dep_YDate((short) year, (byte) month, (byte) day, INIT_JD);
     }
 
-    public static YDate createFromGregorian(int year, int month, int day) {
-        return new YDate((short) year, (byte) month, (byte) day, INIT_GD);
+    public static dep_YDate createFromGregorian(int year, int month, int day) {
+        return new dep_YDate((short) year, (byte) month, (byte) day, INIT_GD);
     }
 
-    public static YDate getNow() {
+    public static dep_YDate getNow() {
         Date d = new Date();
         return createFrom(d);
     }

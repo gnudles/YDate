@@ -32,16 +32,28 @@ public class JewishTimes
     {
         SunTimeEngine.RiseSet res;
         res = engine.calculateSunRiseSet(90.833,SunTimeEngine.RiseSetCalc.RISE_SET);
+        if(Double.isNaN(res.rise) || Double.isNaN(res.set))
+            System.err.println("rise or set (0.833) for specific location is invalid.");
         risemin= res.rise;
         setmin=res.set;
         noonmin= (risemin+setmin)/2;
         res = engine.calculateSunRiseSet(106.01,SunTimeEngine.RiseSetCalc.RISE_SET);
+        if(Double.isNaN(res.rise) || Double.isNaN(res.set))
+            System.err.println("rise or set (16.01) for specific location is invalid.");
         risemin_16=res.rise;
         setmin_16=res.set;
         setmin_8=engine.calculateSunRiseSet(98.5,SunTimeEngine.RiseSetCalc.SET_ONLY).set;
+        if(Double.isNaN(setmin_8))
+            System.err.println("set (8.5) for specific location is invalid.");
         setmin_6=engine.calculateSunRiseSet(95.95,SunTimeEngine.RiseSetCalc.SET_ONLY).set;
+        if(Double.isNaN(setmin_6))
+            System.err.println("set (5.95) for specific location is invalid.");
         risemin_11=engine.calculateSunRiseSet(101.5,SunTimeEngine.RiseSetCalc.RISE_ONLY).rise;
+        if(Double.isNaN(risemin_11))
+            System.err.println("rise (11.5) for specific location is invalid.");
         risemin_19=engine.calculateSunRiseSet(109.75,SunTimeEngine.RiseSetCalc.RISE_ONLY).rise;
+        if(Double.isNaN(risemin_19))
+            System.err.println("rise (19.75) for specific location is invalid.");
     }
     public double getNoon()
     {

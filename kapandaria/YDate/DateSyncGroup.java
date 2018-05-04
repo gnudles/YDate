@@ -92,9 +92,16 @@ public class DateSyncGroup
         boolean clipped = (gdn!=dateSync.GDN());
         for (ADate date : m_dates) {
             if (clipped || date != dateSync) //we will skip updating the sync object.
+            {
+                date.muteTriggers();
                 date.setByGDN(gdn);
+                date.unmuteTriggers();
+            }
         }
         notifyDateChanged(dateSync);
+        for (ADate date : m_dates) {
+            date.triggerEvents();
+        }
         return !clipped;
     }
 }
