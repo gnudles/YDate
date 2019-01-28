@@ -16,6 +16,8 @@
 package kapandaria.YDate;
 
 
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.TimeZone;
 
 public abstract class YDateLanguage
@@ -70,7 +72,15 @@ public abstract class YDateLanguage
         return language;
     }
     public static YDateLanguage getLanguageEngine(Language language){
+        /*Locale locale = new Locale("en","US");
+        ResourceBundle lb = ResourceBundle.getBundle("kapandaria.YDate.DateLang",locale);*/
         return LanguageEngine[language.ordinal()];
+
+        
+        /*
+        
+        Reso
+        */
     }
 
     static YDateLanguage[] LanguageEngine={

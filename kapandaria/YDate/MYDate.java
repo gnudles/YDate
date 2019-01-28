@@ -46,7 +46,7 @@ public class MYDate
         m_gd = new GregorianDate();
         m_syncGroup.add(m_hd);
         m_syncGroup.add(m_gd);
-        //m_eventsMaintainerErezHaKodesh = new EventsMaintainer(m_hd, true);
+        //m_eventsMaintainerErezHaKodesh = new EventsMaintainer(m_hd, false);
         //m_eventsMaintainerDiaspora = new EventsMaintainer(m_hd, true);
     }
         public enum STEP_TYPE {

@@ -646,7 +646,7 @@ public class TorahReading
         return ADate.getPrevious(ADate.SATURDAY, year_first_day - 1);
     }
     /**
-     * UNTESTED. should give you day in "beginning count" for specific sidra.
+     * UNTESTED. should give you day in "beginning count" (GDN) for specific sidra.
      * Vaelech might be twice in year or just once or zero. if there are two shabbats Vayelech,
      * it gives the one in the end of the year.
      * there are two methods to get the desired Vayelech shabbat.
@@ -663,7 +663,7 @@ public class TorahReading
         if (sidra==54)
         {
             // Simchat torah is in Tishrey 22 in Israel or 23 in Galuyot.
-            // but while day in month starts from 1, our day in year count starts from 0.
+            // but while day in month starts from 1, our "day in year" count starts from 0.
             return year_first_day + (diaspora ? 22 : 21); 
         }
         int sat_num = generateSidraToShabbatArray(year_length,year_first_day,diaspora)[sidra-1];
@@ -762,20 +762,46 @@ public class TorahReading
             m_paragraphs =new LinkedList<>();
             m_paragraphs.add(p);
         }
-        public void append(BibleParagraph p)
+        public BibleText(BibleText obj)
+        {
+            m_name = obj.m_name;
+            m_paragraphs = new LinkedList<>(obj.m_paragraphs);
+        }
+        public BibleText append(BibleParagraph p)
         {
             m_paragraphs.add(p);
+            return this;
         }
-        public void prepend(BibleParagraph p)
+        public BibleText prepend(BibleParagraph p)
         {
             m_paragraphs.add(0,p);
+            return this;
         }
         
     }
-    
-    BibleText getHaftara(YDatePreferences.HaftaraMinhag minhag)
+    BibleText gimel_depuranuta[]={
+    (new BibleText("דברי ירמיהו")).append(new BibleParagraph(BibleIndex.BibleIndex(BibleIndex.BibleBook.Yirmiyah, 1, 1 ),
+            BibleIndex.BibleIndex(BibleIndex.BibleBook.Yirmiyah, 2, 3 ))),
+    new BibleText("שמעו דבר ה").append(new BibleParagraph(BibleIndex.BibleIndex(BibleIndex.BibleBook.Yirmiyah, 2, 4 ),
+            BibleIndex.BibleIndex(BibleIndex.BibleBook.Yirmiyah, 2, 28 ))),
+    new BibleText("חזון ישעיהו").append(new BibleParagraph(BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 1, 1 ),
+            BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 1, 27 )))
+};
+    BibleText gimel_depuranuta_chabad[]=
+    {
+        gimel_depuranuta[0],
+        new BibleText(gimel_depuranuta[1]),
+        gimel_depuranuta[2]
+    };
+    BibleText getHaftaraShaharit(YDatePreferences.HaftaraMinhag minhag)
     {
         throw new UnsupportedOperationException("Not supported yet.");
+        
+    }
+    BibleText getHaftaraMincha(YDatePreferences.HaftaraMinhag minhag)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+        
     }
     
 }
