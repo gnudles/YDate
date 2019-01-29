@@ -400,6 +400,14 @@ public class GregorianDate extends ADMYDate
     }
 
     public static boolean isLeap(int year) {
+    /* 
+    trick that work with unsigned 32 bit integers:
+       uint32_t z=(0xc28f5c29*year)&0xf800000f;
+       // 0xc28f5c29 is the multiplicative inverse of 25.
+       // divide by 25. the modulo of 25 will be encoded in the 5 msb, and modulo of 16 in the low 4 bits (because 25*16 = 40)
+       // z==0 checks if year modulo 400 is zero. z>=0x08000000 checks is year modulo 25 is not zero.
+       return (z==0) || ((year&3)==0 && z>=0x08000000);
+    */
        return ( (year % 400) == 0)||( (year % 4) == 0 && (year % 100) != 0);
     }
 
