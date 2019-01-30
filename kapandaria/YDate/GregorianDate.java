@@ -237,19 +237,20 @@ public class GregorianDate extends ADMYDate
            int gd_year;
            int gd_year_first_day = days;
 
-           days -= DAYS_OF_1600;
-           gd_year = 1600 + 400 * ((days) / DAYS_IN_400);
-           days = days % DAYS_IN_400;
-           int h = (days * 4) / DAYS_IN_400;// what hundred are we? 0 1 2 3 ?
-           int not_h0 = (h + 3) / 4; //if h>0
-           gd_year += 100 * h;
+           days -= DAYS_OF_1600; //start calculation from a year thar divisible by 400.
+           gd_year = 1600 + 400 * ((days) / DAYS_IN_400); // now get to our 400 years level
+           days = days % DAYS_IN_400; // number of days since the beginning of current 400 years level.
+           int h = (days * 4) / DAYS_IN_400;// what hundred are we? 0 1 2 3 ? this consider leap years.
+           int not_h0 = (h > 0) ? 1 : 0; //if not the first hundred in four hundreds
+           gd_year += 100 * h; // advance the year to the current hundred
            days = days - HUNDRED_OFFSET[h];//get days after the currect century.
-           int y_in_h = ((days + not_h0) * 4) / DAYS_IN_4;// which year in this hundred?
-           gd_year += y_in_h;// add years in century.
-           int y_in_h_not0 = (y_in_h + 99) / 100;//if y_in_h > 0 (maybe I'd just write that condition)?
-           days = days - (y_in_h * DAYS_IN_4 + 3) / 4 + y_in_h_not0 * not_h0;//we subtract one day too much if we are not in the first year and not in the first hundred.
-           gd_year_first_day -= days;
-
+           int y_in_h = ((days + not_h0) * 4) / DAYS_IN_4;// which year in this hundred? of course considering leap years.
+           gd_year += y_in_h;// add years in century. now we finally found the specified year.
+           int y_in_h_not0 = (y_in_h > 0) ? 1 : 0;//if y_in_h > 0 ? if not the first year in the century.
+           days = days - (y_in_h * DAYS_IN_4 + 3) / 4 + (y_in_h_not0 & not_h0);//we subtracted one day too much if we are not in the first year and not in the first hundred.
+           //so we added it afterwards
+           
+           gd_year_first_day -= days;// get the first day of the year in GDN.
            this.m_year = gd_year;
            this.m_dayInYear = days;
            setMonthDay(days);
