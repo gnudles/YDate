@@ -85,6 +85,7 @@ public class YDateAnnual
     static final int A_EV_FAMILY_DAY = 49;
     static final int A_EV_ISAAC_RABIN_DAY = 50;
     static final int A_EV_TAANIT_GZEROT_408_409 = 51;
+    static final int A_EV_PURIM_MESHULASH = 52;// TODO: move this upward.
 
 
     
@@ -142,6 +143,7 @@ public class YDateAnnual
         "יום המשפחה",
         "יום הזכרון ליצחק רבין",//50
         "תענית ת\"ח ת\"ט",
+        "פורים משולש"
     };
 
     public static final short EV_NONE=0;
@@ -212,11 +214,12 @@ public class YDateAnnual
         EV_NATIONAL,
         EV_NATIONAL|EV_MEMORIAL,//50
         EV_TZOM|EV_MEMORIAL,//51
+        EV_MIRACLE,//PURIM MESHULASH
     };
 
 
     static final byte [][] event_db= 
-    {// month_id,day,array index,# of days,jump/dhia(if #_days==1)
+    {// month_id,day,array index,# of days,jump/dhia(if #_days==1). if dhia>=7 then dhia%7 is the only day of week possible
         {JewishDate.M_ID_TISHREI,1,A_EV_ROSH_HASHANA_A,2,1},//two days of rosh hashana
         {JewishDate.M_ID_TISHREI,3,A_EV_TZOM_GEDALIA,1,1},//zom gdalia, dhia
         {JewishDate.M_ID_TISHREI,9,A_EV_EREV_YOM_KIPPUR,2,1},//yom kippur
@@ -231,9 +234,11 @@ public class YDateAnnual
         {JewishDate.M_ID_SHEVAT,15,A_EV_FIFTEEN_SHVAT,1,0},//Tu B'Shvat
         {JewishDate.M_ID_ADAR,13,A_EV_TAANIT_ESTHER,1,-2},//taanit ester, dhia
         {JewishDate.M_ID_ADAR,14,A_EV_PURIM,2,1},//Purim+Shushan
+        {JewishDate.M_ID_ADAR,16,A_EV_PURIM_MESHULASH,1,7},//Purim Meshulash only on sunday
         {JewishDate.M_ID_ADAR_I,14,A_EV_PURIM_KATAN,2,0},//Purim katan - two days
         {JewishDate.M_ID_ADAR_II,13,A_EV_TAANIT_ESTHER,1,-2},//taanit ester, dhia
         {JewishDate.M_ID_ADAR_II,14,A_EV_PURIM,2,1},//Purim+Shushan
+        {JewishDate.M_ID_ADAR_II,16,A_EV_PURIM_MESHULASH,1,7},//Purim Meshulash only on sunday
         {JewishDate.M_ID_NISAN,14,A_EV_EREV_PESACH,2,1},//Erev Pesah+Pesah
         {JewishDate.M_ID_NISAN,16,A_EV_PESACH_HOL_HAMOED,5,0},//Hol Ha'moed Pesah
         {JewishDate.M_ID_NISAN,21,A_EV_SHVII_PESACH,1,0},//Shvi'i Pesah
@@ -470,18 +475,30 @@ public class YDateAnnual
             int diy = JewishDate.calculateDayInYearByMonthId(year_length, m_id, evdb[ev][IDX_DAY]);
             if (evdb[ev][IDX_LEN] == 1)
             {
+                boolean enable_event = true;
                 if (evdb[ev][IDX_JMP] != 0)// dhia
                 {
-                    if ((year_first_day + diy) % 7 == ADate.SATURDAY)
+                    if (evdb[ev][IDX_JMP] < 7)
                     {
-                        diy += evdb[ev][IDX_JMP];
-                        if (dhia!=null)
+                        if ((year_first_day + diy) % 7 == ADate.SATURDAY)
                         {
-                            ArrayReplace(dhia,(short)-1,(short)(diy|(evdb[ev][IDX_JMP]>0 ?LATE:PRECEDE)));
+                            diy += evdb[ev][IDX_JMP];
+                            if (dhia!=null)
+                            {
+                                ArrayReplace(dhia,(short)-1,(short)(diy|(evdb[ev][IDX_JMP]>0 ?LATE:PRECEDE)));
+                            }
+                        }
+                    }
+                    else if (evdb[ev][IDX_JMP] >= 7) //enable the date only
+                    {
+                        if(evdb[ev][IDX_JMP] % 7 != (year_first_day + diy) % 7)
+                        {
+                            enable_event = false;
                         }
                     }
                 }
-                year_events[diy] = evdb[ev][IDX_IDX];
+                if (enable_event)
+                    year_events[diy] = evdb[ev][IDX_IDX];
             }
             else
             {
