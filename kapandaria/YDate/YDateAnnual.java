@@ -256,12 +256,12 @@ public class YDateAnnual
     };
     static final byte [][] event_db_diaspora= 
     {// month_id,day,array index,# of days,jump/dhia(if #_days==1)
-        {JewishDate.M_ID_TISHREI,16,8,1,0},//sukkot II
-        {JewishDate.M_ID_TISHREI,22,11,1,0},//shmini azeret
-        {JewishDate.M_ID_TISHREI,23,12,1,0},//simhat_tora
-        {JewishDate.M_ID_NISAN,16,30,1,0},//Pesah II
-        {JewishDate.M_ID_NISAN,22,33,1,0},//Shmi'ni Pesah
-        {JewishDate.M_ID_SIVAN,7,38,1,0},//Shavu'ot II
+        {JewishDate.M_ID_TISHREI,16,A_EV_SDOG_SUKKOT,1,0},//sukkot II
+        {JewishDate.M_ID_TISHREI,22,A_EV_SHEMINI_ATZERET,1,0},//shmini azeret
+        {JewishDate.M_ID_TISHREI,23,A_EV_SIMCHAT_TORAH,1,0},//simhat_tora
+        {JewishDate.M_ID_NISAN,16,A_EV_SDOG_PESACH,1,0},//Pesah II
+        {JewishDate.M_ID_NISAN,22,A_EV_SHVII_SDOG_PESACH,1,0},//Shmi'ni Pesah
+        {JewishDate.M_ID_SIVAN,7,A_EV_SDOG_SHAVUOT,1,0},//Shavu'ot II
     };
 
     
@@ -344,7 +344,7 @@ public class YDateAnnual
 
                 day_in_year++;
             }
-            year_events[day_in_year] = 45;
+            year_events[day_in_year] = A_EV_HOLOCAUST_DAY;
         }
         //Yom Azma'ut and Yom HaZikaron
         if (year >= 5708)//1948
@@ -367,20 +367,20 @@ public class YDateAnnual
                 day_in_year += 1;
 
             }
-            year_events[day_in_year - 1] = 46;//Yom HaZikaron
-            year_events[day_in_year] = 47;//Yom Azma'ut
+            year_events[day_in_year - 1] = A_EV_MEMORIAL_DAY_FALLEN;//Yom HaZikaron
+            year_events[day_in_year] = A_EV_INDEPENDENTS_DAY;//Yom Azma'ut
         }
         //Jerusalem day
         if (year >= 5728)//1968
 	{
             int day_in_year = JewishDate.calculateDayInYearByMonthId(year_length, JewishDate.M_ID_IYAR, 28);
-            year_events[day_in_year] = 48;
+            year_events[day_in_year] = A_EV_JERUSALEMS_DAY;
 	}
         //Family day
         if (year >= 5733)//1973
 	{
             int day_in_year = JewishDate.calculateDayInYearByMonthId(year_length, JewishDate.M_ID_SHEVAT, 30);
-            year_events[day_in_year] = 49;
+            year_events[day_in_year] = A_EV_FAMILY_DAY;
 	}
         //Rabin's Day   
         if (year >= 5758)//cheshvan 1997
@@ -391,7 +391,7 @@ public class YDateAnnual
             {
                 day_in_year--;
             }
-            year_events[day_in_year] = 50;
+            year_events[day_in_year] = A_EV_ISAAC_RABIN_DAY;
         }
     }
     static final byte [][][] annual_events = new byte [2][JewishDate.N_YEAR_TYPES][];//[diaspora][year_type][day_in_year]
@@ -489,7 +489,7 @@ public class YDateAnnual
                             }
                         }
                     }
-                    else if (evdb[ev][IDX_JMP] >= 7) //enable the date only
+                    else if (evdb[ev][IDX_JMP] >= 7) //enable the date only if it falls on a certain day of week.
                     {
                         if(evdb[ev][IDX_JMP] % 7 != (year_first_day + diy) % 7)
                         {

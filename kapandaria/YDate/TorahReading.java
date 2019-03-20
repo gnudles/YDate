@@ -288,7 +288,7 @@ public class TorahReading
         return type;
     }
 
-    public static boolean GetMegilatEster(JewishDate h, boolean MukafHoma)
+    public static boolean GetMegilatEsther(JewishDate h, boolean MukafHoma)
     {
         int diy = h.dayInYear();
         int ydiw = h.yearFirstDay() % 7;
@@ -493,11 +493,13 @@ public class TorahReading
         return double_reading[jp];
     }
 /**
- * this method calculate all the parashot of a given year.
- * there are 14 possible year types, and for each one of the 14 we have different settings for diaspora.
- * the year can start in 4 out of 7 possible day in week (not in sunday, wednesday,friday). the year length might be one of the following: 353,354,355,383,384,385.
- * but some of the combinations are not possible so we don't have 24(6*4) combination, we only have 14.
- * the calculations of this method are cached for rapid access.
+ * This method calculate all the parashot of a given year.
+ * There are 14 possible year types, and for each one of the 14 we have different settings for diaspora.
+ * The year can start in *FOUR* out of seven possible day in week (not in sunday, wednesday,friday).
+ * The year length might be one of those *SIX* following: 353,354,355,383,384,385.
+ * But, some of the combinations are not possible so we actually don't have 24(6*4) combination, but only 14 year types.
+ * See ld_year_type for more information.
+ * the calculations of this method are cached for each of the 14 year types.
  * @param year_length
  * @param year_first_day
  * @param diaspora
