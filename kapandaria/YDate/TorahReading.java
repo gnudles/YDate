@@ -296,7 +296,7 @@ public class TorahReading
         int diw = (diy + ydiw) % 7;
         return  (  ((day_type & PURIM) != 0 && MukafHoma && diw == ADate.FRIDAY)//purim meshulash
             ||((day_type & PURIM) != 0 && (!MukafHoma))
-            ||((day_type & SHOSHAN_PURIM) != 0 && MukafHoma));
+            ||((day_type & SHOSHAN_PURIM) != 0 && MukafHoma && diw != ADate.SATURDAY));
     }
 
     public static String GetTorahReading(JewishDate h, boolean diaspora, boolean MukafHoma)
