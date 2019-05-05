@@ -826,7 +826,15 @@ public final class JewishDate extends ADMYDate
         }
         return omer;
     }
-
+    public String sfiratHaomerSfira( int count )
+    {
+        String [] sheva_sfirot={"חסד","גבורה","תפארת","נצח","הוד","יסוד","מלכות"};
+        if (count >=1 && count <=49)
+        {
+            return sheva_sfirot[(count-1)%7]+" שב"+ sheva_sfirot[(count-1)/7];
+        }
+        return "";
+    }
     public int MasechetAvotChapter(boolean AskenazTradition) {
         //TODO:
         throw new UnsupportedOperationException("Not supported yet.");
