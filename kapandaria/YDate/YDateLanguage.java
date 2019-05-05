@@ -15,13 +15,11 @@
  */
 package kapandaria.YDate;
 
-
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.TimeZone;
 
-public abstract class YDateLanguage
-{
+public class YDateLanguage {
 
     public enum Language {
         HEBREW,
@@ -37,107 +35,240 @@ public abstract class YDateLanguage
         ITALIAN,
         ENGLISH_ASKENAZ
     }
-    public static Language guessLanguageFromLocation(TimeZone tz)
-    {
+
+    public static Language guessLanguageFromLocation(TimeZone tz) {
         Language language;
-        if (tz.equals(TimeZone.getTimeZone("Asia/Jerusalem")))
-        {
-            language= Language.HEBREW;
-        }
-        else if (tz.equals(TimeZone.getTimeZone("Europe/Paris")))
-        {
-            language= Language.FRENCH;
-        }
-        else if (tz.equals(TimeZone.getTimeZone("Europe/Madrid")))
-        {
-            language= Language.SPANISH;
-        }
-        else
-        {
-            language= Language.ENGLISH;
+        if (tz.equals(TimeZone.getTimeZone("Asia/Jerusalem"))) {
+            language = Language.HEBREW;
+        } else if (tz.equals(TimeZone.getTimeZone("Europe/Paris"))) {
+            language = Language.FRENCH;
+        } else if (tz.equals(TimeZone.getTimeZone("Europe/Madrid"))) {
+            language = Language.SPANISH;
+        } else {
+            language = Language.ENGLISH;
         }
         return language;
     }
-    public static Language getLanguageFromCode(String code)
-    {
+
+    public static Language getLanguageFromCode(String code) {
         Language language = Language.ENGLISH;
-        if (code.toLowerCase().equals("en"))
-            language=Language.ENGLISH;
-        else if (code.toLowerCase().equals("he"))
-            language=Language.HEBREW;
-        else if (code.toLowerCase().equals("fr"))
-            language=Language.FRENCH;
-        else if (code.toLowerCase().equals("sp"))
-            language=Language.SPANISH;
+        if (code.toLowerCase().equals("en")) {
+            language = Language.ENGLISH;
+        } else if (code.toLowerCase().equals("he")) {
+            language = Language.HEBREW;
+        } else if (code.toLowerCase().equals("fr")) {
+            language = Language.FRENCH;
+        } else if (code.toLowerCase().equals("sp")) {
+            language = Language.SPANISH;
+        }
         return language;
     }
-    public static YDateLanguage getLanguageEngine(Language language){
-        /*Locale locale = new Locale("en","US");
-        ResourceBundle lb = ResourceBundle.getBundle("kapandaria.YDate.DateLang",locale);*/
+    ResourceBundle _rbundle;
+
+    private YDateLanguage(String lcl) {
+        Locale locale = new Locale(lcl);
+        _rbundle = ResourceBundle.getBundle("kapandaria.YDate.DateLang", locale);
+    }
+
+    public static YDateLanguage getLanguageEngine(Language language) {
+
         return LanguageEngine[language.ordinal()];
 
-        
-        /*
-        
-        Reso
-        */
     }
 
-    static YDateLanguage[] LanguageEngine={
-            new YDateLangHebrew(),
-            new YDateLangEnglish(),
-            null,
-            null,
-            new YDateLangFrench(),
-            null,
-            null,
-            null,
-            null,
-            null,
-            null
+    static YDateLanguage[] LanguageEngine = {
+        new YDateLanguage("he"),
+        new YDateLanguage("en"),
+        new YDateLanguage("yid"),
+        new YDateLanguage("sp"),
+        new YDateLanguage("fr"),
+        new YDateLanguage("ru"),
+        new YDateLanguage("gr"),
+        new YDateLanguage("pr"),
+        new YDateLanguage("ar"),
+        new YDateLanguage("arm"),
+        new YDateLanguage("it"),
+        new YDateLanguage("ena")
     };
 
-    public abstract String getWeekToken(int token);
-    public abstract String getSpecialShabbat(int token);
-    public abstract String getShortWeekToken(int token);
-    public abstract String getHebMonthToken(int token);
-    public abstract String getShortHebMonthToken(int token);
-    public abstract String getGregMonthToken(int token);
-    public abstract String getShortGregMonthToken(int token);
-    public abstract String getEventToken(int token);
-    public abstract String getZodiacToken(int token);
-    public abstract String getElementToken(int token);
-    public abstract String getStarToken(int token);
-    public abstract String getRejection(short rejected);
-    public abstract String getNumber(int num);
-    public abstract String FormatGregorianDate(int day,int month,int year);
-    public String FormatGregorianDate(int day,int month,int year, int week_day, String format)
-    {
-        //TODO..
-        return "";
+    /*static String[] LanguageStr={
+            "he",
+            "en",
+            "yid",
+            "sp",
+            "fr",
+            "ru",
+            "gr",
+            "pr",
+            "ar",
+            "arm",
+            "it",
+            "ena"
+    };*/
+    static final String[] WeekTokens = {"wd_sunday", "wd_monday", "wd_tuesday",
+        "wd_wednesday", "wd_thursday", "wd_friday", "wd_saturday"};
+    static final String[] HebMonthTokens = {"hm_tisheri", "hm_cheshvan", "hm_kislev",
+        "hm_tevet",
+        "hm_shevat",
+        "hm_adar",
+        "hm_adar1",
+        "hm_adar2",
+        "hm_nisan",
+        "hm_iyar",
+        "hm_sivan",
+        "hm_tammuz",
+        "hm_av",
+        "hm_elul"};
+    static final String[] GregMonthTokens
+            = {"gm_january",
+                "gm_february",
+                "gm_march",
+                "gm_april",
+                "gm_may",
+                "gm_june",
+                "gm_july",
+                "gm_august",
+                "gm_september",
+                "gm_october",
+                "gm_november",
+                "gm_december"};
+    static final String[] ShortGregMonthTokens
+            = {"Jan",
+                "Feb",
+                "Mar",
+                "Apr",
+                "May",
+                "Jun",
+                "Jul",
+                "Aug",
+                "Sep",
+                "Oct",
+                "Nov",
+                "Dec"};
+
+    public static final String[] zodiac_names
+            = {
+                "zdc_aries",
+                "zdc_taurus",
+                "zdc_gemini",
+                "zdc_cancer",
+                "zdc_leo",
+                "zdc_virgo",
+                "zdc_libra",
+                "zdc_scorpio",
+                "zdc_sagittarius",
+                "zdc_capricorn",
+                "zdc_aquarius",
+                "zdc_pisces"
+            };
+
+    public static final String[] four_elements_names
+            = {
+                "elmnt_fire",
+                "elmnt_earth",
+                "elmnt_wind",
+                "elmnt_water"
+            };
+    public static final String[] star_names
+            = {
+                "star_mercury", "star_moon", "star_saturn", "star_jupiter", "star_mars", "star_sun", "star_venus"
+            };
+    final static String[] special_shabbat
+            = {
+                "Shkalim",
+                "Zakhor",
+                "Parah",
+                "HaChodesh",
+                "HaGadol",
+                "Shira",
+                "Nachamu",
+                "Tshuva"
+            };
+
+    public String getWeekToken(int token) {
+        return _rbundle.getString(WeekTokens[token]);
     }
-    public abstract String FormatJewishDate(int day,int monthId,int year);
-            /**
-             * 
-             * @param day
-             * @param monthId
-             * @param year
-             * @param week_day day week in range 0..6
-             * @param event - event ID from YDateAnnual.
-             * @param format a string that contains _mn_ will be replaced with month name, 
-             * _smn_ short month name,
-             * _dw_ week day name
-             * _sdw_ short week day,
-             * _y_ year in numeric form
-             * _y2_ two digits year in numeric form
-             * _yhl_ year in hebrew letters
-             * _d_ day in month
-             * _dhl_ day in month hebrew letters
-             * _ev_ holiday or event.
-             * @return 
-             */
-    public String FormatJewishDate(int day,int monthId,int year, int week_day, int event, String format)
+
+    public String getShortWeekToken(int token){
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public String getHebMonthToken(int token) {
+        return _rbundle.getString(HebMonthTokens[token]);
+    }
+
+    public String getShortHebMonthToken(int token){
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public String getGregMonthToken(int token) {
+        return _rbundle.getString(GregMonthTokens[token]);
+    }
+
+    public String getShortGregMonthToken(int token){
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public String getEventToken(int token){
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public String getZodiacToken(int token) {
+        return _rbundle.getString(zodiac_names[token]);
+    }
+
+    public String getElementToken(int token)
     {
+        return _rbundle.getString(four_elements_names[token]);
+    }
+
+    public String getStarToken(int token)
+    {
+        return _rbundle.getString(star_names[token]);
+    }
+
+    public  String getRejection(short rejected){
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public  String getSpecialShabbat(int token){
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public  String getNumber(int num){
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public  String FormatGregorianDate(int day, int month, int year){
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public  String FormatGregorianDate(int day, int month, int year, int week_day, String format){
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public String FormatJewishDate(int day, int monthId, int year){
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    public String FormatPeriod(int monthId){
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }//tkufa
+
+    /**
+     *
+     * @param day
+     * @param monthId
+     * @param year
+     * @param week_day day week in range 0..6
+     * @param event - event ID from YDateAnnual.
+     * @param format a string that contains _mn_ will be replaced with month
+     * name, _smn_ short month name, _dw_ week day name _sdw_ short week day,
+     * _y_ year in numeric form _y2_ two digits year in numeric form _yhl_ year
+     * in hebrew letters _d_ day in month _dhl_ day in month hebrew letters _ev_
+     * holiday or event.
+     * @return
+     */
+    public String FormatJewishDate(int day, int monthId, int year, int week_day, int event, String format) {
         format = format.replaceAll("_mn_", getHebMonthToken(monthId));
         format = format.replaceAll("_smn_", getShortHebMonthToken(monthId));
         format = format.replaceAll("_dw_", getWeekToken(week_day));
@@ -150,5 +281,6 @@ public abstract class YDateLanguage
         format = format.replaceAll("_ev_", getEventToken(event));
         return format;
     }
-    public abstract String FormatPeriod(int monthId);//tkufa
+
+    
 }
