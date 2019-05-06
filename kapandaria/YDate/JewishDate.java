@@ -25,19 +25,20 @@ import java.util.TimeZone;
  */
 public final class JewishDate extends ADMYDate
 {
-    static final int DAYS_OF_4119 = 1504084;
-    static final int DAYS_OF_TKUFA_CYCLE_4117 = 1503540;
-    static final int DAYS_OF_6001 = 2191466;
+    static final int DAYS_OF_4119 = 1504084;//the first day of the year 4119 (GDN). This method of hebrew dates was founded in the year 4119 (359CE).
+    //4117 was the closest year with sun blessing before Hillel made this method. (28 years cycle)
+    static final int DAYS_OF_TKUFA_CYCLE_4117 = 1503540;// we start calculations of 4 Tkufut and sun blessing from that year. (365.25 days per year of Shmuel)
+    static final int DAYS_OF_6001 = 2191466; // the first day of the year 6001 (GDN). Six thousand years the world shall exists.
     static final int N_YEAR_TYPES = 14;
-    static final int HOUR = 1080;
-    static final int DAY = (24 * HOUR);
-    static final int WEEK = (7 * DAY);
-    static final int MONTH = 29 * DAY + HP(12, 793);
-    static final int MOLAD = MONDAY * DAY + HP(5, 204);
-    static final int MONTHS_IN_19Y = 235;//12*12+7*13
+    static final int HOUR = 1080;// length of hour in hour-parts (1080).
+    static final int DAY = (24 * HOUR);// length of day in hour-parts (1080).
+    static final int WEEK = (7 * DAY);// length of week in hour-parts (1080).
+    static final int MONTH = 29 * DAY + HP(12, 793); // length of month in hour-parts (1080).
+    static final int MOLAD = MONDAY * DAY + HP(5, 204); //MONDAY = 1. the first molad in genesis since the beginning of the first week.
+    static final int MONTHS_IN_19Y = 235;//12*12+7*13 - number of months in 19 years.
     static final int MOLAD_ZAKEN_ROUNDING = 6 * HOUR;
-    static final int TKUFA = 91 * DAY + 7 * HOUR + 540;
-    static final int MAZAL = 30 * DAY + 10 * HOUR + 540;
+    static final int TKUFA = 91 * DAY + 7 * HOUR + 540; // the length of Tkufa in hour-parts (1080).
+    static final int MAZAL = 30 * DAY + 10 * HOUR + 540; // the length of Mazal in hour-parts (1080). Mazal equals to 365.25 days divided by 12
 
     public static final int M_ID_TISHREI = 0;
     public static final int M_ID_CHESHVAN = 1;
@@ -682,8 +683,8 @@ public final class JewishDate extends ADMYDate
     /*@untested*/
     public boolean yomHakhel() {
         int day_in_week=dayInWeekEnum(); // yom hakhel is nidcha (postponed) if it falls on saturday.
-        return (((m_day == 16 && day_in_week!=SATURDAY ) || (m_day == 17 && day_in_week==SUNDAY)) && monthID() == M_ID_TISHREI
-                && (ShmitaOrdinal() - 1) % 7 == 0);
+        return (((m_day == 16 && day_in_week!=SATURDAY ) || (m_day == 17 && day_in_week==SUNDAY)) && monthID() == M_ID_TISHREI // 16 in tishrei if it is not Shabbat, or 17 in Tisheri otherwise.
+                && (ShmitaOrdinal() - 1) % 7 == 0); //motzei Shvi'it
     }// in the year after Shmita, after first day of Succot.
     /*@untested*/
     public boolean yomKippurQatan()
