@@ -577,30 +577,30 @@ public final class JewishDate extends ADMYDate
         return monthFirstDay(M_ID_SHEVAT)%7==WEDNESDAY;
     }
     /**
-     * based on gmara in eruvin
+     * based on Gemara in Eruvin (.56 / .נו)
      * @return 
      */
     /*@untested*/
     public boolean TkufatNisanMeshaberetIlanot()
     {
-        int tkufa_star=starForHour(getTkufaOfYearParts(2));
+        int tkufa_star=starForHour(getTkufaOfYearParts(2));//2 is for Tkufat Nisan, 0 - Tkufat Tishrei
         int molad_star= starForHour(MoladParts(monthFromID(M_ID_NISAN)));
         return (tkufa_star==S_ID_JUPITER && (molad_star == S_ID_JUPITER || molad_star == S_ID_MOON));
     }
     /**
-     * based on gmara in eruvin
+     * based on Gemara in Eruvin (.56 / .נו)
      * @return 
      */
     /*@untested*/
     public boolean TkufatTavetMeyabeshetZeraim()
     {
-        int tkufa_star=starForHour(getTkufaOfYearParts(1));
+        int tkufa_star=starForHour(getTkufaOfYearParts(1));// 1 for Tkufat Tevet
         int molad_star= starForHour(MoladParts(monthFromID(M_ID_TEVET)));
         return (tkufa_star==S_ID_JUPITER && (molad_star == S_ID_JUPITER || molad_star == S_ID_MOON));
     }
 
     /**
-     * find out when B' H' B' after Sukkot...
+     * find out when B' H' B' (monday-thursday-monday) after Sukkot...
      *
      * @return day (in GDN) for the Shabbat before the first taanit
      * monday.
@@ -612,7 +612,7 @@ public final class JewishDate extends ADMYDate
     }
 
     /**
-     * find out when B' H' B' after Pesach... There is a tradition to bless
+     * find out when B' H' B' (monday-thursday-monday) after Pesach... There is a tradition to bless
      * those who fast in these days in the Shabbat before the Taaniot
      *
      * @return day (in GDN) for the Shabbat before the first taanit
@@ -656,9 +656,11 @@ public final class JewishDate extends ADMYDate
         {30},//AV
         {29}//ELUL
     };
-
+    /**
+     get the formal year type in hebrew letters.
+    */
     public String yearSign() {
-        final byte[] yeartype = {8, 11, 21};
+        final byte[] yeartype = {8, 11, 21};// 21-ח-8,כ-11,ש
         int day_of_pessah = JewishDate.calculateDayInYearByMonthId(m_yearLength, JewishDate.M_ID_NISAN, 15) + m_yearFirstDay;
         return Format.alphabeta[(m_yearFirstDay % 7) + 1] + Format.alphabeta[yeartype[m_yearLength % 10 - 3]]
                 + Format.alphabeta[(day_of_pessah % 7) + 1] + ((m_yearLength >= 383) ? " מעוברת" : " פשוטה");
