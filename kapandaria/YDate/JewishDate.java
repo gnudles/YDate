@@ -602,11 +602,11 @@ public final class JewishDate extends ADMYDate
     /**
      * find out when B' H' B' after Sukkot...
      *
-     * @return day from beginning for the Shabbat before the first taanit
+     * @return day (in GDN) for the Shabbat before the first taanit
      * monday.
      */
     public int taanitBetHehBetForCheshvan() {
-        /* 1 in tishrey is day 0. tishrey has 30 days. so 30 in tishrey is day 29. and 1 cheshvan is day 30.
+        /* 1 in tishrey is day 0 (since beginning of the year). tishrey has 30 days. so 30 in tishrey is day 29. and 1 cheshvan is day 30.
          */
         return getNext(SATURDAY, m_yearFirstDay + 31);
     }
@@ -615,12 +615,14 @@ public final class JewishDate extends ADMYDate
      * find out when B' H' B' after Pesach... There is a tradition to bless
      * those who fast in these days in the Shabbat before the Taaniot
      *
-     * @return day from beginning for the Shabbat before the first taanit
-     * monday.
+     * @return day (in GDN) for the Shabbat before the first taanit
+     * monday. to get first monday you add 2, to get thursday you add 5, to get second monday you add 9.
      */
     public int taanitBetHehBetForIyar() {
         return getNext(SATURDAY, monthFirstDay(M_ID_IYAR) + 1);//+2 to get first monday, +5 to get thursday, and +9 to get the last monday.
     }
+    /** possible day in week that each month can start in.
+    */
 
     public static final int[][] possibleMonthDay = {
         {MONDAY, TUESDAY, THURSDAY, SATURDAY},//TISHREI
