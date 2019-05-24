@@ -998,7 +998,17 @@ public final class JewishDate extends ADMYDate
     @Override
     public int month()
     {
-        return monthInYear();
+        return ordinalMonthInYear();
+    }
+    /**
+     * the number of months in year. in regular year the range is 1..12, 
+     * and in a leap year the range is 1..13.
+     * to get the month ID (eg. TISHREI,CHESHVAN... ADAR_I,ADAR_II...) see 
+     * {@link #monthID() }.
+     * @return the month of the year of the object's date.
+     */
+    public int monthsInYear() {
+        return calculateYearMonths(this.m_year);
     }
     /**
      * the ordinal month in year. in regular year the range is 1..12, 
@@ -1007,7 +1017,7 @@ public final class JewishDate extends ADMYDate
      * {@link #monthID() }.
      * @return the month of the year of the object's date.
      */
-    public int monthInYear() {
+    public int ordinalMonthInYear() {
         return this.m_month;
     }
 

@@ -199,7 +199,8 @@ public class GregorianDate extends ADMYDate
 
            this.m_day = day;
            this.m_dayInYear = calculateDayInYear(this.m_yearLength, this.m_month, this.m_day);
-           return desired && stateChanged();
+           this.m_valid = desired;
+           return this.m_valid && stateChanged();
        }
        else {
            return false;
@@ -256,7 +257,8 @@ public class GregorianDate extends ADMYDate
            setMonthDay(days);
            this.m_yearFirstDay = gd_year_first_day;
            this.m_yearLength = isLeap(this.m_year) ? 366 : 365;
-           return (GDN() == days) && stateChanged();
+           this.m_valid = (GDN() == days);
+           return this.m_valid && stateChanged();
        }
        else {
            return false;
@@ -290,7 +292,8 @@ public class GregorianDate extends ADMYDate
            this.m_yearLength = isLeap(this.m_year) ? 366 : 365;
            this.m_dayInYear = calculateDayInYear(this.m_yearLength, this.m_month, this.m_day);
            this.m_yearFirstDay = days - this.m_dayInYear; //previously it was days_until_year(this.year);
-           return (GDN() == days) && stateChanged();
+           this.m_valid = (GDN() == days);
+           return this.m_valid && stateChanged();
        }
        else {
            return false;
@@ -509,8 +512,7 @@ public class GregorianDate extends ADMYDate
     @Override
     public boolean setByGDN(int gdn)
     {
-        boolean result = setByDays(gdn);
-        return result && stateChanged();
+        return setByDays(gdn);
     }
 
     @Override
