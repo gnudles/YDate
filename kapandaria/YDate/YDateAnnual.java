@@ -18,134 +18,79 @@ package kapandaria.YDate;
 import java.util.Arrays;
 public class YDateAnnual
 {
-    static final int A_EV_ROSH_HASHANA_A = 1;
-    static final int A_EV_ROSH_HASHANA_B = 2;
-    static final int A_EV_TZOM_GEDALIA = 3;
-    static final int A_EV_EREV_YOM_KIPPUR = 4;
-    static final int A_EV_YOM_KIPPUR = 5;
-    static final int A_EV_EREV_SUKKOT = 6;
-    static final int A_EV_SUKKOT = 7;
+    enum JewishEvents
+    {
+    NO_EVENT,
+    ROSH_HASHANA_A,
+    ROSH_HASHANA_B, 
+    TZOM_GEDALIA, 
+    EREV_YOM_KIPPUR, 
+    YOM_KIPPUR,    
+    SIMCHAT_COHEN, 
+    EREV_SUKKOT, 
+    SUKKOT, 
     /**
      * Second day of galuyot of Sukkot.
      */
-    static final int A_EV_SDOG_SUKKOT = 8;
-    static final int A_EV_SUKKOT_HOL_HAMOED = 9;
-    static final int A_EV_HOSHANA_RABBAH = 10;
-    static final int A_EV_SHEMINI_ATZERET = 11;
-    static final int A_EV_SIMCHAT_TORAH = 12;
-    static final int A_EV_SHEMINI_ATZERET_SIMCHAT_TORAH = 13;
-    static final int A_EV_HANUKKAH_ONE_CANDLE = 14;
-    static final int A_EV_HANUKKAH_TWO_CANDLES = 15;
-    static final int A_EV_HANUKKAH_THREE_CANDLES = 16;
-    static final int A_EV_HANUKKAH_FOUR_CANDLES = 17;
-    static final int A_EV_HANUKKAH_FIVE_CANDLES = 18;
-    static final int A_EV_HANUKKAH_SIX_CANDLES = 19;
-    static final int A_EV_HANUKKAH_SEVEN_CANDLES = 20;
-    static final int A_EV_HANUKKAH_EIGHT_CANDLES = 21;
-    static final int A_EV_TENTH_OF_TEVET = 22;
-    static final int A_EV_FIFTEEN_SHVAT = 23;
-    static final int A_EV_TAANIT_ESTHER = 24;
-    static final int A_EV_PURIM = 25;
-    static final int A_EV_SHUSHAN_PURIM = 26;
-    static final int A_EV_PURIM_KATAN = 27;
-    static final int A_EV_EREV_PESACH = 28;
-    static final int A_EV_PESACH = 29;//Passover
+    SDOG_SUKKOT, 
+    SUKKOT_HOL_HAMOED, 
+    HOSHANA_RABBAH, 
+    SHEMINI_ATZERET, 
+    SIMCHAT_TORAH, 
+    SHEMINI_ATZERET_SIMCHAT_TORAH, 
+    HANUKKAH_ONE_CANDLE, 
+    HANUKKAH_TWO_CANDLES, 
+    HANUKKAH_THREE_CANDLES, 
+    HANUKKAH_FOUR_CANDLES, 
+    HANUKKAH_FIVE_CANDLES, 
+    HANUKKAH_SIX_CANDLES, 
+    HANUKKAH_SEVEN_CANDLES, 
+    HANUKKAH_EIGHT_CANDLES, 
+    TENTH_OF_TEVET, 
+    FIFTEEN_SHVAT, 
+    TAANIT_ESTHER, 
+    PURIM, 
+    SHUSHAN_PURIM, 
+    PURIM_MESHULASH, 
+    PURIM_KATAN, 
+    EREV_PESACH, 
+    PESACH, //Passover
     /**
      * Sheni Shel Pesach (second yom-tov day of galuyot - diaspora)
      * this is NOT Pesach Sheni!
      */
-    static final int A_EV_SDOG_PESACH = 30;
-    static final int A_EV_PESACH_HOL_HAMOED = 31;
-    static final int A_EV_SHVII_PESACH = 32;
-    static final int A_EV_SHVII_SDOG_PESACH = 33;
-    static final int A_EV_PESACH_SHENI = 34;
-    static final int A_EV_RASHBI_THIRTY_THREE = 35;
-    static final int A_EV_EREV_SHAVUOT = 36;
-    static final int A_EV_SHAVUOT = 37;
-    static final int A_EV_SDOG_SHAVUOT = 38;
-    static final int A_EV_ISRU_HAG = 39;
-    static final int A_EV_TZOM_SEVENTEEN_TAMMUZ = 40;
-    static final int A_EV_TZOM_NINE_AV = 41;
-    static final int A_EV_FIFTEEN_AV = 42;
-    static final int A_EV_EREV_ROSH_HASHANA = 43;
-    static final int A_EV_SIMCHAT_COHEN = 44;
+    SDOG_PESACH, 
+    PESACH_HOL_HAMOED, 
+    SHVII_PESACH, 
+    SHVII_SDOG_PESACH, 
+    PESACH_SHENI, 
+    RASHBI_THIRTY_THREE, 
+    EREV_SHAVUOT, 
+    SHAVUOT, 
+    SDOG_SHAVUOT, 
+    ISRU_HAG, 
+    TZOM_SEVENTEEN_TAMMUZ, 
+    TZOM_NINE_AV, 
+    FIFTEEN_AV, 
+    EREV_ROSH_HASHANA, 
+    TAANIT_GZEROT_408_409, 
     /**
      *     holocaust day. decided in 27 Nissan 1951 (5711). if on friday, move it backward. if on sunday after 1997 move it afterward.
      */
-    static final int A_EV_HOLOCAUST_DAY = 45;
+    HOLOCAUST_DAY, 
     /**
      * memorial day. in 4 Iyar 1951 (5711).
      */
-    static final int A_EV_MEMORIAL_DAY_FALLEN = 46;
-    static final int A_EV_INDEPENDENTS_DAY = 47;
-    static final int A_EV_JERUSALEMS_DAY = 48;
+    MEMORIAL_DAY_FALLEN, 
+    INDEPENDENTS_DAY, 
+    JERUSALEMS_DAY, 
     /**
      * family day. in 30 Shevat since 1973 (5733).
      */
-    static final int A_EV_FAMILY_DAY = 49;
-    static final int A_EV_ISAAC_RABIN_DAY = 50;
-    static final int A_EV_TAANIT_GZEROT_408_409 = 51;
-    static final int A_EV_PURIM_MESHULASH = 52;// TODO: move this upward.
-
-
-    
-    public final static String[] events_str =
-    {
-        "",//0 -reserved for none
-        "א' ראש השנה",
-        "ב' ראש השנה",//2
-        "צום גדליה",//3
-        "ערב יום כיפור",//4
-        "יום כיפור",//5
-        "ערב סוכות",
-        "סוכות",
-        "יו\"ט שני של סוכות",//Sukkot II
-        "חול המועד סוכות",
-        "הושענא רבה",//10
-        "שמיני עצרת",
-        "שמחת תורה",
-        "שמיני עצרת שמחת תורה",
-        "א' חנוכה",//14
-        "ב' חנוכה",
-        "ג' חנוכה",//16
-        "ד' חנוכה",
-        "ה' חנוכה",
-        "ו' חנוכה",
-        "ז' חנוכה",
-        "ח' חנוכה",//21
-        "צום י' בטבת",
-        "ט\"ו בשבט",
-        "תענית אסתר",//24
-        "פורים",//25
-        "שושן פורים",
-        "פורים קטן",
-        "ערב פסח",//28
-        "פסח",
-        "יו\"ט שני של פסח",//Pesach II
-        "חול המועד פסח",//31
-        "שביעי של פסח",
-        "שמיני של פסח",
-        "פסח שני",
-        "ל\"ג לעמר הילולא דרשב\"י",//35
-        "ערב שבועות",
-        "שבועות",
-        "יו\"ט שני של שבועות",//38//Shavuot II
-        "אסרו חג",
-        "צום י\"ז בתמוז",//40
-        "צום ט' באב",
-        "ט\"ו באב",
-        "ערב ראש השנה",
-        "יום שמחת כהן",//44
-        "יום השואה",//45
-        "יום הזיכרון",
-        "יום העצמאות",//47
-        "יום ירושלים",
-        "יום המשפחה",
-        "יום הזכרון ליצחק רבין",//50
-        "תענית ת\"ח ת\"ט",
-        "פורים משולש"
+    FAMILY_DAY, 
+    ISAAC_RABIN_DAY
     };
-
+    
     public static final short EV_NONE=0;
     public static final short EV_YOM_TOV=1;
     public static final short EV_HOL_HAMOED=2;
@@ -160,108 +105,119 @@ public class YDateAnnual
     public static final short EV_REGALIM=32;
     public static final short EV_MEMORIAL=64;
     public static final short EV_HORBAN=128;
-    static final short[] events_type =
-    {
-        EV_NONE,//0 -reserved for none
-        EV_YOM_TOV,
-        EV_YOM_TOV,//2
-        EV_TZOM|EV_HORBAN,//3
-        EV_EREV_YOM_TOV,//4
-        EV_TZOM|EV_YOM_TOV,//5
-        EV_EREV_YOM_TOV,
-        EV_YOM_TOV|EV_REGALIM,
-        EV_YOM_TOV|EV_REGALIM,//Sukkot II
-        EV_HOL_HAMOED|EV_REGALIM,
-        EV_HOL_HAMOED|EV_REGALIM,//10
-        EV_YOM_TOV|EV_REGALIM,
-        EV_YOM_TOV|EV_REGALIM,
-        EV_YOM_TOV|EV_REGALIM,
-        EV_MIRACLE,
-        EV_MIRACLE,
-        EV_MIRACLE,//16
-        EV_MIRACLE,
-        EV_MIRACLE,
-        EV_MIRACLE,
-        EV_MIRACLE,
-        EV_MIRACLE,//21
-        EV_TZOM|EV_HORBAN,
-        EV_GOOD_DAYS,
-        EV_TZOM|EV_MIRACLE,
-        EV_MIRACLE,//25
-        EV_MIRACLE,
-        EV_MIRACLE,
-        EV_EREV_YOM_TOV,//28
-        EV_YOM_TOV|EV_REGALIM,
-        EV_YOM_TOV|EV_REGALIM,//Pesach II
-        EV_HOL_HAMOED|EV_REGALIM,//31
-        EV_YOM_TOV|EV_REGALIM,
-        EV_YOM_TOV|EV_REGALIM,
-        EV_REGALIM,
-        EV_GOOD_DAYS,//35
-        EV_EREV_YOM_TOV,
-        EV_YOM_TOV|EV_REGALIM,
-        EV_YOM_TOV|EV_REGALIM,//38//Shavuot II
-        EV_ISRU_HAG,
-        EV_TZOM|EV_HORBAN,//40
-        EV_TZOM|EV_HORBAN,
-        EV_GOOD_DAYS,
-        EV_EREV_YOM_TOV,
-        EV_GOOD_DAYS,//44 - Simhat Cohen
-        EV_NATIONAL|EV_MEMORIAL,//45
-        EV_NATIONAL|EV_MEMORIAL,
-        EV_NATIONAL,//47
-        EV_NATIONAL,
-        EV_NATIONAL,
-        EV_NATIONAL|EV_MEMORIAL,//50
-        EV_TZOM|EV_MEMORIAL,//51
-        EV_MIRACLE,//PURIM MESHULASH
-    };
+    
+    static String[] events_str_id;
+    static short[] events_type;
+    static {
+        events_str_id = new String[JewishEvents.values().length];
+        for (int i=1; i<JewishEvents.values().length ; ++i) //start from 1 because zero is null string
+        {
+            events_str_id[i]=JewishEvents.values()[i].name();
+        };
+        
+        events_type = new short[JewishEvents.values().length];
+        
+        events_type[JewishEvents.NO_EVENT.ordinal()]=EV_NONE;
+        events_type[JewishEvents.ROSH_HASHANA_A.ordinal()]=EV_YOM_TOV;
+        events_type[JewishEvents.ROSH_HASHANA_B.ordinal()]=EV_YOM_TOV;//
+        events_type[JewishEvents.TZOM_GEDALIA.ordinal()]=EV_TZOM|EV_HORBAN;
+        events_type[JewishEvents.EREV_YOM_KIPPUR.ordinal()]=EV_EREV_YOM_TOV;
+        events_type[JewishEvents.YOM_KIPPUR.ordinal()]=EV_TZOM|EV_YOM_TOV;
+        events_type[JewishEvents.SIMCHAT_COHEN.ordinal()]=EV_GOOD_DAYS;
+        events_type[JewishEvents.EREV_SUKKOT.ordinal()]=EV_EREV_YOM_TOV;
+        events_type[JewishEvents.SUKKOT.ordinal()]=EV_YOM_TOV|EV_REGALIM;
+        events_type[JewishEvents.SDOG_SUKKOT.ordinal()]=EV_YOM_TOV|EV_REGALIM;
+        events_type[JewishEvents.SUKKOT_HOL_HAMOED.ordinal()]=EV_HOL_HAMOED|EV_REGALIM;
+        events_type[JewishEvents.HOSHANA_RABBAH.ordinal()]=EV_HOL_HAMOED|EV_REGALIM;
+        events_type[JewishEvents.SHEMINI_ATZERET.ordinal()]=EV_YOM_TOV|EV_REGALIM;
+        events_type[JewishEvents.SIMCHAT_TORAH.ordinal()]=EV_YOM_TOV|EV_REGALIM;
+        events_type[JewishEvents.SHEMINI_ATZERET_SIMCHAT_TORAH.ordinal()]=EV_YOM_TOV|EV_REGALIM;
+        events_type[JewishEvents.HANUKKAH_ONE_CANDLE.ordinal()]=EV_MIRACLE;
+        events_type[JewishEvents.HANUKKAH_TWO_CANDLES.ordinal()]=EV_MIRACLE;
+        events_type[JewishEvents.HANUKKAH_THREE_CANDLES.ordinal()]=EV_MIRACLE;
+        events_type[JewishEvents.HANUKKAH_FOUR_CANDLES.ordinal()]=EV_MIRACLE;
+        events_type[JewishEvents.HANUKKAH_FIVE_CANDLES.ordinal()]=EV_MIRACLE;
+        events_type[JewishEvents.HANUKKAH_SIX_CANDLES.ordinal()]=EV_MIRACLE;
+        events_type[JewishEvents.HANUKKAH_SEVEN_CANDLES.ordinal()]=EV_MIRACLE;
+        events_type[JewishEvents.HANUKKAH_EIGHT_CANDLES.ordinal()]=EV_MIRACLE;
+        events_type[JewishEvents.TENTH_OF_TEVET.ordinal()]=EV_TZOM|EV_HORBAN;
+        events_type[JewishEvents.FIFTEEN_SHVAT.ordinal()]=EV_GOOD_DAYS;
+        events_type[JewishEvents.TAANIT_ESTHER.ordinal()]=EV_TZOM|EV_MIRACLE;
+        events_type[JewishEvents.PURIM.ordinal()]=EV_MIRACLE;
+        events_type[JewishEvents.SHUSHAN_PURIM.ordinal()]=EV_MIRACLE;
+        events_type[JewishEvents.PURIM_MESHULASH.ordinal()]=EV_MIRACLE;
+        events_type[JewishEvents.PURIM_KATAN.ordinal()]=EV_MIRACLE;
+        events_type[JewishEvents.EREV_PESACH.ordinal()]=EV_EREV_YOM_TOV;
+        events_type[JewishEvents.PESACH.ordinal()]=EV_YOM_TOV|EV_REGALIM;
+        events_type[JewishEvents.SDOG_PESACH.ordinal()]=EV_YOM_TOV|EV_REGALIM;
+        events_type[JewishEvents.PESACH_HOL_HAMOED.ordinal()]=EV_HOL_HAMOED|EV_REGALIM;
+        events_type[JewishEvents.SHVII_PESACH.ordinal()]=EV_YOM_TOV|EV_REGALIM;
+        events_type[JewishEvents.SHVII_SDOG_PESACH.ordinal()]=EV_YOM_TOV|EV_REGALIM;
+        events_type[JewishEvents.PESACH_SHENI.ordinal()]=EV_REGALIM;
+        events_type[JewishEvents.RASHBI_THIRTY_THREE.ordinal()]=EV_GOOD_DAYS;
+        events_type[JewishEvents.EREV_SHAVUOT.ordinal()]=EV_EREV_YOM_TOV;
+        events_type[JewishEvents.SHAVUOT.ordinal()]=EV_YOM_TOV|EV_REGALIM;
+        events_type[JewishEvents.SDOG_SHAVUOT.ordinal()]=EV_YOM_TOV|EV_REGALIM;
+        events_type[JewishEvents.ISRU_HAG.ordinal()]=EV_ISRU_HAG;
+        events_type[JewishEvents.TZOM_SEVENTEEN_TAMMUZ.ordinal()]=EV_TZOM|EV_HORBAN;
+        events_type[JewishEvents.TZOM_NINE_AV.ordinal()]=EV_TZOM|EV_HORBAN;
+        events_type[JewishEvents.FIFTEEN_AV.ordinal()]=EV_GOOD_DAYS;
+        events_type[JewishEvents.EREV_ROSH_HASHANA.ordinal()]=EV_EREV_YOM_TOV;
+        events_type[JewishEvents.TAANIT_GZEROT_408_409.ordinal()]=EV_TZOM|EV_MEMORIAL;
+        events_type[JewishEvents.HOLOCAUST_DAY.ordinal()]=EV_NATIONAL|EV_MEMORIAL;
+        events_type[JewishEvents.MEMORIAL_DAY_FALLEN.ordinal()]=EV_NATIONAL|EV_MEMORIAL;
+        events_type[JewishEvents.INDEPENDENTS_DAY.ordinal()]=EV_NATIONAL;
+        events_type[JewishEvents.JERUSALEMS_DAY.ordinal()]=EV_NATIONAL;
+        events_type[JewishEvents.FAMILY_DAY.ordinal()]=EV_NATIONAL;
+        events_type[JewishEvents.ISAAC_RABIN_DAY.ordinal()]=EV_NATIONAL|EV_MEMORIAL;
+
+    }
 
 
     static final byte [][] event_db= 
     {// month_id,day,array index,# of days,jump/dhia(if #_days==1). if dhia>=7 then dhia%7 is the only day of week possible
-        {JewishDate.M_ID_TISHREI,1,A_EV_ROSH_HASHANA_A,2,1},//two days of rosh hashana
-        {JewishDate.M_ID_TISHREI,3,A_EV_TZOM_GEDALIA,1,1},//zom gdalia, dhia
-        {JewishDate.M_ID_TISHREI,9,A_EV_EREV_YOM_KIPPUR,2,1},//yom kippur
-        {JewishDate.M_ID_TISHREI,11,A_EV_SIMCHAT_COHEN,1,0},//yom Simhat Cohen
-        {JewishDate.M_ID_TISHREI,14,A_EV_EREV_SUKKOT,2,1},//Erev Sukkot+Sukkot
-        {JewishDate.M_ID_TISHREI,16,A_EV_SUKKOT_HOL_HAMOED,5,0},//hol hamoed sukkot
-        {JewishDate.M_ID_TISHREI,21,A_EV_HOSHANA_RABBAH,1,0},//hoshana raba
-        {JewishDate.M_ID_TISHREI,22,A_EV_SHEMINI_ATZERET_SIMCHAT_TORAH,1,0},//shmini azeret simhat_tora
-        {JewishDate.M_ID_TISHREI,23,A_EV_ISRU_HAG,1,0},//isru hag
-        {JewishDate.M_ID_KISLEV,25,A_EV_HANUKKAH_ONE_CANDLE,8,1},//Chanukah
-        {JewishDate.M_ID_TEVET,10,A_EV_TENTH_OF_TEVET,1,0},//Tzom Asara B'Tevet
-        {JewishDate.M_ID_SHEVAT,15,A_EV_FIFTEEN_SHVAT,1,0},//Tu B'Shvat
-        {JewishDate.M_ID_ADAR,13,A_EV_TAANIT_ESTHER,1,-2},//taanit ester, dhia
-        {JewishDate.M_ID_ADAR,14,A_EV_PURIM,2,1},//Purim+Shushan
-        {JewishDate.M_ID_ADAR,16,A_EV_PURIM_MESHULASH,1,7},//Purim Meshulash only on sunday
-        {JewishDate.M_ID_ADAR_I,14,A_EV_PURIM_KATAN,2,0},//Purim katan - two days
-        {JewishDate.M_ID_ADAR_II,13,A_EV_TAANIT_ESTHER,1,-2},//taanit ester, dhia
-        {JewishDate.M_ID_ADAR_II,14,A_EV_PURIM,2,1},//Purim+Shushan
-        {JewishDate.M_ID_ADAR_II,16,A_EV_PURIM_MESHULASH,1,7},//Purim Meshulash only on sunday
-        {JewishDate.M_ID_NISAN,14,A_EV_EREV_PESACH,2,1},//Erev Pesah+Pesah
-        {JewishDate.M_ID_NISAN,16,A_EV_PESACH_HOL_HAMOED,5,0},//Hol Ha'moed Pesah
-        {JewishDate.M_ID_NISAN,21,A_EV_SHVII_PESACH,1,0},//Shvi'i Pesah
-        {JewishDate.M_ID_NISAN,22,A_EV_ISRU_HAG,1,0},//isru hag
-        {JewishDate.M_ID_IYAR,14,A_EV_PESACH_SHENI,1,0},//Pesah Sheni
-        {JewishDate.M_ID_IYAR,18,A_EV_RASHBI_THIRTY_THREE,1,0},//Lag Ba'Omer
-        {JewishDate.M_ID_SIVAN,5,A_EV_EREV_SHAVUOT,2,1},//Erev Shavu'ot+Shavu'ot
-        {JewishDate.M_ID_SIVAN,7,A_EV_ISRU_HAG,1,0},//isru hag
-        {JewishDate.M_ID_TAMMUZ,17,A_EV_TZOM_SEVENTEEN_TAMMUZ,1,1},//Tzom 17 Tamuz, dhia
-        {JewishDate.M_ID_AV,9,A_EV_TZOM_NINE_AV,1,1},//Tzom 9 Av, dhia
-        {JewishDate.M_ID_AV,15,A_EV_FIFTEEN_AV,1,0},//15 Av
-        {JewishDate.M_ID_ELUL,29,A_EV_EREV_ROSH_HASHANA,1,0},//Erev Rosh Hashana
-        {JewishDate.M_ID_SIVAN,20,A_EV_TAANIT_GZEROT_408_409,1,0},//5408-5409 memorial 
+        {JewishDate.M_ID_TISHREI,1,(byte)JewishEvents.ROSH_HASHANA_A.ordinal(),2,1},//two days of rosh hashana
+        {JewishDate.M_ID_TISHREI,3,(byte)JewishEvents.TZOM_GEDALIA.ordinal(),1,1},//zom gdalia, dhia
+        {JewishDate.M_ID_TISHREI,9,(byte)JewishEvents.EREV_YOM_KIPPUR.ordinal(),2,1},//yom kippur
+        {JewishDate.M_ID_TISHREI,11,(byte)JewishEvents.SIMCHAT_COHEN.ordinal(),1,0},//yom Simhat Cohen
+        {JewishDate.M_ID_TISHREI,14,(byte)JewishEvents.EREV_SUKKOT.ordinal(),2,1},//Erev Sukkot+Sukkot
+        {JewishDate.M_ID_TISHREI,16,(byte)JewishEvents.SUKKOT_HOL_HAMOED.ordinal(),5,0},//hol hamoed sukkot
+        {JewishDate.M_ID_TISHREI,21,(byte)JewishEvents.HOSHANA_RABBAH.ordinal(),1,0},//hoshana raba
+        {JewishDate.M_ID_TISHREI,22,(byte)JewishEvents.SHEMINI_ATZERET_SIMCHAT_TORAH.ordinal(),1,0},//shmini azeret simhat_tora
+        {JewishDate.M_ID_TISHREI,23,(byte)JewishEvents.ISRU_HAG.ordinal(),1,0},//isru hag
+        {JewishDate.M_ID_KISLEV,25,(byte)JewishEvents.HANUKKAH_ONE_CANDLE.ordinal(),8,1},//Chanukah
+        {JewishDate.M_ID_TEVET,10,(byte)JewishEvents.TENTH_OF_TEVET.ordinal(),1,0},//Tzom Asara B'Tevet
+        {JewishDate.M_ID_SHEVAT,15,(byte)JewishEvents.FIFTEEN_SHVAT.ordinal(),1,0},//Tu B'Shvat
+        {JewishDate.M_ID_ADAR,13,(byte)JewishEvents.TAANIT_ESTHER.ordinal(),1,-2},//taanit ester, dhia
+        {JewishDate.M_ID_ADAR,14,(byte)JewishEvents.PURIM.ordinal(),2,1},//Purim+Shushan
+        {JewishDate.M_ID_ADAR,16,(byte)JewishEvents.PURIM_MESHULASH.ordinal(),1,7},//Purim Meshulash only on sunday
+        {JewishDate.M_ID_ADAR_I,14,(byte)JewishEvents.PURIM_KATAN.ordinal(),2,0},//Purim katan - two days
+        {JewishDate.M_ID_ADAR_II,13,(byte)JewishEvents.TAANIT_ESTHER.ordinal(),1,-2},//taanit ester, dhia
+        {JewishDate.M_ID_ADAR_II,14,(byte)JewishEvents.PURIM.ordinal(),2,1},//Purim+Shushan
+        {JewishDate.M_ID_ADAR_II,16,(byte)JewishEvents.PURIM_MESHULASH.ordinal(),1,7},//Purim Meshulash only on sunday
+        {JewishDate.M_ID_NISAN,14,(byte)JewishEvents.EREV_PESACH.ordinal(),2,1},//Erev Pesah+Pesah
+        {JewishDate.M_ID_NISAN,16,(byte)JewishEvents.PESACH_HOL_HAMOED.ordinal(),5,0},//Hol Ha'moed Pesah
+        {JewishDate.M_ID_NISAN,21,(byte)JewishEvents.SHVII_PESACH.ordinal(),1,0},//Shvi'i Pesah
+        {JewishDate.M_ID_NISAN,22,(byte)JewishEvents.ISRU_HAG.ordinal(),1,0},//isru hag
+        {JewishDate.M_ID_IYAR,14,(byte)JewishEvents.PESACH_SHENI.ordinal(),1,0},//Pesah Sheni
+        {JewishDate.M_ID_IYAR,18,(byte)JewishEvents.RASHBI_THIRTY_THREE.ordinal(),1,0},//Lag Ba'Omer
+        {JewishDate.M_ID_SIVAN,5,(byte)JewishEvents.EREV_SHAVUOT.ordinal(),2,1},//Erev Shavu'ot+Shavu'ot
+        {JewishDate.M_ID_SIVAN,7,(byte)JewishEvents.ISRU_HAG.ordinal(),1,0},//isru hag
+        {JewishDate.M_ID_TAMMUZ,17,(byte)JewishEvents.TZOM_SEVENTEEN_TAMMUZ.ordinal(),1,1},//Tzom 17 Tamuz, dhia
+        {JewishDate.M_ID_AV,9,(byte)JewishEvents.TZOM_NINE_AV.ordinal(),1,1},//Tzom 9 Av, dhia
+        {JewishDate.M_ID_AV,15,(byte)JewishEvents.FIFTEEN_AV.ordinal(),1,0},//15 Av
+        {JewishDate.M_ID_ELUL,29,(byte)JewishEvents.EREV_ROSH_HASHANA.ordinal(),1,0},//Erev Rosh Hashana
+        {JewishDate.M_ID_SIVAN,20,(byte)JewishEvents.TAANIT_GZEROT_408_409.ordinal(),1,0},//5408-5409 memorial 
 //TODO: maybe add event since year parameter. for 5408 memorial.
     };
     static final byte [][] event_db_diaspora= 
     {// month_id,day,array index,# of days,jump/dhia(if #_days==1)
-        {JewishDate.M_ID_TISHREI,16,A_EV_SDOG_SUKKOT,1,0},//sukkot II
-        {JewishDate.M_ID_TISHREI,22,A_EV_SHEMINI_ATZERET,1,0},//shmini azeret
-        {JewishDate.M_ID_TISHREI,23,A_EV_SIMCHAT_TORAH,1,0},//simhat_tora
-        {JewishDate.M_ID_NISAN,16,A_EV_SDOG_PESACH,1,0},//Pesah II
-        {JewishDate.M_ID_NISAN,22,A_EV_SHVII_SDOG_PESACH,1,0},//Shmi'ni Pesah
-        {JewishDate.M_ID_SIVAN,7,A_EV_SDOG_SHAVUOT,1,0},//Shavu'ot II
+        {JewishDate.M_ID_TISHREI,16,(byte)JewishEvents.SDOG_SUKKOT.ordinal(),1,0},//sukkot II
+        {JewishDate.M_ID_TISHREI,22,(byte)JewishEvents.SHEMINI_ATZERET.ordinal(),1,0},//shmini azeret
+        {JewishDate.M_ID_TISHREI,23,(byte)JewishEvents.SIMCHAT_TORAH.ordinal(),1,0},//simhat_tora
+        {JewishDate.M_ID_NISAN,16,(byte)JewishEvents.SDOG_PESACH.ordinal(),1,0},//Pesah II
+        {JewishDate.M_ID_NISAN,22,(byte)JewishEvents.SHVII_SDOG_PESACH.ordinal(),1,0},//Shmi'ni Pesah
+        {JewishDate.M_ID_SIVAN,7,(byte)JewishEvents.SDOG_SHAVUOT.ordinal(),1,0},//Shavu'ot II
     };
 
     
@@ -283,15 +239,11 @@ public class YDateAnnual
     }
     public String getYearEventForDay(JewishDate d, YDateLanguage language)
     {
-        //TODO: replace events_str with language
-        //return language.getEventToken(current_year_events[d.dayInYear()]);
-        return events_str[current_year_events[d.dayInYear()]];
+        return language.getToken(events_str_id[current_year_events[d.dayInYear()]]);
     }
     public String getYearEventForDayRejection(JewishDate d, YDateLanguage language)
     {
-        //TODO: replace events_str with language
-        //return language.getEventToken(current_year_events[d.dayInYear()]);
-        String out=events_str[current_year_events[d.dayInYear()]];
+        String out=language.getToken(events_str_id[current_year_events[d.dayInYear()]]);
         short rej= isRejected(d);
         if (rej!=0)
             out+=" ("+language.getRejection(rej)+")";
@@ -344,7 +296,7 @@ public class YDateAnnual
 
                 day_in_year++;
             }
-            year_events[day_in_year] = A_EV_HOLOCAUST_DAY;
+            year_events[day_in_year] = (byte)JewishEvents.HOLOCAUST_DAY.ordinal();
         }
         //Yom Azma'ut and Yom HaZikaron
         if (year >= 5708)//1948
@@ -367,20 +319,20 @@ public class YDateAnnual
                 day_in_year += 1;
 
             }
-            year_events[day_in_year - 1] = A_EV_MEMORIAL_DAY_FALLEN;//Yom HaZikaron
-            year_events[day_in_year] = A_EV_INDEPENDENTS_DAY;//Yom Azma'ut
+            year_events[day_in_year - 1] = (byte)JewishEvents.MEMORIAL_DAY_FALLEN.ordinal();//Yom HaZikaron
+            year_events[day_in_year] = (byte)JewishEvents.INDEPENDENTS_DAY.ordinal();//Yom Azma'ut
         }
         //Jerusalem day
         if (year >= 5728)//1968
 	{
             int day_in_year = JewishDate.calculateDayInYearByMonthId(year_length, JewishDate.M_ID_IYAR, 28);
-            year_events[day_in_year] = A_EV_JERUSALEMS_DAY;
+            year_events[day_in_year] = (byte)JewishEvents.JERUSALEMS_DAY.ordinal();
 	}
         //Family day
         if (year >= 5733)//1973
 	{
             int day_in_year = JewishDate.calculateDayInYearByMonthId(year_length, JewishDate.M_ID_SHEVAT, 30);
-            year_events[day_in_year] = A_EV_FAMILY_DAY;
+            year_events[day_in_year] = (byte)JewishEvents.FAMILY_DAY.ordinal();
 	}
         //Rabin's Day   
         if (year >= 5758)//cheshvan 1997
@@ -391,17 +343,16 @@ public class YDateAnnual
             {
                 day_in_year--;
             }
-            year_events[day_in_year] = A_EV_ISAAC_RABIN_DAY;
+            year_events[day_in_year] = (byte)JewishEvents.ISAAC_RABIN_DAY.ordinal();
         }
     }
     static final byte [][][] annual_events = new byte [2][JewishDate.N_YEAR_TYPES][];//[diaspora][year_type][day_in_year]
     static final short [][] annual_events_dhia = new short [JewishDate.N_YEAR_TYPES][4];//[year_type][5]->[day_in_year]
     public static String getEventForDay(JewishDate d, boolean diaspora, YDateLanguage language)
     {
-        //TODO: make this depended on language...
-        //return language.getEventToken(getEvents(d, diaspora)[d.dayInYear()]);
-        return events_str[getEvents(d, diaspora)[d.dayInYear()]];
+        return language.getToken(events_str_id[getEvents(d, diaspora)[d.dayInYear()]]);
     }
+    
     public static byte [] getEvents(JewishDate d,boolean diaspora)
     {
         int year_ld_t= JewishDate.ld_year_type(d.yearLength(),d.yearFirstDay()%7+1);

@@ -13,7 +13,8 @@ import java.nio.charset.Charset;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import kapandaria.YDate.Format;
-import kapandaria.YDate.MYDate;
+import kapandaria.YDate.JewishDate;
+import kapandaria.YDate.YDateDual;
 import kapandaria.YDate.YDateLanguage;
 
 /**
@@ -52,18 +53,20 @@ public class Exporter
 "</style>\n" +
 "</head>\n" +
 "<body>");
+        if (args.length == 0)
+            return;
         String larg = args[args.length-1];
-        MYDate x=MYDate.getNow();
+        YDateDual x=YDateDual.getNow();
         
         
         if (larg.toLowerCase() == "now" || larg.toLowerCase() == "this")
         {
-            x=MYDate.getNow();
+            x=YDateDual.getNow();
         }
         if (larg.toLowerCase() == "next")
         {
-            x=MYDate.getNow();
-            x.step(MYDate.STEP_TYPE.HEB_YEAR_FORWARD); // print next year
+            x=YDateDual.getNow();
+            x.step(YDateDual.STEP_TYPE.HEB_YEAR_FORWARD); // print next year
         }
         
         System.out.println("<h2>"+Format.HebIntString(x.hebrewDate().year(), true)+"</h2>");
@@ -76,11 +79,39 @@ public class Exporter
             int month_length= x.hebrewDate().monthLength();
             for (int i=1; i<= month_length;++i)
             {
-                System.out.println("<tr><td>" +x.hebrewDate().dayString(YDateLanguage.Language.HEBREW)+ "</td></tr>");
+                System.out.println("<tr><td>" +x.hebrewDate().dayString(YDateLanguage.Language.HEBREW)+ "</td>");
+                System.out.println("<td>" +x.getEventString(YDateLanguage.Language.HEBREW, false)+ "</td></tr>");
                 x.hebrewDate().seekBy(1);
             }
             System.out.println("</table>");
         }
+        
+        System.out.println("<h3>"+"מידע תקופות"+"</h3>");
+        System.out.println("<table>");
+        for (int y = 5700; y <= 5900; ++y)
+        {
+
+                
+                x.hebrewDate().setByYearMonthIdDay(y, JewishDate.M_ID_TISHREI, 1);
+                System.out.println("<tr><td>" +Format.HebIntString(y, true)+ "</td>");
+                String Meyab = "";
+                if (x.hebrewDate().TkufatNisanMeshaberetIlanot())
+                {
+                    Meyab= "תקופת ניסן משברת אילנות";
+                }
+                if (x.hebrewDate().TkufatTavetMeyabeshetZeraim())
+                {
+                    if (!Meyab.isEmpty()) Meyab+=", ";
+                    Meyab= "תקופת טבת מייבשת זרעים";
+                }
+                System.out.println("<td>" +Meyab+ "</td>");
+                System.out.println("<td>" +x.hebrewDate().yearSign()+ "</td>");
+                System.out.println("<td>" +x.hebrewDate().yearLength()+ "</td>");
+                System.out.println("<td>" +(x.hebrewDate().yearOfColdWinter()?"חורף קר":"")+ "</td>");
+                System.out.println("<td>" +(x.hebrewDate().ShmitaLabel(YDateLanguage.Language.HEBREW))+ "</td>");
+                System.out.println("</tr>");
+        }
+        System.out.println("</table>");
         System.out.println("</body>\n" +
 "</html>");
 

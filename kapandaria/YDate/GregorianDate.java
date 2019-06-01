@@ -199,8 +199,8 @@ public class GregorianDate extends ADMYDate
 
            this.m_day = day;
            this.m_dayInYear = calculateDayInYear(this.m_yearLength, this.m_month, this.m_day);
-           this.m_valid = desired;
-           return this.m_valid && stateChanged();
+           this.m_valid = true;
+           return desired && stateChanged();
        }
        else {
            return false;

@@ -795,7 +795,7 @@ static final int[] bavli_name_index
 
         int offset = d - yerushalmi_first_cycle;
         // subtract the number of nine in Av and Kippur day from cycle begin till now.
-        offset -= countNoLimudDays(yerushalmi_jd, jd);
+        offset -= _countNoLimudDays(yerushalmi_jd, jd);
         offset %= yerushalmi_cycle_length;
         int daf_counter = 0;
         for (int masechet = 0; masechet < yerushalmi_masechet_length.length; masechet++) {
@@ -819,8 +819,8 @@ static final int[] bavli_name_index
 
     }
 
-    private static int countNoLimudDays(JewishDate jd_from, JewishDate jd_to) {
-        if (jd_to.daysSinceBeginning() <= jd_from.daysSinceBeginning()) {
+    private static int _countNoLimudDays(JewishDate jd_from, JewishDate jd_to) {
+        if (jd_to.GDN() <= jd_from.GDN()) {
             return 0;
         }
 

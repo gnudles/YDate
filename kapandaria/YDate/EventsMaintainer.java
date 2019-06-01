@@ -80,11 +80,14 @@ public class EventsMaintainer {
     {
         if (events_current==null)
         {
-            events_current=getAnnualFromCache(m_hd.year(),m_hd.yearLength(),m_hd.yearFirstDay(),m_diaspora);
+            if (m_hd.isValid())
+            {
+                events_current=getAnnualFromCache(m_hd.year(),m_hd.yearLength(),m_hd.yearFirstDay(),m_diaspora);
 
-            events_next=getAnnualFromCache(m_hd.year()+1, JewishDate.calculateYearLength(m_hd.year()+1),m_hd.yearFirstDay()+m_hd.yearLength(),m_diaspora);
+                events_next=getAnnualFromCache(m_hd.year()+1, JewishDate.calculateYearLength(m_hd.year()+1),m_hd.yearFirstDay()+m_hd.yearLength(),m_diaspora);
 
-            events_previous=getAnnualFromCache(m_hd.year()-1, JewishDate.calculateYearLength(m_hd.year()-1), JewishDate.calculateYearFirstDay(m_hd.year()-1),m_diaspora);
+                events_previous=getAnnualFromCache(m_hd.year()-1, JewishDate.calculateYearLength(m_hd.year()-1), JewishDate.calculateYearFirstDay(m_hd.year()-1),m_diaspora);
+            }
         }
     }
     public YDateAnnual yearEvents(){ return events_current;}
@@ -112,8 +115,8 @@ public class EventsMaintainer {
             if (events_current.year()!=m_hd.year())
             {
                 events_current=null;
-                setMaintainEvents();
             }
         }
+        setMaintainEvents();
     }
 }

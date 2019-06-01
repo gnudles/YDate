@@ -183,7 +183,7 @@ public class TorahReading
     public static String parshiot4(JewishDate h, YDateLanguage lang)
     {
         JewishDate tweaked = new JewishDate(h);
-        if (getShabbatBereshit(h.yearLength(), h.yearFirstDay()) + 15 * 7 == h.daysSinceBeginning())
+        if (getShabbatBereshit(h.yearLength(), h.yearFirstDay()) + 15 * 7 == h.GDN())
         {
             return lang.getSpecialShabbat(SHABAT_SHIRA);
         }
@@ -221,14 +221,14 @@ public class TorahReading
             shabbat_nachamu += JewishDate.calculateDayInYearByMonthId(h.yearLength(), JewishDate.M_ID_AV, 10);
             shabbat_nachamu = ADate.getNext(ADate.SATURDAY, shabbat_nachamu);
 
-            if (h.daysSinceBeginning() == shabbat_nachamu)
+            if (h.GDN() == shabbat_nachamu)
             {
                 return lang.getSpecialShabbat(SHABAT_NACHAMU);
             }
             int shabbat_tshuva = h.yearFirstDay();
             shabbat_tshuva += JewishDate.calculateDayInYearByMonthId(h.yearLength(), JewishDate.M_ID_TISHREI, 9);
             shabbat_tshuva = ADate.getPrevious(ADate.SATURDAY, shabbat_tshuva);
-            if (h.daysSinceBeginning() == shabbat_tshuva)
+            if (h.GDN() == shabbat_tshuva)
             {
                 return lang.getSpecialShabbat(SHABAT_TSHUVA);
             }
@@ -676,6 +676,51 @@ public class TorahReading
     
     static class BibleIndex
     {
+        /*
+        
+        
+Bereishit - Genesis
+Shemot - Exodus
+Vayikra - Leviticus
+Bamidbar - Numbers
+Devarim - Deuteronomy
+Nevi'im - Prophets
+Yehoshua - Joshua
+Shoftim - Judges
+Shmuel I - I Samuel
+Shmuel II - II Samuel
+Melachim I - I Kings
+Melachim II - II Kings
+Yeshayahu - Isaiah
+Yirmiyahu - Jeremiah
+Yechezkel - Ezekiel
+Hoshea - Hosea
+Yoel - Joel
+Amos
+Ovadiah - Obadiah
+Yonah - Jonah
+Michah - Micah
+Nachum - Nahum
+Chavakuk - Habakkuk
+Tzefaniah - Zephaniah
+Chaggai - Haggai
+Zechariah
+Malachi
+Ketuvim - Scriptures
+Tehillim - Psalms
+Mishlei - Proverbs
+Iyov - Job
+Shir Hashirim - Song of Songs
+Rut - Ruth
+Eichah - Lamentations
+Kohelet - Ecclesiastes
+Esther
+Daniel
+Ezra
+Nechemiah - Nehemiah
+Divrei Hayamim I - I Chronicles
+Divrei Hayamim II - II Chronicles
+        */
         enum BibleBook
         {
            Bereshit,
@@ -781,22 +826,44 @@ public class TorahReading
         }
         
     }
-    BibleText gimel_depuranuta[]={
-    (new BibleText("דברי ירמיהו")).append(new BibleParagraph(BibleIndex.BibleIndex(BibleIndex.BibleBook.Yirmiyah, 1, 1 ),
+    BibleText haftarot[]=
+    {
+        
+    }
+    BibleText gimel_depuranuta_sheva_denechamata[]={
+        //gimel depuranuta
+    new BibleText("דברי ירמיהו").append(new BibleParagraph(BibleIndex.BibleIndex(BibleIndex.BibleBook.Yirmiyah, 1, 1 ),
             BibleIndex.BibleIndex(BibleIndex.BibleBook.Yirmiyah, 2, 3 ))),
     new BibleText("שמעו דבר ה").append(new BibleParagraph(BibleIndex.BibleIndex(BibleIndex.BibleBook.Yirmiyah, 2, 4 ),
             BibleIndex.BibleIndex(BibleIndex.BibleBook.Yirmiyah, 2, 28 ))),
     new BibleText("חזון ישעיהו").append(new BibleParagraph(BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 1, 1 ),
-            BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 1, 27 )))
+            BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 1, 27 ))),
+    //sheva denechamata
+    new BibleText("נחמו").append(new BibleParagraph(BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 40, 1 ),
+            BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 40, 26 ))),
+    new BibleText("ותאמר ציון").append(new BibleParagraph(BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 49, 14 ),
+            BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 51, 3 ))),
+    new BibleText("עניה סוערה").append(new BibleParagraph(BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 54, 11 ),
+            BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 55, 5 ))),
+    new BibleText("אנכי").append(new BibleParagraph(BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 51, 12 ),
+            BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 52, 12 ))),
+    new BibleText("רני עקרה").append(new BibleParagraph(BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 54, 1 ),
+            BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 54, 10 ))),
+    new BibleText("קומי אורי").append(new BibleParagraph(BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 60, 1 ),
+            BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 60, 22 ))),
+    new BibleText("שוש אשיש").append(new BibleParagraph(BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 61, 10 ),
+            BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 63, 9 ))),
 };
     BibleText gimel_depuranuta_chabad[]=
     {
-        gimel_depuranuta[0],
-        new BibleText(gimel_depuranuta[1]),
-        gimel_depuranuta[2]
+        gimel_depuranuta_sheva_denechamata[0],
+        new BibleText(gimel_depuranuta_sheva_denechamata[1]),
+        gimel_depuranuta_sheva_denechamata[2]
     };
+
     BibleText getHaftaraShaharit(YDatePreferences.HaftaraMinhag minhag)
     {
+        //https://he.wikipedia.org/wiki/%D7%94%D7%A4%D7%98%D7%A8%D7%94
         throw new UnsupportedOperationException("Not supported yet.");
         
     }

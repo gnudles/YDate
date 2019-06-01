@@ -5,7 +5,7 @@
  */
 package kapandaria.YDateQuery;
 
-import kapandaria.YDate.MYDate;
+import kapandaria.YDate.YDateDual;
 import kapandaria.YDate.YDatePreferences;
 import static kapandaria.YDateQuery.YDateEvaluator.FALSE;
 import static kapandaria.YDateQuery.YDateEvaluator.TRUE;
@@ -20,10 +20,10 @@ import java.util.Map;
  */
 public class YDateVariableSet implements AbstractVariableSet<Integer>
 {
-        MYDate m_ydate;
+        YDateDual m_ydate;
         YDatePreferences.DiasporaType m_diaspora;
         static private interface LambdaQuery {
-            int get(MYDate ydate, YDatePreferences.DiasporaType diaspora);
+            int get(YDateDual ydate, YDatePreferences.DiasporaType diaspora);
         }
         public static final int M_ID_TISHREI = 0;
         public static final int M_ID_CHESHVAN = 1;
@@ -61,7 +61,7 @@ public class YDateVariableSet implements AbstractVariableSet<Integer>
             lambdas = new HashMap<>();
             lambdas.put("dsb", ((ydate, diaspora) ->
             {
-                return ydate.hebrewDate().daysSinceBeginning();
+                return ydate.hebrewDate().GDN();
             }));
             lambdas.put("weekday", ((ydate, diaspora) ->
             {
@@ -101,7 +101,7 @@ public class YDateVariableSet implements AbstractVariableSet<Integer>
             lambdas.put("hanukkah", chanukkah);
         }
 
-        public YDateVariableSet(MYDate ydate,YDatePreferences.DiasporaType diaspora)
+        public YDateVariableSet(YDateDual ydate,YDatePreferences.DiasporaType diaspora)
         {
             m_ydate=ydate;
             m_diaspora=diaspora;

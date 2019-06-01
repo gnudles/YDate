@@ -123,7 +123,7 @@ public class IsraelDstTzProvider implements TimeZoneProvider
     static public float GetDSTAtIL(Date d)//d in UTC.
     {
 
-        MYDate _yd = MYDate.createFrom(d);
+        YDateDual _yd = YDateDual.createFrom(d);
         if (_yd.gregorianDate().year() < 2005)
         {
             final int BC=0;

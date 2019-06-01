@@ -169,14 +169,14 @@ public abstract class ADate
      * @param days day in "beginning count" or other count that day 0 is sunday
      * @return days + x (6 &gt; = x &gt; = 0). that gives that certain day in week. 
      */
-    public static int getNext(int diw, int days) // return the upcoming diw (or today if it's that diw)
+    public static int getNext(int diw, int gdn) // return the upcoming diw (or today if it's that diw)
     {
-        int diff = (diw - days % 7 + 7) % 7;
-        return (days + diff);
+        int diff = (diw - gdn % 7 + 7) % 7;
+        return (gdn + diff);
     }
 
-    public static int getPrevious(int diw, int days) {
-        return getNext(diw, days - 6);
+    public static int getPrevious(int diw, int gdn) {
+        return getNext(diw, gdn - 6);
     }
     
     public static Date toDate(int days, float hour)//hour in utc
@@ -190,8 +190,8 @@ public abstract class ADate
     {
         return (int) (jd + 0.5001 - ADate.JULIAN_DAY_OFFSET);
     }
-    public static double DaysToJd(int days) {
-            return days + ADate.JULIAN_DAY_OFFSET - 0.5;
+    public static double DaysToJd(int gdn) {
+            return gdn + ADate.JULIAN_DAY_OFFSET - 0.5;
         }
 
     public static String getTimeString(Date d, TimeZone tz, boolean seconds) {

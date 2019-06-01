@@ -173,6 +173,11 @@ public class YDateLanguage {
             = {
                 "star_mercury", "star_moon", "star_saturn", "star_jupiter", "star_mars", "star_sun", "star_venus"
             };
+    public static final String[] shmita_labels
+            = {
+                "shmita_1", "shmita_2", "shmita_3", "shmita_4", "shmita_5", "shmita_6", "shmita_7", "yovel"
+            };
+
     final static String[] special_shabbat
             = {
                 "Shkalim",
@@ -209,8 +214,17 @@ public class YDateLanguage {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public String getEventToken(int token){
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public String getToken(String token){
+        if (token == null || token.isEmpty())
+            return "";
+        try
+        {
+            return _rbundle.getString(token);
+        }
+        catch(Exception e)
+                {
+                    throw new NullPointerException("Unknwn token: " +token);
+                }
     }
 
     public String getZodiacToken(int token) {
@@ -226,9 +240,17 @@ public class YDateLanguage {
     {
         return _rbundle.getString(star_names[token]);
     }
+    public String getShmitaToken(int token)
+    {
+        return _rbundle.getString(shmita_labels[token]);
+    }
 
     public  String getRejection(short rejected){
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (rejected==YDateAnnual.LATE)
+            return _rbundle.getString("LATE_EVENT");
+        if (rejected==YDateAnnual.PRECEDE)
+            return _rbundle.getString("EARLY_EVENT");
+        return null;
     }
 
     public  String getSpecialShabbat(int token){

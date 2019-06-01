@@ -26,7 +26,7 @@ import kapandaria.GP.EventHandler;
 public class DateSyncGroup
 {
     private List<ADate> m_dates;
-    final int INVALID_BOUND = -1;
+    static final int INVALID_BOUND = -1;
     /**
      * common lower bound in GDN.
      */
@@ -53,7 +53,7 @@ public class DateSyncGroup
         m_dateChanged.addListener(listener);
     }
 
-    private void notifyDateChanged(ADate date) {
+    private void _notifyDateChanged(ADate date) {
         m_dateChanged.trigger(date);
     }
     /**
@@ -69,7 +69,7 @@ public class DateSyncGroup
         if (m_upperCommonBound==INVALID_BOUND || m_upperCommonBound>dateObject.upperBound())
             m_upperCommonBound=dateObject.upperBound();
     }
-    private int clippedGDN(int gdn)
+    private int _clippedGDN(int gdn)
     {
         if (gdn<m_lowerCommonBound)
             return m_lowerCommonBound;
@@ -88,7 +88,7 @@ public class DateSyncGroup
     {
         if (!dateSync.isValid())
             return false;
-        int gdn = clippedGDN(dateSync.GDN());
+        int gdn = _clippedGDN(dateSync.GDN());
         boolean clipped = (gdn!=dateSync.GDN());
         for (ADate date : m_dates) {
             if (clipped || date != dateSync) //we will skip updating the sync object.
@@ -98,7 +98,7 @@ public class DateSyncGroup
                 date.unmuteTriggers();
             }
         }
-        notifyDateChanged(dateSync);
+        _notifyDateChanged(dateSync);
         for (ADate date : m_dates) {
             date.triggerEvents();
         }
