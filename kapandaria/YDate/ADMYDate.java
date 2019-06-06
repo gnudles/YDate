@@ -33,4 +33,26 @@ public abstract class ADMYDate extends ADate
     public abstract int yearFirstDayGDN();
     public abstract int monthFirstDayGDN();
     
+    /**
+    * Get the day in the week for that specific date.
+    * @return the week day number in range 0..6, where 0 denotes sunday and 6 denotes saturday.
+    */
+    public int dayInWeekEnum()//starts from zero
+    {
+        return GDN() % 7;
+    }
+    /**
+    * Get the day in the week for that specific date.
+    * @return the week day number in range 1..7, where 1 denotes sunday and 7 denotes saturday.
+    */
+    public int dayInWeek()//starts from one
+    {
+        return GDN() % 7 + 1;
+    }
+    public String dayInWeekName(YDateLanguage.Language language) {
+        //TODO... make this multilingual...
+        YDateLanguage le = YDateLanguage.getLanguageEngine(language);
+        return le.getToken(DayInWeekTokens[dayInWeekEnum()]);
+    }
+    
 }

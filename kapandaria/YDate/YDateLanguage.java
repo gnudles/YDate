@@ -105,20 +105,8 @@ public class YDateLanguage {
             "it",
             "ena"
     };*/
-    static final String[] WeekTokens = {"wd_sunday", "wd_monday", "wd_tuesday",
-        "wd_wednesday", "wd_thursday", "wd_friday", "wd_saturday"};
-    static final String[] HebMonthTokens = {"hm_tisheri", "hm_cheshvan", "hm_kislev",
-        "hm_tevet",
-        "hm_shevat",
-        "hm_adar",
-        "hm_adar1",
-        "hm_adar2",
-        "hm_nisan",
-        "hm_iyar",
-        "hm_sivan",
-        "hm_tammuz",
-        "hm_av",
-        "hm_elul"};
+    
+    
     static final String[] GregMonthTokens
             = {"gm_january",
                 "gm_february",
@@ -146,33 +134,7 @@ public class YDateLanguage {
                 "Nov",
                 "Dec"};
 
-    public static final String[] zodiac_names
-            = {
-                "zdc_aries",
-                "zdc_taurus",
-                "zdc_gemini",
-                "zdc_cancer",
-                "zdc_leo",
-                "zdc_virgo",
-                "zdc_libra",
-                "zdc_scorpio",
-                "zdc_sagittarius",
-                "zdc_capricorn",
-                "zdc_aquarius",
-                "zdc_pisces"
-            };
 
-    public static final String[] four_elements_names
-            = {
-                "elmnt_fire",
-                "elmnt_earth",
-                "elmnt_wind",
-                "elmnt_water"
-            };
-    public static final String[] star_names
-            = {
-                "star_mercury", "star_moon", "star_saturn", "star_jupiter", "star_mars", "star_sun", "star_venus"
-            };
     public static final String[] shmita_labels
             = {
                 "shmita_1", "shmita_2", "shmita_3", "shmita_4", "shmita_5", "shmita_6", "shmita_7", "yovel"
@@ -191,7 +153,7 @@ public class YDateLanguage {
             };
 
     public String getWeekToken(int token) {
-        return _rbundle.getString(WeekTokens[token]);
+        return _rbundle.getString(ADate.DayInWeekTokens[token]);
     }
 
     public String getShortWeekToken(int token){
@@ -199,7 +161,7 @@ public class YDateLanguage {
     }
 
     public String getHebMonthToken(int token) {
-        return _rbundle.getString(HebMonthTokens[token]);
+        return _rbundle.getString(JewishDate.HebMonthTokens[token]);
     }
 
     public String getShortHebMonthToken(int token){
@@ -226,7 +188,7 @@ public class YDateLanguage {
                     throw new NullPointerException("Unknwn token: " +token);
                 }
     }
-
+/*
     public String getZodiacToken(int token) {
         return _rbundle.getString(zodiac_names[token]);
     }
@@ -239,7 +201,7 @@ public class YDateLanguage {
     public String getStarToken(int token)
     {
         return _rbundle.getString(star_names[token]);
-    }
+    }*/
     public String getShmitaToken(int token)
     {
         return _rbundle.getString(shmita_labels[token]);

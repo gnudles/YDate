@@ -54,54 +54,56 @@ public class GregorianDate extends ADMYDate
 
     static final int[] HUNDRED_OFFSET = {0, 36525, 36525 * 2 - 1, 36525 * 3 - 2};
     /**
-    * The gregorian year. year 1 is the first year in CE. There is no year
+    * The Gregorian year. year 1 is the first year in CE. There is no year
     * zero. Year -1 is the last year before Common Era. Anyway, the valid
     * range for this variable is 1600..2299
     */
-    private int m_year;
+    private int _year;
     /**
     * The month in the year. There are twelve months in a year. The value
     * is in the range 1..12, while 1 denotes January, 2 denotes February ..
     * 12 denotes December
     */
-    private int m_month;
+    private int _month;
     /**
     * The day in the month. The value is in the range 1..31 .
     */
-    private int m_day;
+    private int _day;
     /**
     * The number of days in the year. The value may be only 365 or 366.
     */
-    private int m_yearLength;
+    private int _yearLength;
     /**
     * The number of days from the beginning to the year's first day (1st of
     * January of the year)
     */
-    private int m_yearFirstDay;
+    private int _yearFirstDay;
     /**
     * The day in the year (or number of days after year beginning). 0
     * denotes the year's first day (1st of January of the year). the value
     * is in the range 0..364 in regular year and in the range 0..365 in a
     * leap year.
     */
-    private int m_dayInYear;
+    private int _dayInYear;
     /**
     * Is the date valid?
     */
-    private boolean m_valid;
+    private boolean _valid;
+    private boolean _desired;
 
     /**
     * empty constructor.
     * constructs empty invalid object.
     */
     public GregorianDate() {
-       this.m_valid = false;
-       this.m_year = 1;
-       this.m_month = 1;
-       this.m_day = 1;
-       this.m_yearFirstDay = 0;
-       this.m_yearLength = 365;
-       this.m_dayInYear = 0;
+       this._valid = false;
+       this._desired = false;
+       this._year = 1;
+       this._month = 1;
+       this._day = 1;
+       this._yearFirstDay = 0;
+       this._yearLength = 365;
+       this._dayInYear = 0;
     }
     
     /**
@@ -110,13 +112,14 @@ public class GregorianDate extends ADMYDate
     * @param o object to be cloned.
     */
     public GregorianDate(GregorianDate o) {
-       this.m_valid = o.m_valid;
-       this.m_year = o.m_year;
-       this.m_month = o.m_month;
-       this.m_day = o.m_day;
-       this.m_yearFirstDay = o.m_yearFirstDay;
-       this.m_yearLength = o.m_yearLength;
-       this.m_dayInYear = o.m_dayInYear;
+       this._valid = o._valid;
+       this._desired = o._desired;
+       this._year = o._year;
+       this._month = o._month;
+       this._day = o._day;
+       this._yearFirstDay = o._yearFirstDay;
+       this._yearLength = o._yearLength;
+       this._dayInYear = o._dayInYear;
     }
     
     /**
@@ -125,13 +128,14 @@ public class GregorianDate extends ADMYDate
     * @param o object to copy from.
     */
     public boolean MimicDate(GregorianDate o) {
-       this.m_valid = o.m_valid;
-       this.m_year = o.m_year;
-       this.m_month = o.m_month;
-       this.m_day = o.m_day;
-       this.m_yearFirstDay = o.m_yearFirstDay;
-       this.m_yearLength = o.m_yearLength;
-       this.m_dayInYear = o.m_dayInYear;
+       this._valid = o._valid;
+       this._desired = o._desired;
+       this._year = o._year;
+       this._month = o._month;
+       this._day = o._day;
+       this._yearFirstDay = o._yearFirstDay;
+       this._yearLength = o._yearLength;
+       this._dayInYear = o._dayInYear;
        return stateChanged();
     }
 
@@ -145,7 +149,8 @@ public class GregorianDate extends ADMYDate
     * @param day Gregorian day in month (range 1..31).
     */
     public GregorianDate(int year, int month, int day) {
-       m_valid = setByYearMonthDay(year, month, day);
+       _valid = false;
+       setByYearMonthDay(year, month, day);
     }
 
     /**
@@ -157,7 +162,8 @@ public class GregorianDate extends ADMYDate
     * object from it.
     */
     public GregorianDate(int days) {
-       m_valid = setByDays(days);
+       _valid = false;
+       setByDays(days);
     }
 
     /**
@@ -169,40 +175,42 @@ public class GregorianDate extends ADMYDate
     public boolean setByYearMonthDay(int year, int month, int day) {
         
        if (year >= 1600 && year < 2300) {
-           boolean desired=true;
-           this.m_year = year;
+           _desired=true;
+           this._year = year;
            //fix the month parameter
            if (month > 12) {
                month = 12;
-               desired=false;
+               _desired=false;
            }
            else if (month < 1) {
                month = 1;
-               desired=false;
+               _desired=false;
            }
-           this.m_month = month;
+           this._month = month;
            //calculate the year's first day in the "beginning count".
-           this.m_yearFirstDay = yearGDN(this.m_year);
+           this._yearFirstDay = yearGDN(this._year);
            //calculate the year's length.
-           this.m_yearLength = isLeap(this.m_year) ? 366 : 365;
+           this._yearLength = isLeap(this._year) ? 366 : 365;
            //calculate the month's length.
            int month_length = monthLength();
            //fix the day parameter
            if (day > month_length) {
                day = month_length;
-               desired=false;
+               _desired=false;
            }
            else if (day < 1) {
                day = 1;
-               desired=false;
+               _desired=false;
            }
 
-           this.m_day = day;
-           this.m_dayInYear = calculateDayInYear(this.m_yearLength, this.m_month, this.m_day);
-           this.m_valid = true;
-           return desired && stateChanged();
+           this._day = day;
+           this._dayInYear = calculateDayInYear(this._yearLength, this._month, this._day);
+           this._valid = true;
+           _desired = _desired && stateChanged();
+           return _desired;
        }
        else {
+           this._desired = false;
            return false;
        }
     }
@@ -214,53 +222,55 @@ public class GregorianDate extends ADMYDate
        for (i = DAYS_OF_1600; i < DAYS_OF_2300; ++i) {
            gd1.setByDays(i);
            gd2.setByDaysOrig(i);
-           if (gd1.m_year != gd2.m_year) {
+           if (gd1._year != gd2._year) {
                break;
            }
-           if (gd1.m_month != gd2.m_month) {
+           if (gd1._month != gd2._month) {
                break;
            }
-           if (gd1.m_day != gd2.m_day) {
+           if (gd1._day != gd2._day) {
                break;
            }
-           if (gd1.m_yearFirstDay != gd2.m_yearFirstDay) {
+           if (gd1._yearFirstDay != gd2._yearFirstDay) {
                break;
            }
-           if (gd1.m_dayInYear != gd2.m_dayInYear) {
+           if (gd1._dayInYear != gd2._dayInYear) {
                break;
            }
        }
        return i;
     }
-    private boolean setByDays(int days) {
-       if (days >= DAYS_OF_1600 && days < DAYS_OF_2300) {
+    private boolean setByDays(int gdn) {
+       if (checkBounds(gdn)) {
 
            int gd_year;
-           int gd_year_first_day = days;
+           int gd_year_first_day = gdn;
 
-           days -= DAYS_OF_1600; //start calculation from a year thar divisible by 400.
-           gd_year = 1600 + 400 * ((days) / DAYS_IN_400); // now get to our 400 years level
-           days = days % DAYS_IN_400; // number of days since the beginning of current 400 years level.
-           int h = (days * 4) / DAYS_IN_400;// what hundred are we? 0 1 2 3 ? this consider leap years.
+           gdn -= DAYS_OF_1600; //start calculation from a year thar divisible by 400.
+           gd_year = 1600 + 400 * ((gdn) / DAYS_IN_400); // now get to our 400 years level
+           gdn = gdn % DAYS_IN_400; // number of days since the beginning of current 400 years level.
+           int h = (gdn * 4) / DAYS_IN_400;// what hundred are we? 0 1 2 3 ? this consider leap years.
            int not_h0 = (h > 0) ? 1 : 0; //if not the first hundred in four hundreds
            gd_year += 100 * h; // advance the year to the current hundred
-           days = days - HUNDRED_OFFSET[h];//get days after the currect century.
-           int y_in_h = ((days + not_h0) * 4) / DAYS_IN_4;// which year in this hundred? of course considering leap years.
+           gdn = gdn - HUNDRED_OFFSET[h];//get days after the currect century.
+           int y_in_h = ((gdn + not_h0) * 4) / DAYS_IN_4;// which year in this hundred? of course considering leap years.
            gd_year += y_in_h;// add years in century. now we finally found the specified year.
            int y_in_h_not0 = (y_in_h > 0) ? 1 : 0;//if y_in_h > 0 ? if not the first year in the century.
-           days = days - (y_in_h * DAYS_IN_4 + 3) / 4 + (y_in_h_not0 & not_h0);//we subtracted one day too much if we are not in the first year and not in the first hundred.
+           gdn = gdn - (y_in_h * DAYS_IN_4 + 3) / 4 + (y_in_h_not0 & not_h0);//we subtracted one day too much if we are not in the first year and not in the first hundred.
            //so we added it afterwards
            
-           gd_year_first_day -= days;// get the first day of the year in GDN.
-           this.m_year = gd_year;
-           this.m_dayInYear = days;
-           setMonthDay(days);
-           this.m_yearFirstDay = gd_year_first_day;
-           this.m_yearLength = isLeap(this.m_year) ? 366 : 365;
-           this.m_valid = (GDN() == days);
-           return this.m_valid && stateChanged();
+           gd_year_first_day -= gdn;// get the first day of the year in GDN.
+           this._year = gd_year;
+           this._dayInYear = gdn;
+           setMonthDay(gdn);
+           this._yearFirstDay = gd_year_first_day;
+           this._yearLength = isLeap(this._year) ? 366 : 365;
+           this._desired = stateChanged();
+           this._valid = true;
+           return this._desired;
        }
        else {
+           this._desired = false;
            return false;
        }
     }
@@ -285,15 +295,15 @@ public class GregorianDate extends ADMYDate
                gd_year = 100 * (n - 49) + i + l;
            }
 
-           this.m_year = gd_year;
-           this.m_month = gd_month;
-           this.m_day = gd_day;
+           this._year = gd_year;
+           this._month = gd_month;
+           this._day = gd_day;
 
-           this.m_yearLength = isLeap(this.m_year) ? 366 : 365;
-           this.m_dayInYear = calculateDayInYear(this.m_yearLength, this.m_month, this.m_day);
-           this.m_yearFirstDay = days - this.m_dayInYear; //previously it was days_until_year(this.year);
-           this.m_valid = (GDN() == days);
-           return this.m_valid && stateChanged();
+           this._yearLength = isLeap(this._year) ? 366 : 365;
+           this._dayInYear = calculateDayInYear(this._yearLength, this._month, this._day);
+           this._yearFirstDay = days - this._dayInYear; //previously it was days_until_year(this.year);
+           this._valid = (GDN() == days);
+           return this._valid && stateChanged();
        }
        else {
            return false;
@@ -307,7 +317,7 @@ public class GregorianDate extends ADMYDate
     @Override
     public boolean isValid()
     {
-       return m_valid;
+       return _valid;
     }
 
     /**
@@ -318,16 +328,10 @@ public class GregorianDate extends ADMYDate
     * @return a string in the format "August 1, 1999".
     */
     public String dayString(YDateLanguage.Language language) {
-       return YDateLanguage.getLanguageEngine(language).FormatGregorianDate(m_day, m_month, m_year);
+       return YDateLanguage.getLanguageEngine(language).FormatGregorianDate(_day, _month, _year);
     }
 
-    /**
-    * Get the day in the week for that specific date.
-    * @return the week day number in range 1..7, where 1 denotes sunday and 7 denotes saturday.
-    */
-    public int dayInWeek() {
-       return daysSinceBeginning() % 7 + 1;
-    }
+    
 
     /**
     * Get the day in the month for that specific date.
@@ -335,7 +339,7 @@ public class GregorianDate extends ADMYDate
     */
     @Override
     public int dayInMonth() {
-       return this.m_day;
+       return this._day;
     }
 
     /**
@@ -345,7 +349,7 @@ public class GregorianDate extends ADMYDate
     */
     @Override
     public int dayInYear() {
-       return this.m_dayInYear;
+       return this._dayInYear;
     }
 
     /**
@@ -354,16 +358,16 @@ public class GregorianDate extends ADMYDate
      */
     @Override
     public int year() {
-       return this.m_year;
+       return this._year;
     }
 
     @Override
     public int month() {
-       return this.m_month;
+       return this._month;
     }
 
     public int daysSinceBeginning() {
-       return m_yearFirstDay + m_dayInYear;
+       return _yearFirstDay + _dayInYear;
     }
 
     /**
@@ -371,7 +375,7 @@ public class GregorianDate extends ADMYDate
     * January of the year)
     */
     public int yearFirstDay() {
-       return this.m_yearFirstDay;
+       return this._yearFirstDay;
     }
 
     /**
@@ -379,28 +383,28 @@ public class GregorianDate extends ADMYDate
     * @return The number of days in the "beginning count" to the first day in the current month.
     */
     public int monthFirstDay() {
-       return m_yearFirstDay + m_dayInYear - m_day + 1;
+       return _yearFirstDay + _dayInYear - _day + 1;
     }
     @Override
     public int monthLength()
     {
-       int mo_year_t = m_yearLength - 365;
-       return months_days_offsets[mo_year_t][m_month] - months_days_offsets[mo_year_t][m_month - 1];
+       int mo_year_t = _yearLength - 365;
+       return months_days_offsets[mo_year_t][_month] - months_days_offsets[mo_year_t][_month - 1];
     }
 
     @Override
     public int previousMonthLength()
     {
-       if (this.m_month == 1)//December is always 31 days
+       if (this._month == 1)//December is always 31 days
        {
            return 31;
        }
-       int mo_year_t = m_yearLength - 365;
-       return months_days_offsets[mo_year_t][m_month - 1] - months_days_offsets[mo_year_t][m_month - 2];
+       int mo_year_t = _yearLength - 365;
+       return months_days_offsets[mo_year_t][_month - 1] - months_days_offsets[mo_year_t][_month - 2];
     }
 
     public int yearLength() {
-       return this.m_yearLength;
+       return this._yearLength;
     }
 
     public static boolean isLeap(int year) {
@@ -421,7 +425,7 @@ public class GregorianDate extends ADMYDate
     }
 
     public String monthName(YDateLanguage.Language language) {
-       return YDateLanguage.getLanguageEngine(language).getGregMonthToken(this.m_month - 1);
+       return YDateLanguage.getLanguageEngine(language).getGregMonthToken(this._month - 1);
     }
     private static final int[][] months_days_offsets
            = {
@@ -435,7 +439,7 @@ public class GregorianDate extends ADMYDate
     * @param days day in the year.
     */
     private void setMonthDay(int days) {
-       int mo_year_t = isLeap(this.m_year) ? 1 : 0;
+       int mo_year_t = isLeap(this._year) ? 1 : 0;
        int m = days * 2 / 61;
        if (months_days_offsets[mo_year_t][m] > days) {
            m--;
@@ -443,8 +447,8 @@ public class GregorianDate extends ADMYDate
        else if (months_days_offsets[mo_year_t][m + 1] <= days) {
            m++;
        }
-       this.m_month = m + 1;
-       this.m_day = days - months_days_offsets[mo_year_t][m] + 1;
+       this._month = m + 1;
+       this._day = days - months_days_offsets[mo_year_t][m] + 1;
        //TODO: create a static version for this method.
     }
 
@@ -490,11 +494,11 @@ public class GregorianDate extends ADMYDate
     }
 
     public boolean stepMonthForward(boolean cyclic) {
-       return setByYearMonthDay(m_year + (cyclic ? 0 : (m_month == 12 ? 1 : 0)), (m_month % 12) + 1, m_day);
+       return setByYearMonthDay(_year + (cyclic ? 0 : (_month == 12 ? 1 : 0)), (_month % 12) + 1, _day);
     }
 
     public boolean stepMonthBackward(boolean cyclic) {
-       return setByYearMonthDay(m_year - (cyclic ? 0 : (m_month == 1 ? 1 : 0)), ((m_month + 10) % 12) + 1, m_day);
+       return setByYearMonthDay(_year - (cyclic ? 0 : (_month == 1 ? 1 : 0)), ((_month + 10) % 12) + 1, _day);
     }
 
     @Override
@@ -531,5 +535,10 @@ public class GregorianDate extends ADMYDate
     public int lowerBound()
     {
         return DAYS_OF_1600;
+    }
+
+    @Override
+    public boolean isDesired() {
+        return this._desired;
     }
 }

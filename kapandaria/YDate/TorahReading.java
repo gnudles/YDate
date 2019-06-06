@@ -826,10 +826,63 @@ Divrei Hayamim II - II Chronicles
         }
         
     }
-    BibleText haftarot[]=
+    BibleText haftarot_ashkenaz[]=
     {
+      //Bereshit
+        new BibleText("כה אמר האל").append(new BibleParagraph(BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 42, 5 ),
+            BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 43, 10 ))),
+        //Noah
+        new BibleText("רני עקרה").append(new BibleParagraph(BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 54, 1 ),
+            BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 55, 5 ))),
+    };
+    BibleText haftarot_sefaradim[]=
+    {
+      //Bereshit
+        new BibleText("כה אמר האל").append(new BibleParagraph(BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 42, 5 ),
+            BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 42, 21 ))),
+        //Noah
+        new BibleText("רני עקרה").append(new BibleParagraph(BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 54, 1 ),
+            BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 54, 10 ))),
         
-    }
+    };
+    BibleText haftarot_chabad[]=
+    {
+        //bereshit
+        haftarot_sefaradim[0],
+        //Noah
+        haftarot_sefaradim[1],
+        
+        
+    };
+    BibleText haftarot_frankfurt[]=
+    {
+        //bereshit
+        haftarot_sefaradim[0],
+        //Noah
+        haftarot_ashkenaz[1],
+        
+    };
+    BibleText haftarot_italians[]=
+    {
+        //bereshit
+        new BibleText("הן עבדי").append(new BibleParagraph(BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 42, 1 ),
+            BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 42, 21 ))),
+        //Noah
+        haftarot_ashkenaz[1],
+        
+        
+        
+    };
+    BibleText haftarot_teiman[]=
+    {
+        //bereshit
+        new BibleText("הן עבדי").append(new BibleParagraph(BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 42, 1 ),
+            BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 42, 16 ))),
+        //Noah
+        new BibleText("רני עקרה").append(new BibleParagraph(BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 54, 1 ),
+            BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 55, 3 ))),
+        
+    };
     BibleText gimel_depuranuta_sheva_denechamata[]={
         //gimel depuranuta
     new BibleText("דברי ירמיהו").append(new BibleParagraph(BibleIndex.BibleIndex(BibleIndex.BibleBook.Yirmiyah, 1, 1 ),

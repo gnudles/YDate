@@ -79,12 +79,18 @@ public final class JewishDate extends ADMYDate
     static int HP(int h, int p) {
         return h * HOUR + p;
     }
-    /** to be removed!... */
-    public static final String[][] zodiac_names = {
-        {"טלה", "שור", "תאומים", "סרטן", "אריה", "בתולה", "מאזנים", "עקרב", "קשת", "גדי", "דלי", "דגים"},
-        {"Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"}
-    };
-    
+    static final String[] HebMonthTokens = {"hm_tisheri", "hm_cheshvan", "hm_kislev",
+        "hm_tevet",
+        "hm_shevat",
+        "hm_adar",
+        "hm_adar1",
+        "hm_adar2",
+        "hm_nisan",
+        "hm_iyar",
+        "hm_sivan",
+        "hm_tammuz",
+        "hm_av",
+        "hm_elul"};
     /**
      * Every zodiac sign is connected with an element. this string contains the
      * names of the four elements.
@@ -95,26 +101,46 @@ public final class JewishDate extends ADMYDate
      * The ones with the element of fire doesn't get along with those of water.
      * The ones with the element of earth doesn't get along with those of wind.
      */
-    /** to be removed!... */
-    public static final String[][] four_elements_names = {
-        {"אש", "עפר", "רוח", "מים"},
-        {"fire", "earth", "wind", "water"}
-    };
-    /** to be removed!... */
-    public static final String[][] day_names = {
-        {"ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"},
-        {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"},
-        {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"}};
+        public static final String[] zodiacNameTokens
+            = {
+                "zdc_aries",
+                "zdc_taurus",
+                "zdc_gemini",
+                "zdc_cancer",
+                "zdc_leo",
+                "zdc_virgo",
+                "zdc_libra",
+                "zdc_scorpio",
+                "zdc_sagittarius",
+                "zdc_capricorn",
+                "zdc_aquarius",
+                "zdc_pisces"
+            };
+
+    public static final String[] FourElementsNameTokens
+            = {
+                "elmnt_fire",
+                "elmnt_earth",
+                "elmnt_wind",
+                "elmnt_water"
+            };
+    
+    public static final String[] starNameTokens
+            = {
+                "star_mercury", "star_moon", "star_saturn", "star_jupiter", "star_mars", "star_sun", "star_venus"
+            };
+
 
     private int _year = 0; // year 1 is the first year.
     private int _month; // range 1..12,or 1..13 in leap year
 
     private int _day; // range 1..30
-    private long _yearGParts; // parts since the beginning
+    private long _yearGParts; // parts since the Genesis beginning
     private int _yearLength; // days in year - 353,354,355,383,384,385
     private int _yearFirstDay; // first day of rosh hashana from the beginning
     private int _dayInYear; // days after year beginning. first day in year  is 0
     private boolean _valid;
+    private boolean _desired;
 
     /**
     * empty constructor.
@@ -122,6 +148,7 @@ public final class JewishDate extends ADMYDate
     */
     public JewishDate() {
         this._valid = false;
+        this._desired = false;
         this._year = 1;
         this._month = 1;
         this._day = 1;
@@ -137,6 +164,7 @@ public final class JewishDate extends ADMYDate
     */
     public JewishDate(JewishDate o) {
         this._valid = o._valid;
+        this._desired = o._desired;
         this._year = o._year;
         this._month = o._month;
         this._day = o._day;
@@ -152,6 +180,7 @@ public final class JewishDate extends ADMYDate
     */
     public boolean MimicDate(JewishDate o) {
         this._valid = o._valid;
+        this._desired = o._desired;
         this._year = o._year;
         this._month = o._month;
         this._day = o._day;
@@ -161,62 +190,129 @@ public final class JewishDate extends ADMYDate
         this._dayInYear = o._dayInYear;
         return stateChanged();
     }
-    public static JewishDate create(int year, int monthId, int day)
+    public static JewishDate createByYMidD(int year, int monthId, int day)
     {
-        return new JewishDate(year,monthFromIDByYear(year,monthId),day);
+        JewishDate jd = new JewishDate(year,1,1);
+        jd.setByYearMonthIdDay(year, monthId, day);
+        return jd;
     }
-
-    private JewishDate(int year, int month, int day) {
-        if (year >= 4119 && year < 7001) {
+    public static JewishDate createByYMD(int year, int month, int day)
+    {
+        return new JewishDate(year, month, day);
+    }
+    
+    
+    public boolean setByYearMonthDay(int year, int month, int day) {
+        if (year >= 4119 && year < 6001) {
+            
+            if (this._year != year || this._valid == false) {
+                this._year = year;
+                _calculateYearVariables();
+            }
             this._valid = true;
-            this._year = year;
+            this._desired = true;
+            if (month < 1)
+            {
+                month = 1;
+                _desired = false;
+            }
+            else if ( month > calculateYearMonths(year) )
+            {
+                month = calculateYearMonths(year);
+                _desired = false;
+            }
             this._month = month;
+            int month_length = monthLength();
+            if (day < 1)
+            {
+                day = 1;
+                _desired = false;
+            }
+            if (day > month_length)
+            {
+                day = month_length;
+                _desired = false;
+            }
             this._day = day;
-            _calculateYearVariables();
             this._dayInYear = _calculateDayInYear(this._yearLength, month, day);
+            _desired = _desired && stateChanged();
+            return _desired;
         }
         else {
             this._valid = false;
+            this._desired = false;
+            return false;
         }
     }
 
+    public boolean setByYearMonthIdDay(int year, int monthId, int day) {
+        return setByYearMonthDay(year, monthFromIDByYear(year,monthId), day);
+    }
+
+    @Override
+    public boolean setByGDN(int gdn) {
+        if (!checkBounds(gdn)) {
+            this._desired = false;
+            return false;
+        }
+        long orig_parts = (long) gdn * DAY;
+        long parts = orig_parts - MOLAD;
+        int months = (int) (parts / MONTH);
+        parts = (parts % MONTH);
+        int years = 1;//first year was year one.
+        years += 19 * (months / MONTHS_IN_19Y);
+        months = months % MONTHS_IN_19Y;
+        int year_in_19 = ((months + 1) * 19 - 2) / 235;
+        years += year_in_19;
+        months = months - (235 * (year_in_19) + 1) / 19;
+        parts += months * MONTH;
+        this._yearGParts = orig_parts - parts;
+        this._yearFirstDay = days_until_year(years, this._yearGParts);
+        int next_year_day = days_until_year(years + 1, partsSinceGenesis(years + 1));
+        int months_in_year;
+        if (gdn >= this._yearFirstDay && gdn < next_year_day) {
+            this._year = years;
+            this._yearLength = next_year_day - this._yearFirstDay;
+        }
+        else {
+
+            if (gdn < this._yearFirstDay) {
+                this._year = years - 1;
+                months_in_year = calculateYearMonths(this._year);
+                this._yearGParts -= months_in_year * MONTH;
+                next_year_day = this._yearFirstDay;
+                this._yearFirstDay = days_until_year(this._year, this._yearGParts);
+                this._yearLength = next_year_day - this._yearFirstDay;
+            }
+            else {
+                this._year = years + 1;
+                months_in_year = calculateYearMonths(years);
+                this._yearGParts += months_in_year * MONTH;
+                this._yearFirstDay = next_year_day;
+                this._yearLength = days_until_year(this._year + 1, partsSinceGenesis(this._year + 1)) - this._yearFirstDay;
+            }
+        }
+        this._dayInYear = gdn - this._yearFirstDay;
+        _setMonthDay(this._dayInYear);
+        this._valid = true;
+        this._desired = stateChanged();
+        return this._desired;
+    }
     private void _calculateYearVariables() {
         this._yearGParts = partsSinceGenesis(_year);
         this._yearFirstDay = days_until_year(_year, this._yearGParts);
         this._yearLength = days_until_year(_year + 1, partsSinceGenesis(_year + 1)) - this._yearFirstDay;
     }
 
-    public boolean setByYearMonthIdDay(int year, int month_id, int day) {
-        if (year >= 4119 && year < 6001) {
-            this._valid = true;
-            if (this._year != year) {
-                this._year = year;
-                _calculateYearVariables();
-            }
-            this._month = monthFromIDByYearLength(this._yearLength, month_id);
-            int month_length = monthLength();
-            this._day = Math.min(month_length, day);
-            this._dayInYear = _calculateDayInYear(this._yearLength, this._month, this._day);
-            return stateChanged();
-        }
-        return false;
-    }
-
-    @Override
-    public boolean setByGDN(int gdn) {
-        boolean result=_setByDays(gdn);
-        stateChanged();
-        return result && (gdn == GDN());
-    }
-    /*@Override
-    public boolean seekBy(int offset) {
-        int days = GDN() + offset;
-        return setByGDN(days);
-    }*/
     
-
+    
+    public JewishDate(int year, int month, int day) {
+        _valid = false;
+        setByYearMonthDay(year,month,day);
+    }
     public JewishDate(int gdn) {
-        _valid = _setByDays(gdn);
+        _valid = false;
+        setByGDN(gdn);
     }
 
     /**
@@ -253,60 +349,7 @@ public final class JewishDate extends ADMYDate
     {
         return _valid;
     }
-    /**
-     * don't use that, use setByGDN instead
-     * @param gdn
-     * @return
-     * 
-     */
-    private boolean _setByDays(int days)
-    {
-        if (!checkBounds(days)) {
-            return false;
-        }
-        long orig_parts = (long) days * DAY;
-        long parts = orig_parts - MOLAD;
-        int months = (int) (parts / MONTH);
-        parts = (parts % MONTH);
-        int years = 1;//first year was year one.
-        years += 19 * (months / MONTHS_IN_19Y);
-        months = months % MONTHS_IN_19Y;
-        int year_in_19 = ((months + 1) * 19 - 2) / 235;
-        years += year_in_19;
-        months = months - (235 * (year_in_19) + 1) / 19;
-        parts += months * MONTH;
-        this._yearGParts = orig_parts - parts;
-        this._yearFirstDay = days_until_year(years, this._yearGParts);
-        int next_year_day = days_until_year(years + 1, partsSinceGenesis(years + 1));
-        int months_in_year;
-        if (days >= this._yearFirstDay && days < next_year_day) {
-            this._year = years;
-            this._yearLength = next_year_day - this._yearFirstDay;
-        }
-        else {
 
-            if (days < this._yearFirstDay) {
-                this._year = years - 1;
-                months_in_year = calculateYearMonths(this._year);
-                this._yearGParts -= months_in_year * MONTH;
-                next_year_day = this._yearFirstDay;
-                this._yearFirstDay = days_until_year(this._year, this._yearGParts);
-                this._yearLength = next_year_day - this._yearFirstDay;
-            }
-            else {
-                assert (days >= next_year_day);
-                this._year = years + 1;
-                months_in_year = calculateYearMonths(years);
-                this._yearGParts += months_in_year * MONTH;
-                this._yearFirstDay = next_year_day;
-                this._yearLength = days_until_year(this._year + 1, partsSinceGenesis(this._year + 1)) - this._yearFirstDay;
-            }
-        }
-        this._dayInYear = days - this._yearFirstDay;
-        _setMonthDay(this._dayInYear);
-        this._valid = true;
-        return true;
-    }
 
     @Override
     public int GDN()
@@ -380,6 +423,11 @@ public final class JewishDate extends ADMYDate
         }
         int pessach_day = calculateDayInYearByMonthId(_yearLength, M_ID_NISAN, 15);
         return (_dayInYear == pessach_day && !MusafAndAfter) || _dayInYear < pessach_day;
+    }
+
+    @Override
+    public boolean isDesired() {
+        return this._desired;
     }
 
 
@@ -510,15 +558,16 @@ public final class JewishDate extends ADMYDate
         return (M_ID_NISAN + (d % 4) * 3) % 14;
     }
 
-    public String MazalName(boolean Heb) {
+    public String ZodiacSignFormatted(YDateLanguage.Language language) {
         //TODO: make this return integer of mazal ID...
+        
         int mazal = MazalType();
-        if (Heb) {
-            return "מזל " + zodiac_names[0][mazal] + " (" + four_elements_names[0][mazal % 4] + ")";
-        }
-        else {
-            return "Zodiac. " + zodiac_names[1][mazal] + " (" + four_elements_names[1][mazal % 4] + ")";
-        }
+        YDateLanguage le = YDateLanguage.getLanguageEngine(language);
+
+        String formatted = le.getToken("format_zodiac");
+        formatted = formatted.replaceAll("_z_sign_", le.getToken(zodiacNameTokens[mazal]));
+        formatted = formatted.replaceAll("_element_", le.getToken(FourElementsNameTokens[mazal%4]));
+        return formatted;
     }
 
     public String TkufaName(YDateLanguage.Language language) {
@@ -527,14 +576,15 @@ public final class JewishDate extends ADMYDate
 
     public String MazalBeginning(TimeZoneProvider tz) {
         Date m = partsToUTC(MazalParts());
-        return FormatUTC(m, tz, true);
+        return FormatUTC(m, tz, YDateLanguage.Language.HEBREW);
     }
 
     public String TkufaBeginning(TimeZoneProvider tz) {
+        final int TAMMUZ_OR_TEVET = (1<<M_ID_TAMMUZ) | (1<<M_ID_TEVET);
         long parts = TkufaParts();
         Date m = partsToUTC(parts);
-        return FormatUTC(m, tz, true) + "\nמוסיפים " + ((TkufaType() % M_ID_NISAN == M_ID_TEVET) ? "60" : "30") + " דקות לפני ואחרי."
-                + "\nתחילת תקופה ב" + starForHour(parts, YDateLanguage.getLanguageEngine(YDateLanguage.Language.HEBREW));
+        return FormatUTC(m, tz, YDateLanguage.Language.HEBREW) + "\nמוסיפים " + ( (( 1<<TkufaType() ) & TAMMUZ_OR_TEVET) !=0 ? "60" : "30") + " דקות לפני ואחרי."
+                + "\nתחילת תקופה ב" + starForHour(parts, YDateLanguage.Language.HEBREW);
     }
 
     /**
@@ -842,9 +892,9 @@ public final class JewishDate extends ADMYDate
      * Also, according to the book of Yezira, each star is connected with a
      * single day of the week (just as their names suggest).
      */
-    String starForHour(long parts, YDateLanguage lang) {
+    String starForHour(long parts, YDateLanguage.Language lang) {
         int hour = (int) ((parts / HOUR) % 7);
-        return lang.getStarToken(hour);
+        return YDateLanguage.getLanguageEngine(lang).getToken(starNameTokens[hour]);
     }
     /**
      * There are seven stars, each star controls different hour of the day in
@@ -866,7 +916,7 @@ public final class JewishDate extends ADMYDate
         return _yearGParts + (_month - 1) * MONTH;
     }
 
-    public Date partsToUTC(long parts) {
+    public static Date partsToUTC(long parts) {
         int days = (int) (parts / DAY);
         int single_parts = (int) (parts % DAY);
         int hours = (int) (single_parts / HOUR);
@@ -880,49 +930,11 @@ public final class JewishDate extends ADMYDate
         millis += (hours * 3600L * 1000L + single_parts * 10000L / 3 + offset_utc * 1000L);
         return new Date(millis);
     }
-    /** move this from here */
-    static String dayPartName(int minutes) {
-        if (minutes > 23 * 60 || minutes < 3 * 60) {
-            return "לילה";
-        }
-        if (minutes < 5 * 60) {
-            return "לפנות בוקר";
-        }
-        if (minutes < 11 * 60) {
-            return "בוקר";
-        }
-        if (minutes < 15 * 60) {
-            return "צהריים";
-        }
-        if (minutes < 17 * 60) {
-            return "אחה\"צ";
-        }
-        return "ערב";
-    }
-
-    /** move this from here */
-    public static String FormatUTC(Date t, TimeZoneProvider tz, boolean Heb) {
-        String lstr;
-        int utc_minute_offset = (int) (tz.getOffset(t) * 60);
-        t.setTime(t.getTime() + utc_minute_offset * 60000L);
-        Calendar c = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        c.setTime(t);
-        int gdmonth = c.get(Calendar.MONTH) - Calendar.JANUARY + 1;
-        int gdday = c.get(Calendar.DAY_OF_MONTH);
-        int gdyear = c.get(Calendar.YEAR);
-
-        String clock_type = "UTC" + (utc_minute_offset >= 0 ? "+" : "-") + String.valueOf(Math.abs(utc_minute_offset)) + "MIN";
-        long millis = t.getTime() + (EPOCH_DAY - DAYS_OF_4119) * (24 * 60 * 60000L);//DAYS_OF_4119 is monday
-        int minutes = (int) ((millis / 60000L) % (24 * 60));
-        lstr = Format.GDateString(gdyear, gdmonth, gdday) + " " + Format.Min2Str(minutes);
-        String day_part_name = dayPartName(minutes);
-        lstr += " (" + day_names[Heb ? 0 : 1][(int) ((millis / (24 * 60 * 60000)) + 1) % 7] + " " + day_part_name + ")";
-        lstr += " (" + clock_type + ")";
-        return lstr;
-    }
+    
     
     public String MoladString(TimeZoneProvider tz, YDateLanguage.Language language) {
         //TODO: make this multilingual
+        YDateLanguage le = YDateLanguage.getLanguageEngine(language);
         long parts = MoladParts();
         int days = (int) (parts / DAY);
         int single_parts = (int) (parts % DAY);
@@ -933,7 +945,7 @@ public final class JewishDate extends ADMYDate
         lstr += " ";
         lstr += Format.HebIntString(year(), true);
         lstr += " ביום ";
-        lstr += day_names[0][days % 7];
+        lstr += le.getToken(DayInWeekTokens[days % 7]);
         lstr += " שעה ";
         lstr += String.valueOf(hours);
         lstr += " ו ";
@@ -942,11 +954,11 @@ public final class JewishDate extends ADMYDate
         lstr += "\n";
         //int minutes=(single_parts)/(1080/60);
         Date m = partsToUTC(parts);
-        lstr += FormatUTC(m, tz, true);
-        lstr += "\nהמולד ב" + starForHour(parts, YDateLanguage.getLanguageEngine(YDateLanguage.Language.HEBREW));
+        lstr += FormatUTC(m, tz, language);
+        lstr += "\nהמולד ב" + starForHour(parts, YDateLanguage.Language.HEBREW);
         Date fill = partsToUTC(parts + MONTH / 2);
         lstr += "\nמילוי הלבנה ";
-        lstr += FormatUTC(fill, tz, true);
+        lstr += FormatUTC(fill, tz, language);
         return lstr;
     }
 
@@ -956,20 +968,9 @@ public final class JewishDate extends ADMYDate
         return this._day;
     }
 
-    public int dayInWeekEnum()//starts from zero
-    {
-        return GDN() % 7;
-    }
+    
 
-    public int dayInWeek()//starts from one
-    {
-        return GDN() % 7 + 1;
-    }
-
-    public String dayInWeekName(boolean Heb) {
-        //TODO... make this multilingual...
-        return day_names[Heb ? 0 : 1][dayInWeekEnum()];
-    }
+    
 
     @Override
     public int dayInYear()//starts from zero
@@ -1037,6 +1038,8 @@ public final class JewishDate extends ADMYDate
     }
 
     public static int monthFromMIDByYearMonths(int monthsInYear, int monthId) {
+        if (monthId > M_ID_ELUL || monthId<0)
+            return 0;
         if (monthId < M_ID_ADAR) {
             return monthId + 1;
         }

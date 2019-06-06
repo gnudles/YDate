@@ -42,7 +42,7 @@ public class YDateDual
     private void init_structure()
     {
         m_syncGroup = new DateSyncGroup();
-        m_hd= new JewishDate();
+        m_hd = new JewishDate();
         m_gd = new GregorianDate();
         m_syncGroup.add(m_hd);
         m_syncGroup.add(m_gd);

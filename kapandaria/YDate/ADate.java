@@ -41,6 +41,10 @@ public abstract class ADate
     static final int THURSDAY = 4;//Jupiter - Þunor in old english
     static final int FRIDAY = 5;//Venus - frig in old english
     static final int SATURDAY = 6;//Saturn - Sætern in old english
+    
+    static final String[] DayInWeekTokens = {"wd_sunday", "wd_monday", "wd_tuesday",
+        "wd_wednesday", "wd_thursday", "wd_friday", "wd_saturday"};
+        
     /**
      * The difference between the GDN and the Julian count. (the
      * Julian count start earlier)
@@ -83,6 +87,7 @@ public abstract class ADate
      */
     public abstract int lowerBound();
     public abstract boolean isValid();
+    public abstract boolean isDesired();
     /**
      * Register a listner for a date change event.
      * The listner will recieve as a sender the date object.
@@ -205,5 +210,45 @@ public abstract class ADate
             return Format.TimeString(hour, min, sec);
         }
         return Format.TimeString(hour, min);
+    }
+    /** move this from here */
+    static String dayPartName(int minutes) {
+        if (minutes > 23 * 60 || minutes < 3 * 60) {
+            return "לילה";
+        }
+        if (minutes < 5 * 60) {
+            return "לפנות בוקר";
+        }
+        if (minutes < 11 * 60) {
+            return "בוקר";
+        }
+        if (minutes < 15 * 60) {
+            return "צהריים";
+        }
+        if (minutes < 17 * 60) {
+            return "אחה\"צ";
+        }
+        return "ערב";
+    }
+
+    public static String FormatUTC(Date t, TimeZoneProvider tz, YDateLanguage.Language language ) {
+        String lstr;
+        int utc_minute_offset = (int) (tz.getOffset(t) * 60);
+        t.setTime(t.getTime() + utc_minute_offset * 60000L);
+        Calendar c = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        c.setTime(t);
+        int gdmonth = c.get(Calendar.MONTH) - Calendar.JANUARY + 1;
+        int gdday = c.get(Calendar.DAY_OF_MONTH);
+        int gdyear = c.get(Calendar.YEAR);
+        int dayInWeek = c.get(Calendar.DAY_OF_WEEK) - Calendar.SUNDAY;// range 0-6
+
+        String clock_type = "UTC" + (utc_minute_offset >= 0 ? "+" : "-") + String.valueOf(Math.abs(utc_minute_offset)) + "MIN";
+        int minutes = c.get(Calendar.HOUR_OF_DAY)*60 + c.get(Calendar.MINUTE);
+        lstr = Format.GDateString(gdyear, gdmonth, gdday) + " " + Format.Min2Str(minutes);
+        String day_part_name = dayPartName(minutes);
+        YDateLanguage le = YDateLanguage.getLanguageEngine(language);
+        lstr += " (" + le.getToken(DayInWeekTokens[dayInWeek]) + " " + day_part_name + ")";
+        lstr += " (" + clock_type + ")";
+        return lstr;
     }
 }
