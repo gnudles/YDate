@@ -175,16 +175,16 @@ public class GregorianDate extends ADMYDate
     public boolean setByYearMonthDay(int year, int month, int day) {
         
        if (year >= 1600 && year < 2300) {
-           _desired=true;
+           _desired = true;
            this._year = year;
            //fix the month parameter
            if (month > 12) {
                month = 12;
-               _desired=false;
+               _desired = false;
            }
            else if (month < 1) {
                month = 1;
-               _desired=false;
+               _desired = false;
            }
            this._month = month;
            //calculate the year's first day in the "beginning count".
@@ -196,11 +196,11 @@ public class GregorianDate extends ADMYDate
            //fix the day parameter
            if (day > month_length) {
                day = month_length;
-               _desired=false;
+               _desired = false;
            }
            else if (day < 1) {
                day = 1;
-               _desired=false;
+               _desired = false;
            }
 
            this._day = day;
@@ -215,13 +215,13 @@ public class GregorianDate extends ADMYDate
        }
     }
 
-    public static int test_setByDays_new() {
+    /*public static int test_setByDays_new() {
        GregorianDate gd1 = new GregorianDate(1600, 1, 1);
        GregorianDate gd2 = new GregorianDate(1600, 1, 1);
        int i;
        for (i = DAYS_OF_1600; i < DAYS_OF_2300; ++i) {
            gd1.setByDays(i);
-           gd2.setByDaysOrig(i);
+           gd2.setByDaysFvF(i);
            if (gd1._year != gd2._year) {
                break;
            }
@@ -239,7 +239,7 @@ public class GregorianDate extends ADMYDate
            }
        }
        return i;
-    }
+    }*/
     private boolean setByDays(int gdn) {
        if (checkBounds(gdn)) {
 
@@ -265,8 +265,8 @@ public class GregorianDate extends ADMYDate
            setMonthDay(gdn);
            this._yearFirstDay = gd_year_first_day;
            this._yearLength = isLeap(this._year) ? 366 : 365;
-           this._desired = stateChanged();
            this._valid = true;
+           this._desired = stateChanged();
            return this._desired;
        }
        else {
@@ -274,8 +274,8 @@ public class GregorianDate extends ADMYDate
            return false;
        }
     }
-
-    private boolean setByDaysOrig(int days) {
+/** The Fliegel and van Flandern algorithm */
+    private boolean setByDaysFvF(int days) {
        if (days >= DAYS_OF_1600 && days < DAYS_OF_2300) {
            int gd_day;
            int gd_month;
@@ -302,10 +302,12 @@ public class GregorianDate extends ADMYDate
            this._yearLength = isLeap(this._year) ? 366 : 365;
            this._dayInYear = calculateDayInYear(this._yearLength, this._month, this._day);
            this._yearFirstDay = days - this._dayInYear; //previously it was days_until_year(this.year);
-           this._valid = (GDN() == days);
-           return this._valid && stateChanged();
+           this._valid = true;
+           this._desired = stateChanged();
+           return this._desired ;
        }
        else {
+           this._desired = false;
            return false;
        }
     }
@@ -318,6 +320,11 @@ public class GregorianDate extends ADMYDate
     public boolean isValid()
     {
        return _valid;
+    }
+    
+    @Override
+    public boolean isDesired() {
+        return this._desired;
     }
 
     /**
@@ -403,6 +410,7 @@ public class GregorianDate extends ADMYDate
        return months_days_offsets[mo_year_t][_month - 1] - months_days_offsets[mo_year_t][_month - 2];
     }
 
+    @Override
     public int yearLength() {
        return this._yearLength;
     }
@@ -537,8 +545,5 @@ public class GregorianDate extends ADMYDate
         return DAYS_OF_1600;
     }
 
-    @Override
-    public boolean isDesired() {
-        return this._desired;
-    }
+
 }

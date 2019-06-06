@@ -15,10 +15,12 @@
  */
 package kapandaria.YDate;
 
+import java.text.DecimalFormat;
+
 
 public class Format
 {
-    public static String Min2Str(double min)
+    public static String FormatMinutes(double min)
     {
         int sign=1;
         if (min<0)
@@ -30,63 +32,36 @@ public class Format
         imin = imin % (60*24);
         String stime = ((sign==-1)?"-":"") + (imin / 60);
         imin = imin % 60;
-        if (imin < 10)
-        {
-            stime += ":0" + imin;
-        }
-        else
-        {
-            stime += ":" + imin;
-        }
+        stime += ":"+Formatter00.format(imin);
         return stime;
     }
-    private static char getSingleDigitChar(int d)
+    public static char getDigitChar(int d)
     {
         return (char)('0'+(d%10));
     }
-    /**
-     * Colon prefixed two digits string
-     * @param x
-     * @return 
-     */
-    private static String getc00String(int x)
-    {
-        char a = getSingleDigitChar(getTenthsDigit(x));
-        char b = getSingleDigitChar(getOnesDigit(x));
-        return (":"+a)+b;
-    }
-    /**
-     * Two digits string
-     * @param x
-     * @return 
-     */
-    public static String get00String(int x)
-    {
-        char a = getSingleDigitChar(getTenthsDigit(x));
-        char b = getSingleDigitChar(getOnesDigit(x));
-        return (""+a)+b;
-    }
+    static DecimalFormat Formatter00 = new DecimalFormat("00");
+
     public static String GDateString(int y,int m,int d)
     {
-        String sdate = get00String(d);
-        sdate += "."+get00String(m);
-        sdate += "."+get00String(y%100);
+        String sdate = Formatter00.format(d);
+        sdate += "."+Formatter00.format(m);
+        sdate += "."+Formatter00.format(y%100);
         return sdate;
     }
     public static String TimeString(int h,int m)
     {
-        String stime = get00String(h);
-        stime += getc00String(m);
+        String stime = Formatter00.format(h);
+        stime += ":"+Formatter00.format(m);
         return stime;
     }
     public static String TimeString(int h,int m,int s)
     {
-        String stime = get00String(h);
-        stime += getc00String(m);
-        stime += getc00String(s);
+        String stime = Formatter00.format(h);
+        stime += ":"+Formatter00.format(m);
+        stime += ":"+Formatter00.format(s);
         return stime;
     }
-    public static final String[] alphabeta =
+    public static final String[] heb_alphabeta =
     {
         " ", "א", "ב", "ג", "ד", "ה", "ו", "ז", "ח", "ט",
         "י", "כ", "ל", "מ", "נ", "ס", "ע", "פ", "צ",
@@ -113,13 +88,13 @@ public class Format
                 a-=t;
                 if (a==0 && n==0 && !strstrm.equals("") && gereshim)
                     strstrm+="\"";
-                strstrm+=alphabeta[t+HUNDREDS];
+                strstrm+=heb_alphabeta[t+HUNDREDS];
             }
             
             if (n == 15 || n == 16)
             {
                 n-=9;
-                strstrm+=alphabeta[TET];
+                strstrm+=heb_alphabeta[TET];
             }
             a=n/10;
             n=n%10;
@@ -127,14 +102,14 @@ public class Format
             {
                 if (n==0 && !strstrm.equals("") && gereshim)
                     strstrm+="\"";
-                strstrm+=alphabeta[TENS+a];
+                strstrm+=heb_alphabeta[TENS+a];
             }
             
             if (n>0)
             {
                 if (!strstrm.equals("") && gereshim)
                     strstrm+="\"";
-                strstrm+=alphabeta[ONES+n];
+                strstrm+=heb_alphabeta[ONES+n];
             }
             if (strstrm.length()==1 && geresh)
                 strstrm+="\'";
@@ -174,7 +149,7 @@ public class Format
         return (num/100)%10;
     }
     public static String numSuffix(int num) {
-        if (getTenthsDigit(num) == 1) {
+        if (getTenthsDigit(num) >= 1) {
             return "th";
         }
         switch (getOnesDigit(num)) {

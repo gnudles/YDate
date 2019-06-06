@@ -244,7 +244,7 @@ public abstract class ADate
 
         String clock_type = "UTC" + (utc_minute_offset >= 0 ? "+" : "-") + String.valueOf(Math.abs(utc_minute_offset)) + "MIN";
         int minutes = c.get(Calendar.HOUR_OF_DAY)*60 + c.get(Calendar.MINUTE);
-        lstr = Format.GDateString(gdyear, gdmonth, gdday) + " " + Format.Min2Str(minutes);
+        lstr = Format.GDateString(gdyear, gdmonth, gdday) + " " + Format.FormatMinutes(minutes);
         String day_part_name = dayPartName(minutes);
         YDateLanguage le = YDateLanguage.getLanguageEngine(language);
         lstr += " (" + le.getToken(DayInWeekTokens[dayInWeek]) + " " + day_part_name + ")";

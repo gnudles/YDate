@@ -55,6 +55,18 @@ public final class JewishDate extends ADMYDate
     public static final int M_ID_AV = 12;
     public static final int M_ID_ELUL = 13;
 
+    public enum Planet
+    {
+        Mercury,//0
+        Moon,//1
+        Saturn,//2
+        Jupiter,//3
+        Mars,//4
+        Sun,//5
+        Venus//6
+    }
+    
+    /*
     public static final int S_ID_MERCURY = 0;
     public static final int S_ID_MOON = 1;
     public static final int S_ID_SATURN = 2;
@@ -62,6 +74,7 @@ public final class JewishDate extends ADMYDate
     public static final int S_ID_MARS = 4;
     public static final int S_ID_SUN = 5;
     public static final int S_ID_VENUS = 6;
+    */
 
 
     public static final int YEZIAT_MIZRAIM = 2449;
@@ -101,6 +114,22 @@ public final class JewishDate extends ADMYDate
      * The ones with the element of fire doesn't get along with those of water.
      * The ones with the element of earth doesn't get along with those of wind.
      */
+    public enum ZodiacSign
+    {
+        Aries,//0
+        Taurus,//1
+        Gemini,//2
+        Cancer,//3
+        Leo,//4
+        Virgo,//5
+        Libra,//6
+        Scorpio,//7
+        Sagittarius,//8
+        Capricorn,//9
+        Aquarius,//10
+        Pisces//11
+    }
+    
         public static final String[] zodiacNameTokens
             = {
                 "zdc_aries",
@@ -117,6 +146,13 @@ public final class JewishDate extends ADMYDate
                 "zdc_pisces"
             };
 
+    public enum Element
+    {
+        Fire,//0
+        Earth,//1
+        Wind,//2
+        Water//3
+    }
     public static final String[] FourElementsNameTokens
             = {
                 "elmnt_fire",
@@ -125,9 +161,9 @@ public final class JewishDate extends ADMYDate
                 "elmnt_water"
             };
     
-    public static final String[] starNameTokens
+    public static final String[] planetNameTokens
             = {
-                "star_mercury", "star_moon", "star_saturn", "star_jupiter", "star_mars", "star_sun", "star_venus"
+                "planet_mercury", "planet_moon", "planet_saturn", "planet_jupiter", "planet_mars", "planet_sun", "planet_venus"
             };
 
 
@@ -173,6 +209,16 @@ public final class JewishDate extends ADMYDate
         this._yearLength = o._yearLength;
         this._dayInYear = o._dayInYear;
     }
+        
+    public JewishDate(int year, int month, int day) {
+        _valid = false;
+        setByYearMonthDay(year,month,day);
+    }
+    public JewishDate(int gdn) {
+        _valid = false;
+        setByGDN(gdn);
+    }
+    
     /**
     * Copy date from a given object to this. 
     * event handler and sync group are not cloned.
@@ -190,13 +236,13 @@ public final class JewishDate extends ADMYDate
         this._dayInYear = o._dayInYear;
         return stateChanged();
     }
-    public static JewishDate createByYMidD(int year, int monthId, int day)
+    public static JewishDate createByYearMonthIdDay(int year, int monthId, int day)
     {
         JewishDate jd = new JewishDate(year,1,1);
         jd.setByYearMonthIdDay(year, monthId, day);
         return jd;
     }
-    public static JewishDate createByYMD(int year, int month, int day)
+    public static JewishDate createByYearMonthDay(int year, int month, int day)
     {
         return new JewishDate(year, month, day);
     }
@@ -209,7 +255,7 @@ public final class JewishDate extends ADMYDate
                 this._year = year;
                 _calculateYearVariables();
             }
-            this._valid = true;
+            
             this._desired = true;
             if (month < 1)
             {
@@ -235,11 +281,11 @@ public final class JewishDate extends ADMYDate
             }
             this._day = day;
             this._dayInYear = _calculateDayInYear(this._yearLength, month, day);
+            this._valid = true;
             _desired = _desired && stateChanged();
             return _desired;
         }
         else {
-            this._valid = false;
             this._desired = false;
             return false;
         }
@@ -304,16 +350,93 @@ public final class JewishDate extends ADMYDate
         this._yearLength = days_until_year(_year + 1, partsSinceGenesis(_year + 1)) - this._yearFirstDay;
     }
 
-    
-    
-    public JewishDate(int year, int month, int day) {
-        _valid = false;
-        setByYearMonthDay(year,month,day);
+
+    public static long partsSinceGenesis(int year) {
+        /*
+         the loop:
+         for x in range(0,19):
+         &nbsp;&nbsp;print (235*(x+1)+1)/19-(235*x+1)/19
+         gives exactly:
+         12,12,13,12,12,13,12,13,12,12,13,12,12,13,12,12,13,12,13
+         which is the 19-years period month's division
+         */
+        int months = (235 * (year - 1) + 1) / 19;//first year was year one. so we subtract one from year to start from 0.
+        long parts = MOLAD + MONTH * (long) months;
+        return parts;
     }
-    public JewishDate(int gdn) {
-        _valid = false;
-        setByGDN(gdn);
+
+    public static int days_until_year(int year, long parts) {
+        int days = (int) ((parts + MOLAD_ZAKEN_ROUNDING) / DAY);
+        int parts_mod = (int) (parts % DAY);
+        int year_type = ((year - 1) * 7 + 1) % 19;
+        /* this magic gives us the following array:
+         1, 8,15, 3,10,17, 5,12, 0, 7,14, 2, 9,16, 4,11,18, 6,13
+         now if we compare it with the 235 months division:
+         12,12,13,12,12,13,12,13,12,12,13,12,12,13,12,12,13,12,13
+         we can see that all the leap years # >=12 and all the regular years # <12
+         also, all the years that comes after a leap year have a number < 7
+         */
+        int week_day = (days % 7);
+        if (parts_mod < DAY - MOLAD_ZAKEN_ROUNDING) {
+            if (year_type < 12)//regular year (non leap)
+            {
+                if (week_day == TUESDAY && parts_mod >= HP(9, 204)) {
+                    return days + 2;//we need to add 2 because Wednesday comes next (ADU)
+                }
+            }
+            if (year_type < 7)//a year after a leap year
+            {
+                if (week_day == MONDAY && parts_mod >= HP(15, 589)) {
+                    return days + 1;//we need to add only 1..
+                }
+            }
+        }
+        if (week_day == SUNDAY || week_day == WEDNESDAY || week_day == FRIDAY) {
+            ++days;
+        }
+        return days;
     }
+
+    public static int calculateYearLength(int year) {
+        return calculateYearFirstDay(year + 1) - calculateYearFirstDay(year);
+    }
+
+    public static int calculateYearFirstDay(int year) {
+        return days_until_year(year, partsSinceGenesis(year));
+    }
+
+    public static int days_to_year(int days) {
+        long orig_parts = (long) days * DAY;
+        long parts = orig_parts - MOLAD;
+        int months = (int) (parts / MONTH);
+        parts = (parts % MONTH);
+        int years = 1;//first year was year one.
+        years += 19 * (months / MONTHS_IN_19Y);
+        months = months % MONTHS_IN_19Y;
+        int year_in_19 = ((months + 1) * 19 - 2) / 235;
+        years += year_in_19;
+        months = months - (235 * (year_in_19) + 1) / 19;
+        parts += months * MONTH;
+        int estimated_year_length = 353;
+        if (calculateYearMonths(years) == 13) {
+            estimated_year_length = 383;
+        }
+        long year_molad_parts = orig_parts - parts;
+        int estimated_first_year_day = (int) ((year_molad_parts) / DAY);
+        if (estimated_first_year_day + 2 <= days && days < estimated_first_year_day + estimated_year_length) {
+            return years;
+        }
+        int year_first_day = days_until_year(years, year_molad_parts);
+        if (days < year_first_day) {
+            return years - 1;
+        }
+        int next_year_day = days_until_year(years + 1, partsSinceGenesis(years + 1));
+        if (days >= next_year_day) {
+            return years + 1;
+        }
+        return years;
+    }        
+
 
     /**
      * Gives a cloned object with the next date.
@@ -350,6 +473,12 @@ public final class JewishDate extends ADMYDate
         return _valid;
     }
 
+    @Override
+    public boolean isDesired() {
+        return this._desired;
+    }
+
+
 
     @Override
     public int GDN()
@@ -381,6 +510,322 @@ public final class JewishDate extends ADMYDate
         return monthFirstDay();
     }
 
+        @Override
+    public int dayInMonth()//starts from one
+    {
+        return this._day;
+    }
+
+    @Override
+    public int dayInYear()//starts from zero
+    {
+        return this._dayInYear;
+    }
+
+    /**
+     * the ordinal month in year. in regular year the range is 1..12, 
+     * and in a leap year the range is 1..13.
+     * to get the month ID (eg. TISHREI,CHESHVAN... ADAR_I,ADAR_II...) see 
+     * {@link #monthID() }.
+     * @return the month of the year of the object's date.
+     */
+    @Override
+    public int month()
+    {
+        return this._month;
+    }
+    /**
+     * the number of months in year. in regular year the range is 1..12, 
+     * and in a leap year the range is 1..13.
+     * to get the month ID (eg. TISHREI,CHESHVAN... ADAR_I,ADAR_II...) see 
+     * {@link #monthID() }.
+     * @return the month of the year of the object's date.
+     */
+    public int monthsInYear() {
+        return calculateYearMonths(this._year);
+    }
+
+    @Override
+    public int year() {
+        return this._year;
+    }
+
+    @Override
+    public int yearLength() {
+        return this._yearLength;
+    }
+
+    public int yearFirstDay() {
+        return this._yearFirstDay;
+    }
+
+    public int monthFirstDay() { //days since beginning
+        int yearLen_t = _yearLengthType(this._yearLength);
+        return this._yearFirstDay + _monthsDaysOffsets[yearLen_t][this._month - 1];
+    }
+
+    public int monthIdFirstDay(int monthId) { //days since beginning
+        int yearLen_t = _yearLengthType(this._yearLength);
+        return this._yearFirstDay + _monthsDaysOffsets[yearLen_t][monthFromMID(monthId) - 1];
+    }
+
+    public static int monthFromIDByYear(int year, int monthId) {
+        return monthFromMIDByYearMonths(calculateYearMonths(year), monthId);
+    }
+
+    public static int monthFromIDByYearLength(int year_length, int monthId) {
+        return monthFromMIDByYearMonths((year_length > 355) ? 13 : 12, monthId);
+    }
+
+    public int monthFromMID(int monthId) {
+        return monthFromMIDByYearMonths((this._yearLength > 355) ? 13 : 12, monthId);
+    }
+
+    public static int monthFromMIDByYearMonths(int monthsInYear, int monthId) {
+        if (monthId > M_ID_ELUL || monthId<0)
+            return 0;
+        if (monthId < M_ID_ADAR) {
+            return monthId + 1;
+        }
+        if (monthsInYear == 13)//leap year
+        {
+
+            if (monthId >= M_ID_ADAR_I) {
+                return monthId;
+            }
+            return 7;//adar II if monthId==M_ID_ADAR
+        }
+        else {
+            if (monthId >= M_ID_NISAN) {
+                return monthId - 1;
+            }
+            return 6; // regular adar
+        }
+    }
+
+    public static int monthToMIDByYearMonths(int monthsInYear, int month) {
+        if (monthsInYear == 13)//leap year
+        {
+            if (month > 5)//if Adar or after
+            {
+                ++month;//skip regular Adar
+            }
+        }
+        else {
+            if (month > 6)//if Nisan or after
+            {
+                month += 2;//skip Adar I+II
+            }
+        }
+        return month - 1;
+    }
+
+    public int monthID() {
+        return monthToMIDByYearMonths(calculateYearMonths(_year), this._month);
+    }
+
+    private static final int[][] _monthsDaysOffsets
+            = {
+                {0, 30, 59, 88, 117, 147, 176, 206, 235, 265, 294, 324, 353},
+                {0, 30, 59, 89, 118, 148, 177, 207, 236, 266, 295, 325, 354},
+                {0, 30, 60, 90, 119, 149, 178, 208, 237, 267, 296, 326, 355},
+                {0, 30, 59, 88, 117, 147, 177, 206, 236, 265, 295, 324, 354, 383},
+                {0, 30, 59, 89, 118, 148, 178, 207, 237, 266, 296, 325, 355, 384},
+                {0, 30, 60, 90, 119, 149, 179, 208, 238, 267, 297, 326, 356, 385}
+            };
+
+    private void _setMonthDay(int days)//finds the month by day in year.
+    {
+        int yearLen_t = _yearLengthType(this._yearLength);
+        int m = days * 2 / 59; //close approximation.
+        if (_monthsDaysOffsets[yearLen_t][m] > days) {
+            m--;
+        }
+        else if (_monthsDaysOffsets[yearLen_t][m + 1] <= days) {
+            m++;
+        }
+        this._month = m + 1;
+        this._day = days - _monthsDaysOffsets[yearLen_t][m] + 1;
+    }
+
+    /**
+     * Return Hebrew year type based on size and first week day of year.
+     * p - pshuta  353..355
+     * m - meuberet 383..385
+     * h - hasera [353,383]
+     * k - kesidra [354,384]
+     * s - shlema (melea) [355,385]
+     * |year type| year length | Tishery 1 day of week
+     * | 1       | 353         | 2  ph2
+     * | XXXXX   | 353         | 3  ph3 impossible
+     * | XXXXX   | 353         | 5  ph5 impossible
+     * | 2       | 353         | 7  ph7
+     * | XXXXX   | 354         | 2  pk2 impossible
+     * | 3       | 354         | 3  pk3
+     * | 4       | 354         | 5  pk5
+     * | XXXXX   | 354         | 7  pk7 impossible
+     * | 5       | 355         | 2  ps2
+     * | XXXXX   | 355         | 3  ps3 impossible
+     * | 6       | 355         | 5  ps5
+     * | 7       | 355         | 7  ps7
+     * | 8       | 383         | 2  mh2
+     * | XXXXX   | 383         | 3  mh3 impossible
+     * | 9       | 383         | 5  mh5
+     * |10       | 383         | 7  mh7
+     * | XXXXX   | 384         | 2  mk2 impossible
+     * |11       | 384         | 3  mk3
+     * | XXXXX   | 384         | 5  mk5 impossible
+     * | XXXXX   | 384         | 7  mk7 impossible
+     * |12       | 385         | 2  ms2
+     * | XXXXX   | 385         | 3  ms3 impossible
+     * |13       | 385         | 5  ms5
+     * |14       | 385         | 7  ms7
+     *
+     * @param size_of_year Length of year in days
+     * @param year_first_dw First week day of year (1..7)
+     * @return A number for year type (1..14)
+     */
+    public static int ld_year_type(int size_of_year, int year_first_dw) {
+        final int[] year_type_map
+                = {1, 0, 0, 2, 0, 3, 4, 0, 5, 0, 6, 7,
+                    8, 0, 9, 10, 0, 11, 0, 0, 12, 0, 13, 14};
+
+        /* the year cannot start at days 1 4 6, so we are left with 2,3,5,7.
+           and the possible lengths are 353 354 355 383 384 385...
+           so we have 24 combinations, but only 14 are possible. (see table above)
+         */
+/* 2,3,5,7 -> 0,1,2,3 */
+        int offset = (year_first_dw - 1) / 2;
+        return year_type_map[4 * _yearLengthType(size_of_year) + offset];
+    }
+
+    public int getYearTypeWeekDayLength() {
+        return ld_year_type(this._yearLength, yearWeekDay());
+    }
+
+    public int yearWeekDay()//1- sunday,7-saturday
+    {
+        return this._yearFirstDay % 7 + 1;
+    }
+
+    public int week() {
+        return ((this._dayInYear) + (this._yearFirstDay % 7)) / 7 + 1;
+    }
+
+    private static int _yearLengthType(int year_length) {
+        //0 hasera,1 kesidra,2 melea,3 meuberet hasera,4 meuberet kesidra,5 meuberet melea
+        return ((year_length % 10) - 3) + (year_length - 350) / 10;
+    }
+    
+
+    private static int _calculateDayInYear(int year_length, int month, int day)//0..385
+    {
+        int yearLen_t = _yearLengthType(year_length);
+        return _monthsDaysOffsets[yearLen_t][month - 1] + day - 1;
+    }
+
+    public static int calculateDayInYearByMonthId(int year_length, int month_id, int day) {
+        int month = monthFromIDByYearLength(year_length, month_id);
+        return _calculateDayInYear(year_length, month, day);
+    }
+
+    public boolean stepMonthForward(boolean cyclic) {
+        int months_in_year = calculateYearMonths(_year);
+        if (_month == months_in_year) {
+            return setByYearMonthIdDay(_year + (cyclic ? 0 : 1), M_ID_TISHREI, _day);
+        }
+        else {
+            return setByYearMonthDay(_year, _month + 1, _day);
+        }
+    }
+
+    public boolean stepMonthBackward(boolean cyclic) {
+        if (_month == 1) {
+            return setByYearMonthIdDay(_year - (cyclic ? 0 : 1), M_ID_ELUL, _day);
+        }
+        else {
+            return setByYearMonthDay(_year, _month - 1 , _day);
+        }
+    }
+
+    @Override
+    public int monthLength() {
+        return monthLengthInYear(this._yearLength, this._month);
+    }
+
+    @Override
+    public int previousMonthLength() {
+        if (this._month == 1)//Elul is always 29 days
+        {
+            return 29;
+        }
+        return monthLengthInYear(this._yearLength, this._month - 1);
+    }
+
+    public static int monthLengthInYear(int year_length, int month) {
+        int yearLen_t = _yearLengthType(year_length);
+        return _monthsDaysOffsets[yearLen_t][month] - _monthsDaysOffsets[yearLen_t][month - 1];
+    }
+
+    /**
+     * checks how many months are in a certain year
+     *
+     * @param year a hebrew year
+     * @return the number of months in this year
+     */
+    public static int calculateYearMonths(int year) {
+        /*
+         the loop:
+         for x in range(0,19):
+         &nbsp;&nbsp;print (235*(x+1)+1)/19-(235*x+1)/19
+         gives exactly:
+         12,12,13,12,12,13,12,13,12,12,13,12,12,13,12,12,13,12,13
+         which is the 19-years period month's division
+         */
+        //return (235 * year + 1) / 19 - (235 * (year - 1) + 1) / 19;
+        return MONTHS_DIVISION[(year - 1) % 19];
+    }
+
+    public static boolean isLeapYear(int year) {
+        return MONTHS_DIVISION[(year - 1) % 19] == 13;
+    }
+    
+    /** possible day in week that each month can start in.
+    */
+
+    public static final int[][] possibleMonthDay = {
+        {MONDAY, TUESDAY, THURSDAY, SATURDAY},//TISHREI
+        {MONDAY, WEDNESDAY, THURSDAY, SATURDAY},//CHESHVAN
+        {SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY},//KISLEV
+        {SUNDAY, MONDAY, TUESDAY, WEDNESDAY, FRIDAY},//TEVET
+        {MONDAY, TUESDAY, WEDNESDAY, THURSDAY, SATURDAY},//SHEVAT
+        {MONDAY, WEDNESDAY, FRIDAY, SATURDAY},//ADAR
+        {MONDAY, WEDNESDAY, THURSDAY, SATURDAY},//ADAR_I
+        {MONDAY, WEDNESDAY, FRIDAY, SATURDAY},//ADAR_II
+        {SUNDAY, TUESDAY, THURSDAY, SATURDAY},//NISAN
+        {MONDAY, TUESDAY, THURSDAY, SATURDAY},//IYAR
+        {SUNDAY, TUESDAY, WEDNESDAY, FRIDAY},//SIVAN
+        {SUNDAY, TUESDAY, THURSDAY, FRIDAY},//TAMMUZ
+        {MONDAY, WEDNESDAY, FRIDAY, SATURDAY},//AV
+        {SUNDAY, MONDAY, WEDNESDAY, FRIDAY}//ELUL
+    };
+    public static final int[][] possibleMonthLength = {
+        {30},//TISHREI
+        {29, 30},//CHESHVAN
+        {29, 30},//KISLEV
+        {29},//TEVET
+        {30},//SHEVAT
+        {29},//ADAR
+        {30},//ADAR_I
+        {29},//ADAR_II
+        {30},//NISAN
+        {29},//IYAR
+        {30},//SIVAN
+        {29},//TAMMUZ
+        {30},//AV
+        {29}//ELUL
+    };
+    
     public int NumberOfShabbats() {
         int year_diw = _yearFirstDay % 7;
         int diy = getNext(SATURDAY, year_diw) - year_diw;
@@ -425,10 +870,6 @@ public final class JewishDate extends ADMYDate
         return (_dayInYear == pessach_day && !MusafAndAfter) || _dayInYear < pessach_day;
     }
 
-    @Override
-    public boolean isDesired() {
-        return this._desired;
-    }
 
 
 
@@ -547,9 +988,9 @@ public final class JewishDate extends ADMYDate
         return tkufa_parts;
     }
 
-    public int MazalType() {
+    public ZodiacSign zodiacSign() {
         int d = (TkufotCycle() + 1) * DAY - 1;
-        return (d / MAZAL) % 12;
+        return ZodiacSign.values()[(d / MAZAL) % 12];
     }
 
     public int TkufaType() {
@@ -557,16 +998,21 @@ public final class JewishDate extends ADMYDate
         d = d / TKUFA;
         return (M_ID_NISAN + (d % 4) * 3) % 14;
     }
+    public static Element elementOfZodiacSign(ZodiacSign zs)
+    {
+        return Element.values()[zs.ordinal()%4];
+    }
 
     public String ZodiacSignFormatted(YDateLanguage.Language language) {
         //TODO: make this return integer of mazal ID...
         
-        int mazal = MazalType();
+        ZodiacSign mazal = zodiacSign();
         YDateLanguage le = YDateLanguage.getLanguageEngine(language);
 
         String formatted = le.getToken("format_zodiac");
-        formatted = formatted.replaceAll("_z_sign_", le.getToken(zodiacNameTokens[mazal]));
-        formatted = formatted.replaceAll("_element_", le.getToken(FourElementsNameTokens[mazal%4]));
+        formatted = formatted.replaceAll("_z_sign_", le.getToken(zodiacNameTokens[mazal.ordinal()]));
+        Element elem = elementOfZodiacSign(mazal);
+        formatted = formatted.replaceAll("_element_", le.getToken(FourElementsNameTokens[elem.ordinal()]));
         return formatted;
     }
 
@@ -584,7 +1030,7 @@ public final class JewishDate extends ADMYDate
         long parts = TkufaParts();
         Date m = partsToUTC(parts);
         return FormatUTC(m, tz, YDateLanguage.Language.HEBREW) + "\nמוסיפים " + ( (( 1<<TkufaType() ) & TAMMUZ_OR_TEVET) !=0 ? "60" : "30") + " דקות לפני ואחרי."
-                + "\nתחילת תקופה ב" + starForHour(parts, YDateLanguage.Language.HEBREW);
+                + "\nתחילת תקופה ב" + planetOfHourName(parts, YDateLanguage.Language.HEBREW);
     }
 
     /**
@@ -594,7 +1040,7 @@ public final class JewishDate extends ADMYDate
      */
     public int TkufotCycle()//when this method return 0, we need to do sun blessing in nissan.
     {
-        return TkufotCycle(GDN());
+        return JewishDate.TkufotCycle(GDN());
     }
 
     static public int TkufotCycle(int days)//when this method return 0, we need to do sun blessing in nissan.
@@ -608,7 +1054,7 @@ public final class JewishDate extends ADMYDate
         //which is actually 1461/16 or 16/1461
     }
     /**
-     * I heard that one said that if 3 Shvat falls on Friday, There will be a cold winter.
+     * I heard that one said that if 3 Shevat falls on Friday, There will be a cold winter.
      * @return if we will have a cold winter.
      */
     public boolean yearOfColdWinter()
@@ -622,9 +1068,9 @@ public final class JewishDate extends ADMYDate
     /*@untested*/
     public boolean TkufatNisanMeshaberetIlanot()
     {
-        int tkufa_star=starForHour(getTkufaOfYearParts(2));//2 is for Tkufat Nisan, 0 - Tkufat Tishrei
-        int molad_star= starForHour(MoladParts(monthFromMID(M_ID_NISAN)));
-        return (tkufa_star==S_ID_JUPITER && (molad_star == S_ID_JUPITER || molad_star == S_ID_MOON));
+        Planet tkufa_planet=planetOfHour(getTkufaOfYearParts(2));//2 is for Tkufat Nisan, 0 - Tkufat Tishrei
+        Planet molad_planet= planetOfHour(MoladParts(monthFromMID(M_ID_NISAN)));
+        return (tkufa_planet==Planet.Jupiter && (molad_planet == Planet.Jupiter || molad_planet == Planet.Moon));
     }
     /**
      * based on Gemara in Eruvin (.56 / .נו)
@@ -633,9 +1079,9 @@ public final class JewishDate extends ADMYDate
     /*@untested*/
     public boolean TkufatTavetMeyabeshetZeraim()
     {
-        int tkufa_star=starForHour(getTkufaOfYearParts(1));// 1 for Tkufat Tevet
-        int molad_star= starForHour(MoladParts(monthFromMID(M_ID_TEVET)));
-        return (tkufa_star==S_ID_JUPITER && (molad_star == S_ID_JUPITER || molad_star == S_ID_MOON));
+        Planet tkufa_planet=planetOfHour(getTkufaOfYearParts(1));// 1 for Tkufat Tevet
+        Planet molad_planet= planetOfHour(MoladParts(monthFromMID(M_ID_TEVET)));
+        return (tkufa_planet==Planet.Jupiter && (molad_planet == Planet.Jupiter || molad_planet == Planet.Moon));
     }
 
     /**
@@ -647,7 +1093,7 @@ public final class JewishDate extends ADMYDate
     public int taanitBetHehBetForCheshvan() {
         /* 1 in tishrey is day 0 (since beginning of the year). tishrey has 30 days. so 30 in tishrey is day 29. and 1 cheshvan is day 30.
          */
-        return getNext(SATURDAY, _yearFirstDay + 31);
+        return getNext(SATURDAY, _yearFirstDay + 31);// 31 is 2 in cheshvan, we need the first saturday after Rosh Chodesh
     }
 
     /**
@@ -658,51 +1104,18 @@ public final class JewishDate extends ADMYDate
      * monday. to get first monday you add 2, to get thursday you add 5, to get second monday you add 9.
      */
     public int taanitBetHehBetForIyar() {
+        //we need the first saturday after Rosh Chodesh, this is why we add +1
         return getNext(SATURDAY, monthIdFirstDay(M_ID_IYAR) + 1);//+2 to get first monday, +5 to get thursday, and +9 to get the last monday.
     }
-    /** possible day in week that each month can start in.
-    */
-
-    public static final int[][] possibleMonthDay = {
-        {MONDAY, TUESDAY, THURSDAY, SATURDAY},//TISHREI
-        {MONDAY, WEDNESDAY, THURSDAY, SATURDAY},//CHESHVAN
-        {SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY},//KISLEV
-        {SUNDAY, MONDAY, TUESDAY, WEDNESDAY, FRIDAY},//TEVET
-        {MONDAY, TUESDAY, WEDNESDAY, THURSDAY, SATURDAY},//SHEVAT
-        {MONDAY, WEDNESDAY, FRIDAY, SATURDAY},//ADAR
-        {MONDAY, WEDNESDAY, THURSDAY, SATURDAY},//ADAR_I
-        {MONDAY, WEDNESDAY, FRIDAY, SATURDAY},//ADAR_II
-        {SUNDAY, TUESDAY, THURSDAY, SATURDAY},//NISAN
-        {MONDAY, TUESDAY, THURSDAY, SATURDAY},//IYAR
-        {SUNDAY, TUESDAY, WEDNESDAY, FRIDAY},//SIVAN
-        {SUNDAY, TUESDAY, THURSDAY, FRIDAY},//TAMMUZ
-        {MONDAY, WEDNESDAY, FRIDAY, SATURDAY},//AV
-        {SUNDAY, MONDAY, WEDNESDAY, FRIDAY}//ELUL
-    };
-    public static final int[][] possibleMonthLength = {
-        {30},//TISHREI
-        {29, 30},//CHESHVAN
-        {29, 30},//KISLEV
-        {29},//TEVET
-        {30},//SHEVAT
-        {29},//ADAR
-        {30},//ADAR_I
-        {29},//ADAR_II
-        {30},//NISAN
-        {29},//IYAR
-        {30},//SIVAN
-        {29},//TAMMUZ
-        {30},//AV
-        {29}//ELUL
-    };
+    
     /**
-     get the formal year type in hebrew letters.
+     get the formal year type in Hebrew letters.
     */
     public String yearSign() {
         final byte[] yeartype = {8, 11, 21};// 21-ח-8,כ-11,ש
         int day_of_pessah = JewishDate.calculateDayInYearByMonthId(_yearLength, JewishDate.M_ID_NISAN, 15) + _yearFirstDay;
-        return Format.alphabeta[(_yearFirstDay % 7) + 1] + Format.alphabeta[yeartype[_yearLength % 10 - 3]]
-                + Format.alphabeta[(day_of_pessah % 7) + 1] + ((_yearLength >= 383) ? " מעוברת" : " פשוטה");
+        return Format.heb_alphabeta[(_yearFirstDay % 7) + 1] + Format.heb_alphabeta[yeartype[_yearLength % 10 - 3]]
+                + Format.heb_alphabeta[(day_of_pessah % 7) + 1] + ((_yearLength >= 383) ? " מעוברת" : " פשוטה");
     }
 
     public boolean roshChodesh() {
@@ -713,7 +1126,7 @@ public final class JewishDate extends ADMYDate
         return (_day >= 23 && _day < 30 && dayInWeekEnum() == SATURDAY && monthID() != M_ID_ELUL);
     }//not mevarchin before Tishrei
     /**
-     * shabbat before 17 Tammuz and 10 Tevet the Shliach Tzibur declares the upcoming taanit.
+     * Shabbat before 17 Tammuz and 10 Tevet the Shliach Tzibur declares the upcoming taanit.
      * 
      * @return 
     */
@@ -885,28 +1298,28 @@ public final class JewishDate extends ADMYDate
     }
 
     /**
-     * There are seven stars, each star controls different hour of the day in
+     * There are seven planets, each planet controls different hour of the day in
      * the following sequence: Saturn, Jupiter, Mars, Sun, Venus, Mercury, Moon.
      * That sequence starts in the beginning of the Wednesday night (right after
      * the stars comes out). So Sunday's night starts with Mercury.
-     * Also, according to the book of Yezira, each star is connected with a
+     * Also, according to the book of Yezira, each planet is connected with a
      * single day of the week (just as their names suggest).
      */
-    String starForHour(long parts, YDateLanguage.Language lang) {
-        int hour = (int) ((parts / HOUR) % 7);
-        return YDateLanguage.getLanguageEngine(lang).getToken(starNameTokens[hour]);
+    String planetOfHourName(long parts, YDateLanguage.Language lang) {
+        Planet hour = planetOfHour(parts);
+        return YDateLanguage.getLanguageEngine(lang).getToken(planetNameTokens[hour.ordinal()]);
     }
     /**
-     * There are seven stars, each star controls different hour of the day in
+     * There are seven planets, each planet controls different hour of the day in
      * the following sequence: Saturn, Jupiter, Mars, Sun, Venus, Mercury, Moon.
      * That sequence starts in the beginning of the Wednesday night (right after
      * the stars comes out). So Sunday's night starts with Mercury.
-     * Also, according to the book of Yezira, each star is connected with a
+     * Also, according to the book of Yezira, each planet is connected with a
      * single day of the week (just as their names suggest).
      * check the returned value against S_ID_MERCURY...
      */
-    int starForHour(long parts) {
-        return (int) ((parts / HOUR) % 7);
+    Planet planetOfHour(long parts) {
+        return Planet.values()[(int) ( (parts / HOUR) % 7 )];
     }
 
     public long MoladParts() {
@@ -955,130 +1368,13 @@ public final class JewishDate extends ADMYDate
         //int minutes=(single_parts)/(1080/60);
         Date m = partsToUTC(parts);
         lstr += FormatUTC(m, tz, language);
-        lstr += "\nהמולד ב" + starForHour(parts, YDateLanguage.Language.HEBREW);
+        lstr += "\nהמולד ב" + planetOfHourName(parts, YDateLanguage.Language.HEBREW);
         Date fill = partsToUTC(parts + MONTH / 2);
         lstr += "\nמילוי הלבנה ";
         lstr += FormatUTC(fill, tz, language);
         return lstr;
     }
 
-    @Override
-    public int dayInMonth()//starts from one
-    {
-        return this._day;
-    }
-
-    
-
-    
-
-    @Override
-    public int dayInYear()//starts from zero
-    {
-        return this._dayInYear;
-    }
-
-    /**
-     * the ordinal month in year. in regular year the range is 1..12, 
-     * and in a leap year the range is 1..13.
-     * to get the month ID (eg. TISHREI,CHESHVAN... ADAR_I,ADAR_II...) see 
-     * {@link #monthID() }.
-     * @return the month of the year of the object's date.
-     */
-    @Override
-    public int month()
-    {
-        return this._month;
-    }
-    /**
-     * the number of months in year. in regular year the range is 1..12, 
-     * and in a leap year the range is 1..13.
-     * to get the month ID (eg. TISHREI,CHESHVAN... ADAR_I,ADAR_II...) see 
-     * {@link #monthID() }.
-     * @return the month of the year of the object's date.
-     */
-    public int monthsInYear() {
-        return calculateYearMonths(this._year);
-    }
-
-    @Override
-    public int year() {
-        return this._year;
-    }
-
-    @Override
-    public int yearLength() {
-        return this._yearLength;
-    }
-
-    public int yearFirstDay() {
-        return this._yearFirstDay;
-    }
-
-    public int monthFirstDay() { //days since beginning
-        int yearLen_t = _yearLengthType(this._yearLength);
-        return this._yearFirstDay + _monthsDaysOffsets[yearLen_t][this._month - 1];
-    }
-
-    public int monthIdFirstDay(int monthId) { //days since beginning
-        int yearLen_t = _yearLengthType(this._yearLength);
-        return this._yearFirstDay + _monthsDaysOffsets[yearLen_t][monthFromMID(monthId) - 1];
-    }
-
-    public static int monthFromIDByYear(int year, int monthId) {
-        return monthFromMIDByYearMonths(calculateYearMonths(year), monthId);
-    }
-
-    public static int monthFromIDByYearLength(int year_length, int monthId) {
-        return monthFromMIDByYearMonths((year_length > 355) ? 13 : 12, monthId);
-    }
-
-    public int monthFromMID(int monthId) {
-        return monthFromMIDByYearMonths((this._yearLength > 355) ? 13 : 12, monthId);
-    }
-
-    public static int monthFromMIDByYearMonths(int monthsInYear, int monthId) {
-        if (monthId > M_ID_ELUL || monthId<0)
-            return 0;
-        if (monthId < M_ID_ADAR) {
-            return monthId + 1;
-        }
-        if (monthsInYear == 13)//leap year
-        {
-
-            if (monthId >= M_ID_ADAR_I) {
-                return monthId;
-            }
-            return 7;//adar II if monthId==M_ID_ADAR
-        }
-        else {
-            if (monthId >= M_ID_NISAN) {
-                return monthId - 1;
-            }
-            return 6; // regular adar
-        }
-    }
-
-    public static int monthToMIDByYearMonths(int monthsInYear, int month) {
-        if (monthsInYear == 13)//leap year
-        {
-            if (month > 5)//if Adar or after
-            {
-                ++month;//skip regular Adar
-            }
-        }
-        else {
-            if (month > 6)//if Nisan or after
-            {
-                month += 2;//skip Adar I+II
-            }
-        }
-        return month - 1;
-    }
-
-    public int monthID() {
-        return monthToMIDByYearMonths(calculateYearMonths(_year), this._month);
-    }
 
     public static String monthNameByID(int mID, YDateLanguage.Language language) {
         /*final String[][] months =
@@ -1103,255 +1399,6 @@ public final class JewishDate extends ADMYDate
         return monthNameByID(monthID(), language);
     }
 
-    private static final int[][] _monthsDaysOffsets
-            = {
-                {0, 30, 59, 88, 117, 147, 176, 206, 235, 265, 294, 324, 353},
-                {0, 30, 59, 89, 118, 148, 177, 207, 236, 266, 295, 325, 354},
-                {0, 30, 60, 90, 119, 149, 178, 208, 237, 267, 296, 326, 355},
-                {0, 30, 59, 88, 117, 147, 177, 206, 236, 265, 295, 324, 354, 383},
-                {0, 30, 59, 89, 118, 148, 178, 207, 237, 266, 296, 325, 355, 384},
-                {0, 30, 60, 90, 119, 149, 179, 208, 238, 267, 297, 326, 356, 385}
-            };
+    
 
-    private void _setMonthDay(int days)//finds the month by day in year.
-    {
-        int yearLen_t = _yearLengthType(this._yearLength);
-        int m = days * 2 / 59;
-        if (_monthsDaysOffsets[yearLen_t][m] > days) {
-            m--;
-        }
-        else if (_monthsDaysOffsets[yearLen_t][m + 1] <= days) {
-            m++;
-        }
-        this._month = m + 1;
-        this._day = days - _monthsDaysOffsets[yearLen_t][m] + 1;
-    }
-
-    /**
-     * Return Hebrew year type based on size and first week day of year.
-     * p - pshuta  353..355
-     * m - meuberet 383..385
-     * h - hasera [353,383]
-     * k - kesidra [354,384]
-     * s - shlema (melea) [355,385]
-     * |year type| year length | Tishery 1 day of week
-     * | 1       | 353         | 2  ph2
-     * | XXXXX   | 353         | 3  ph3 impossible
-     * | XXXXX   | 353         | 5  ph5 impossible
-     * | 2       | 353         | 7  ph7
-     * | XXXXX   | 354         | 2  pk2 impossible
-     * | 3       | 354         | 3  pk3
-     * | 4       | 354         | 5  pk5
-     * | XXXXX   | 354         | 7  pk7 impossible
-     * | 5       | 355         | 2  ps2
-     * | XXXXX   | 355         | 3  ps3 impossible
-     * | 6       | 355         | 5  ps5
-     * | 7       | 355         | 7  ps7
-     * | 8       | 383         | 2  mh2
-     * | XXXXX   | 383         | 3  mh3 impossible
-     * | 9       | 383         | 5  mh5
-     * |10       | 383         | 7  mh7
-     * | XXXXX   | 384         | 2  mk2 impossible
-     * |11       | 384         | 3  mk3
-     * | XXXXX   | 384         | 5  mk5 impossible
-     * | XXXXX   | 384         | 7  mk7 impossible
-     * |12       | 385         | 2  ms2
-     * | XXXXX   | 385         | 3  ms3 impossible
-     * |13       | 385         | 5  ms5
-     * |14       | 385         | 7  ms7
-     *
-     * @param size_of_year Length of year in days
-     * @param year_first_dw First week day of year (1..7)
-     * @return A number for year type (1..14)
-     */
-    public static int ld_year_type(int size_of_year, int year_first_dw) {
-        final int[] year_type_map
-                = {1, 0, 0, 2, 0, 3, 4, 0, 5, 0, 6, 7,
-                    8, 0, 9, 10, 0, 11, 0, 0, 12, 0, 13, 14};
-
-        /* the year cannot start at days 1 4 6, so we are left with 2,3,5,7.
-           and the possible lengths are 353 354 355 383 384 385...
-           so we have 24 combinations, but only 14 are possible. (see table above)
-         */
-/* 2,3,5,7 -> 0,1,2,3 */
-        int offset = (year_first_dw - 1) / 2;
-        return year_type_map[4 * _yearLengthType(size_of_year) + offset];
-    }
-
-    public int getYearTypeWeekDayLength() {
-        return ld_year_type(this._yearLength, yearWeekDay());
-    }
-
-    public int yearWeekDay()//1- sunday,7-saturday
-    {
-        return this._yearFirstDay % 7 + 1;
-    }
-
-    public int week() {
-        return ((this._dayInYear) + (this._yearFirstDay % 7)) / 7 + 1;
-    }
-
-    private static int _yearLengthType(int year_length) {
-        //0 hasera,1 kesidra,2 melea,3 meuberet hasera,4 meuberet kesidra,5 meuberet melea
-        return ((year_length % 10) - 3) + (year_length - 350) / 10;
-    }
-
-    private static int _calculateDayInYear(int year_length, int month, int day)//0..385
-    {
-        int yearLen_t = _yearLengthType(year_length);
-        return _monthsDaysOffsets[yearLen_t][month - 1] + day - 1;
-    }
-
-    public static int calculateDayInYearByMonthId(int year_length, int month_id, int day) {
-        int month = monthFromIDByYearLength(year_length, month_id);
-        return _calculateDayInYear(year_length, month, day);
-    }
-
-    public boolean stepMonthForward(boolean cyclic) {
-        int months_in_year = calculateYearMonths(_year);
-        if (_month == months_in_year) {
-            return setByYearMonthIdDay(_year + (cyclic ? 0 : 1), M_ID_TISHREI, _day);
-        }
-        else {
-            return setByYearMonthIdDay(_year, monthToMIDByYearMonths(months_in_year, _month + 1), _day);
-        }
-    }
-
-    public boolean stepMonthBackward(boolean cyclic) {
-        if (_month == 1) {
-            return setByYearMonthIdDay(_year - (cyclic ? 0 : 1), M_ID_ELUL, _day);
-        }
-        else {
-            int months_in_year = calculateYearMonths(_year);
-            return setByYearMonthIdDay(_year, monthToMIDByYearMonths(months_in_year, _month - 1), _day);
-        }
-    }
-
-    @Override
-    public int monthLength() {
-        return monthLengthInYear(this._yearLength, this._month);
-    }
-
-    @Override
-    public int previousMonthLength() {
-        if (this._month == 1)//Elul is always 29 days
-        {
-            return 29;
-        }
-        return monthLengthInYear(this._yearLength, this._month - 1);
-    }
-
-    public static int monthLengthInYear(int year_length, int month) {
-        int yearLen_t = _yearLengthType(year_length);
-        return _monthsDaysOffsets[yearLen_t][month] - _monthsDaysOffsets[yearLen_t][month - 1];
-    }
-
-    /**
-     * checks how many months are in a certain year
-     *
-     * @param year a hebrew year
-     * @return the number of months in this year
-     */
-    public static int calculateYearMonths(int year) {
-        /*
-         the loop:
-         for x in range(0,19):
-         &nbsp;&nbsp;print (235*(x+1)+1)/19-(235*x+1)/19
-         gives exactly:
-         12,12,13,12,12,13,12,13,12,12,13,12,12,13,12,12,13,12,13
-         which is the 19-years period month's division
-         */
-        //return (235 * year + 1) / 19 - (235 * (year - 1) + 1) / 19;
-        return MONTHS_DIVISION[(year - 1) % 19];
-    }
-
-    public static boolean isLeapYear(int year) {
-        return MONTHS_DIVISION[(year - 1) % 19] == 13;
-    }
-
-    public static long partsSinceGenesis(int year) {
-        /*
-         the loop:
-         for x in range(0,19):
-         &nbsp;&nbsp;print (235*(x+1)+1)/19-(235*x+1)/19
-         gives exactly:
-         12,12,13,12,12,13,12,13,12,12,13,12,12,13,12,12,13,12,13
-         which is the 19-years period month's division
-         */
-        int months = (235 * (year - 1) + 1) / 19;//first year was year one. so we subtract one from year to start from 0.
-        long parts = MOLAD + MONTH * (long) months;
-        return parts;
-    }
-
-    public static int days_until_year(int year, long parts) {
-        int days = (int) ((parts + MOLAD_ZAKEN_ROUNDING) / DAY);
-        int parts_mod = (int) (parts % DAY);
-        int year_type = ((year - 1) * 7 + 1) % 19;
-        /* this magic gives us the following array:
-         1, 8,15, 3,10,17, 5,12, 0, 7,14, 2, 9,16, 4,11,18, 6,13
-         now if we compare it with the 235 months division:
-         12,12,13,12,12,13,12,13,12,12,13,12,12,13,12,12,13,12,13
-         we can see that all the leap years # >=12 and all the regular years # <12
-         also, all the years that comes after a leap year have a number < 7
-         */
-        int week_day = (days % 7);
-        if (parts_mod < DAY - MOLAD_ZAKEN_ROUNDING) {
-            if (year_type < 12)//regular year (non leap)
-            {
-                if (week_day == TUESDAY && parts_mod >= HP(9, 204)) {
-                    return days + 2;//we need to add 2 because Wednesday comes next (ADU)
-                }
-            }
-            if (year_type < 7)//a year after a leap year
-            {
-                if (week_day == MONDAY && parts_mod >= HP(15, 589)) {
-                    return days + 1;//we need to add only 1..
-                }
-            }
-        }
-        if (week_day == SUNDAY || week_day == WEDNESDAY || week_day == FRIDAY) {
-            ++days;
-        }
-        return days;
-    }
-
-    public static int calculateYearLength(int year) {
-        return calculateYearFirstDay(year + 1) - calculateYearFirstDay(year);
-    }
-
-    public static int calculateYearFirstDay(int year) {
-        return days_until_year(year, partsSinceGenesis(year));
-    }
-
-    public static int days_to_year(int days) {
-        long orig_parts = (long) days * DAY;
-        long parts = orig_parts - MOLAD;
-        int months = (int) (parts / MONTH);
-        parts = (parts % MONTH);
-        int years = 1;//first year was year one.
-        years += 19 * (months / MONTHS_IN_19Y);
-        months = months % MONTHS_IN_19Y;
-        int year_in_19 = ((months + 1) * 19 - 2) / 235;
-        years += year_in_19;
-        months = months - (235 * (year_in_19) + 1) / 19;
-        parts += months * MONTH;
-        int estimated_year_length = 353;
-        if (calculateYearMonths(years) == 13) {
-            estimated_year_length = 383;
-        }
-        long year_molad_parts = orig_parts - parts;
-        int estimated_first_year_day = (int) ((year_molad_parts) / DAY);
-        if (estimated_first_year_day + 2 <= days && days < estimated_first_year_day + estimated_year_length) {
-            return years;
-        }
-        int year_first_day = days_until_year(years, year_molad_parts);
-        if (days < year_first_day) {
-            return years - 1;
-        }
-        int next_year_day = days_until_year(years + 1, partsSinceGenesis(years + 1));
-        if (days >= next_year_day) {
-            return years + 1;
-        }
-        return years;
-    }    
 }

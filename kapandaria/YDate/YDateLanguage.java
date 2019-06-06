@@ -120,19 +120,21 @@ public class YDateLanguage {
                 "gm_october",
                 "gm_november",
                 "gm_december"};
+    
     static final String[] ShortGregMonthTokens
-            = {"Jan",
-                "Feb",
-                "Mar",
-                "Apr",
-                "May",
-                "Jun",
-                "Jul",
-                "Aug",
-                "Sep",
-                "Oct",
-                "Nov",
-                "Dec"};
+            = { "sgm_jan",
+                "sgm_feb",
+                "sgm_mar",
+                "sgm_apr",
+                "sgm_may",
+                "sgm_jun",
+                "sgm_jul",
+                "sgm_aug",
+                "sgm_sep",
+                "sgm_oct",
+                "sgm_nov",
+                "sgm_dec"};
+
 
 
     public static final String[] shmita_labels
@@ -173,7 +175,7 @@ public class YDateLanguage {
     }
 
     public String getShortGregMonthToken(int token){
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _rbundle.getString(ShortGregMonthTokens[token]);
     }
 
     public String getToken(String token){
@@ -188,20 +190,7 @@ public class YDateLanguage {
                     throw new NullPointerException("Unknwn token: " +token);
                 }
     }
-/*
-    public String getZodiacToken(int token) {
-        return _rbundle.getString(zodiac_names[token]);
-    }
 
-    public String getElementToken(int token)
-    {
-        return _rbundle.getString(four_elements_names[token]);
-    }
-
-    public String getStarToken(int token)
-    {
-        return _rbundle.getString(star_names[token]);
-    }*/
     public String getShmitaToken(int token)
     {
         return _rbundle.getString(shmita_labels[token]);
