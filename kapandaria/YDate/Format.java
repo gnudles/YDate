@@ -149,7 +149,7 @@ public class Format
         return (num/100)%10;
     }
     public static String numSuffix(int num) {
-        if (getTenthsDigit(num) >= 1) {
+        if (getTenthsDigit(num) == 1) {
             return "th";
         }
         switch (getOnesDigit(num)) {
