@@ -292,7 +292,10 @@ public final class JewishDate extends ADMYDate
     }
 
     public boolean setByYearMonthIdDay(int year, int monthId, int day) {
-        return setByYearMonthDay(year, monthFromIDByYear(year,monthId), day);
+        boolean leap_year = (calculateYearMonths(year) == 13);
+        boolean valid_month_id = (leap_year && monthId!=M_ID_ADAR) || (!leap_year && monthId!=M_ID_ADAR_I && monthId!=M_ID_ADAR_II);
+        this._desired = valid_month_id && setByYearMonthDay(year, monthFromIDByYear(year,monthId), day);
+        return this._desired;
     }
 
     @Override
@@ -301,6 +304,15 @@ public final class JewishDate extends ADMYDate
             this._desired = false;
             return false;
         }
+        if (isValid() && (gdn >= _yearFirstDay) && 
+                (gdn < _yearFirstDay + _yearLength)) // the trivial case
+        {
+            this._dayInYear = gdn - this._yearFirstDay;
+            _setMonthDay(this._dayInYear);
+            this._desired = stateChanged();
+            return this._desired;
+        }
+        
         long orig_parts = (long) gdn * DAY;
         long parts = orig_parts - MOLAD;
         int months = (int) (parts / MONTH);
@@ -444,23 +456,7 @@ public final class JewishDate extends ADMYDate
      * @return a cloned object of the next day.
      */
     public JewishDate getDayAfterTwilight() {
-        if (_dayInYear + 1 == _yearLength)// we reached the end of the year.
-        {
-            return new JewishDate(_year + 1, 1, 1);//we must recalculate the year variables.
-        }
-        else {
-            JewishDate cln = new JewishDate(this);
-            cln._dayInYear++;
-            if (cln._day == cln.monthLength())// we reached the end of the month.
-            {
-                cln._day = 1;
-                cln._month++;
-            }
-            else {
-                cln._day++;
-            }
-            return cln;
-        }
+            return new JewishDate(GDN()+1);
     }
 
     public String dayString(YDateLanguage.Language lang) {

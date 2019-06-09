@@ -241,38 +241,44 @@ public class GregorianDate extends ADMYDate
        return i;
     }*/
     private boolean setByDays(int gdn) {
-       if (checkBounds(gdn)) {
+        if (!checkBounds(gdn)) {
+            this._desired = false;
+            return false;
+        }
+        if (isValid() && (gdn >= _yearFirstDay) && (gdn < _yearFirstDay + _yearLength ))
+        {
+            this._dayInYear = gdn -_yearFirstDay;
+            setMonthDay(_dayInYear);
+            this._desired = stateChanged();
+            return this._desired;
+        }
+        int gd_year;
+        int gd_year_first_day = gdn;
+        int day_in_year = gdn;
 
-           int gd_year;
-           int gd_year_first_day = gdn;
+        day_in_year -= DAYS_OF_1600; //start calculation from a year thar divisible by 400.
+        gd_year = 1600 + 400 * ((day_in_year) / DAYS_IN_400); // now get to our 400 years level
+        day_in_year = day_in_year % DAYS_IN_400; // number of days since the beginning of current 400 years level.
+        int h = (day_in_year * 4) / DAYS_IN_400;// what hundred are we? 0 1 2 3 ? this consider leap years.
+        int not_h0 = (h > 0) ? 1 : 0; //if not the first hundred in four hundreds
+        gd_year += 100 * h; // advance the year to the current hundred
+        day_in_year = day_in_year - HUNDRED_OFFSET[h];//get days after the currect century.
+        int y_in_h = ((day_in_year + not_h0) * 4) / DAYS_IN_4;// which year in this hundred? of course considering leap years.
+        gd_year += y_in_h;// add years in century. now we finally found the specified year.
+        int y_in_h_not0 = (y_in_h > 0) ? 1 : 0;//if y_in_h > 0 ? if not the first year in the century.
+        day_in_year = day_in_year - (y_in_h * DAYS_IN_4 + 3) / 4 + (y_in_h_not0 & not_h0);//we subtracted one day too much if we are not in the first year and not in the first hundred.
+        //so we added it afterwards
 
-           gdn -= DAYS_OF_1600; //start calculation from a year thar divisible by 400.
-           gd_year = 1600 + 400 * ((gdn) / DAYS_IN_400); // now get to our 400 years level
-           gdn = gdn % DAYS_IN_400; // number of days since the beginning of current 400 years level.
-           int h = (gdn * 4) / DAYS_IN_400;// what hundred are we? 0 1 2 3 ? this consider leap years.
-           int not_h0 = (h > 0) ? 1 : 0; //if not the first hundred in four hundreds
-           gd_year += 100 * h; // advance the year to the current hundred
-           gdn = gdn - HUNDRED_OFFSET[h];//get days after the currect century.
-           int y_in_h = ((gdn + not_h0) * 4) / DAYS_IN_4;// which year in this hundred? of course considering leap years.
-           gd_year += y_in_h;// add years in century. now we finally found the specified year.
-           int y_in_h_not0 = (y_in_h > 0) ? 1 : 0;//if y_in_h > 0 ? if not the first year in the century.
-           gdn = gdn - (y_in_h * DAYS_IN_4 + 3) / 4 + (y_in_h_not0 & not_h0);//we subtracted one day too much if we are not in the first year and not in the first hundred.
-           //so we added it afterwards
-           
-           gd_year_first_day -= gdn;// get the first day of the year in GDN.
-           this._year = gd_year;
-           this._dayInYear = gdn;
-           setMonthDay(gdn);
-           this._yearFirstDay = gd_year_first_day;
-           this._yearLength = isLeap(this._year) ? 366 : 365;
-           this._valid = true;
-           this._desired = stateChanged();
-           return this._desired;
-       }
-       else {
-           this._desired = false;
-           return false;
-       }
+        gd_year_first_day -= day_in_year;// get the first day of the year in GDN.
+        this._year = gd_year;
+        this._dayInYear = day_in_year;
+        setMonthDay(day_in_year);
+        this._yearFirstDay = gd_year_first_day;
+        this._yearLength = isLeap(this._year) ? 366 : 365;
+        this._valid = true;
+        this._desired = stateChanged();
+        return this._desired;
+
     }
 /** The Fliegel and van Flandern algorithm */
     private boolean setByDaysFvF(int days) {
