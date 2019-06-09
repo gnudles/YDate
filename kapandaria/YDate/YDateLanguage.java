@@ -159,7 +159,7 @@ public class YDateLanguage {
     }
 
     public String getShortWeekToken(int token){
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return _rbundle.getString("s"+ADate.DayInWeekTokens[token]);
     }
 
     public String getHebMonthToken(int token) {
@@ -212,17 +212,25 @@ public class YDateLanguage {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public  String FormatGregorianDate(int day, int month, int year){
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public  String FormatGregorianDate(int day, int month, int year, int week_day){
+        return FormatGregorianDate( day,  month, year, week_day, _rbundle.getString("def_gregorian_format"));
     }
 
     public  String FormatGregorianDate(int day, int month, int year, int week_day, String format){
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        format = format.replaceAll("_mn_", getGregMonthToken(month));
+        format = format.replaceAll("_smn_", getShortGregMonthToken(month));
+        format = format.replaceAll("_dw_", getWeekToken(week_day));
+        format = format.replaceAll("_sdw_", getShortWeekToken(week_day));
+        format = format.replaceAll("_y_", Integer.toString(year));
+        format = format.replaceAll("_y2_", Format.Formatter00.format(year)); //_y2_ two digits year in numeric form
+        format = format.replaceAll("_dsfx_", Integer.toString(day) + Format.numSuffix(day));
+        format = format.replaceAll("_d_", Integer.toString(day));
+        return format;
     }
 
-    public String FormatJewishDate(int day, int monthId, int year){
+    public String FormatJewishDate(int day, int monthId, int year, int week_day){
         
-        return FormatJewishDate( day,  monthId, year, 0, 0, _rbundle.getString("def_jewish_format"));
+        return FormatJewishDate( day,  monthId, year, week_day, _rbundle.getString("def_jewish_format"));
 
     }
     public String FormatPeriod(int monthId){
@@ -235,7 +243,6 @@ public class YDateLanguage {
      * @param monthId
      * @param year
      * @param week_day day week in range 0..6
-     * @param event - event ID from YDateAnnual.
      * @param format a string that contains _mn_ will be replaced with month
      * name, _smn_ short month name, _dw_ week day name _sdw_ short week day,
      * _y_ year in numeric form  _yhl_ year
@@ -243,17 +250,15 @@ public class YDateLanguage {
      * holiday or event.
      * @return
      */
-    public String FormatJewishDate(int day, int monthId, int year, int week_day, int event, String format) {
+    public String FormatJewishDate(int day, int monthId, int year, int week_day, String format) {
         format = format.replaceAll("_mn_", getHebMonthToken(monthId));
         //format = format.replaceAll("_smn_", getShortHebMonthToken(monthId));
         format = format.replaceAll("_dw_", getWeekToken(week_day));
-        //format = format.replaceAll("_sdw_", getShortWeekToken(week_day));
+        format = format.replaceAll("_sdw_", getShortWeekToken(week_day));
         format = format.replaceAll("_yhl_", Format.HebIntString(year, true));
         format = format.replaceAll("_y_", Integer.toString(year));
-        //format = format.replaceAll("_y2_", Format.get00String(year)); //_y2_ two digits year in numeric form
         format = format.replaceAll("_dhl_", Format.HebIntString(day, true));
         format = format.replaceAll("_d_", Integer.toString(day));
-        //format = format.replaceAll("_ev_", getEventToken(event));
         return format;
     }
 

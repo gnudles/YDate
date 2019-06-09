@@ -19,7 +19,7 @@ package kapandaria.YDate;
  *
  * @author Orr Dvori
  */
-public class GregorianDate extends ADMYDate
+public final class GregorianDate extends ADMYDate
 {
     /**
     * Number of days in 400 Gregorian years. The calculation is as follows:
@@ -163,7 +163,7 @@ public class GregorianDate extends ADMYDate
     */
     public GregorianDate(int days) {
        _valid = false;
-       setByDays(days);
+       setByGDN(days);
     }
 
     /**
@@ -175,16 +175,16 @@ public class GregorianDate extends ADMYDate
     public boolean setByYearMonthDay(int year, int month, int day) {
         
        if (year >= 1600 && year < 2300) {
-           _desired = true;
+           this._desired = true;
            this._year = year;
            //fix the month parameter
            if (month > 12) {
                month = 12;
-               _desired = false;
+               this._desired = false;
            }
            else if (month < 1) {
                month = 1;
-               _desired = false;
+               this._desired = false;
            }
            this._month = month;
            //calculate the year's first day in the "beginning count".
@@ -196,18 +196,18 @@ public class GregorianDate extends ADMYDate
            //fix the day parameter
            if (day > month_length) {
                day = month_length;
-               _desired = false;
+               this._desired = false;
            }
            else if (day < 1) {
                day = 1;
-               _desired = false;
+               this._desired = false;
            }
 
            this._day = day;
            this._dayInYear = calculateDayInYear(this._yearLength, this._month, this._day);
            this._valid = true;
-           _desired = _desired && stateChanged();
-           return _desired;
+           this._desired = this._desired && stateChanged();
+           return this._desired;
        }
        else {
            this._desired = false;
@@ -220,7 +220,7 @@ public class GregorianDate extends ADMYDate
        GregorianDate gd2 = new GregorianDate(1600, 1, 1);
        int i;
        for (i = DAYS_OF_1600; i < DAYS_OF_2300; ++i) {
-           gd1.setByDays(i);
+           gd1.setByGDN(i);
            gd2.setByDaysFvF(i);
            if (gd1._year != gd2._year) {
                break;
@@ -240,7 +240,8 @@ public class GregorianDate extends ADMYDate
        }
        return i;
     }*/
-    private boolean setByDays(int gdn) {
+    @Override
+    public boolean setByGDN(int gdn) {
         if (!checkBounds(gdn)) {
             this._desired = false;
             return false;
@@ -335,13 +336,11 @@ public class GregorianDate extends ADMYDate
 
     /**
     * This method gives you a formatted string of the current date.
-    * You may subclass the language class with a new FormatGregorianDate method,
-    * to achieve different formatting options.
     * @param language The language object in which the string will be formatted.
     * @return a string in the format "August 1, 1999".
     */
     public String dayString(YDateLanguage.Language language) {
-       return YDateLanguage.getLanguageEngine(language).FormatGregorianDate(_day, _month, _year);
+       return YDateLanguage.getLanguageEngine(language).FormatGregorianDate(_day, _month, _year,dayInWeekEnum());
     }
 
     
@@ -384,7 +383,7 @@ public class GregorianDate extends ADMYDate
     }
 
     /**
-    * @return The number of days in the "beginning count" to the year's first day (1st of
+    * @return The GDN of the year's first day (1st of
     * January of the year)
     */
     public int yearFirstDay() {
@@ -535,11 +534,8 @@ public class GregorianDate extends ADMYDate
         return monthFirstDay();
     }
 
-    @Override
-    public boolean setByGDN(int gdn)
-    {
-        return setByDays(gdn);
-    }
+    
+    
 
     @Override
     public int GDN()

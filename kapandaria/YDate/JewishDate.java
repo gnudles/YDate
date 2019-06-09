@@ -460,7 +460,7 @@ public final class JewishDate extends ADMYDate
     }
 
     public String dayString(YDateLanguage.Language lang) {
-        return YDateLanguage.getLanguageEngine(lang).FormatJewishDate(_day, monthID(), _year);
+        return YDateLanguage.getLanguageEngine(lang).FormatJewishDate(_day, monthID(), _year, dayInWeekEnum());
     }
 
     @Override
@@ -1273,7 +1273,9 @@ public final class JewishDate extends ADMYDate
         }
         return nine_av;
     }
-
+    /**
+     * @return Whether current date is Nine at Av or not.
+     */
     public boolean isNineAv() {
 
         return dayInYear() == nineAvDayInYear(); // 9 in Av.

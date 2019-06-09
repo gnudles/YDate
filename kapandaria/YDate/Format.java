@@ -39,7 +39,7 @@ public class Format
     {
         return (char)('0'+(d%10));
     }
-    static DecimalFormat Formatter00 = new DecimalFormat("00");
+    public static DecimalFormat Formatter00 = new DecimalFormat("00");
 
     public static String GDateString(int y,int m,int d)
     {
