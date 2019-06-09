@@ -743,6 +743,14 @@ public final class JewishDate extends ADMYDate
             return setByYearMonthDay(_year, _month - 1 , _day);
         }
     }
+    public boolean stepDayForwardCyclic() {
+        int new_day = (_day == monthLength())? 1 : _day + 1;
+        return setByYearMonthDay(_year, _month, new_day);
+    }
+    public boolean stepDayBackwardCyclic() {
+        int new_day = (_day == 1)? monthLength() : _day - 1;
+        return setByYearMonthDay(_year, _month, new_day);
+    }
 
     @Override
     public int monthLength() {
@@ -1224,6 +1232,7 @@ public final class JewishDate extends ADMYDate
      * return list of the thursdays of taanit shovavim - shmot vaera bo beshalach yitro mishpatim truma tezave
      * @return 
      */
+    
     public int[] shovavim() {
 
         int first_sunday_of_shovavim = TorahReading.getShabbatBereshit(yearLength(), yearFirstDay()) + 12 * 7 - 6;

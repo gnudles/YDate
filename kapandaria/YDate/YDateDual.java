@@ -115,13 +115,11 @@ public class YDateDual
                 new_hd.seekBy(-1);
                 break;
             case HEB_DAY_FORWARD_CYCLIC:
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-                //new_hd.stepDayFwdCyclic();
-                //break;
+                new_hd.stepDayForwardCyclic();
+                break;
             case HEB_DAY_BACKWARD_CYCLIC:
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-                //new_hd.stepDayBackCyclic();
-                //break;
+                new_hd.stepDayBackwardCyclic();
+                break;
             case HEB_MONTH_BACKWARD_CYCLIC:
             case HEB_MONTH_BACKWARD:
                 new_hd.stepMonthBackward(cyclic);
@@ -137,13 +135,11 @@ public class YDateDual
                 new_hd.setByYearMonthIdDay(m_hd.year() + 1, m_hd.monthID(), m_hd.dayInMonth());
                 break;
             case GRE_DAY_FORWARD_CYCLIC:
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-                //new_gd.stepDayFwdCyclic();
-                //break;
+                new_gd.stepDayForwardCyclic();
+                break;
             case GRE_DAY_BACKWARD_CYCLIC:
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-                //new_gd.stepDayBackCyclic();
-                //break;
+                new_gd.stepDayBackwardCyclic();
+                break;
             case GRE_MONTH_BACKWARD_CYCLIC:
             case GRE_MONTH_BACKWARD:
                 new_gd.stepMonthBackward(cyclic);
@@ -168,27 +164,16 @@ public class YDateDual
             return m_gd.MimicDate(new_gd);
         }
     }
-    //private static final byte INIT_JD = 0;
-    private static final byte INIT_JD_MID = 1;// by month id
-    private static final byte INIT_GD = 2;
 
-    private YDateDual(short year, byte mon, byte day, byte init) {
+    private YDateDual() {
         init_structure();
-        switch (init) {
-            case INIT_JD_MID:
-                m_hd.setByYearMonthIdDay(year, mon, day);
-            case INIT_GD:
-                m_gd.setByYearMonthDay(year, mon, day);
-        }
     }
 
-    private YDateDual(int gdn) {
-        init_structure();
-        m_hd.setByGDN(gdn);
-    }
 
     public static YDateDual createFromGDN(int gdn) {
-        return new YDateDual(gdn);
+        YDateDual d = new YDateDual();
+        d.m_hd.setByGDN(gdn);
+        return d;
     }
 
     public static YDateDual createFrom(Date d, Calendar cal) {
@@ -197,7 +182,7 @@ public class YDateDual
         int gd_mon = cal.get(Calendar.MONTH) + 1;
         int gd_year = cal.get(Calendar.YEAR);
         //long t = d.getTime(); //milliseconds since 1.1.70 00:00 GMT+
-        return new YDateDual((short) gd_year, (byte) gd_mon, (byte) gd_day, INIT_GD);
+        return createFromGregorian( gd_year, gd_mon, gd_day);
     }
 
     public static YDateDual createFrom(Date d, TimeZone tz) {
@@ -211,11 +196,20 @@ public class YDateDual
     }
 
     public static YDateDual createFromJewish(int year, int month_id, int day) {
-        return new YDateDual((short) year, (byte) month_id, (byte) day, INIT_JD_MID);
+        YDateDual d = new YDateDual();
+        d.m_hd.setByYearMonthIdDay(year, month_id, day);
+        return d;
+    }
+    public static YDateDual createFromJewishExplicitMonth(int year, int month, int day) {
+        YDateDual d = new YDateDual();
+        d.m_hd.setByYearMonthDay(year, month, day);
+        return d;
     }
 
     public static YDateDual createFromGregorian(int year, int month, int day) {
-        return new YDateDual((short) year, (byte) month, (byte) day, INIT_GD);
+        YDateDual d = new YDateDual();
+        d.m_gd.setByYearMonthDay(year, month, day);
+        return d;
     }
 
     public static YDateDual getNow() {

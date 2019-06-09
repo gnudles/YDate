@@ -514,6 +514,14 @@ public class GregorianDate extends ADMYDate
     public boolean stepMonthBackward(boolean cyclic) {
        return setByYearMonthDay(_year - (cyclic ? 0 : (_month == 1 ? 1 : 0)), ((_month + 10) % 12) + 1, _day);
     }
+    public boolean stepDayForwardCyclic() {
+        int new_day = (_day == monthLength())? 1 : _day + 1;
+        return setByYearMonthDay(_year, _month, new_day);
+    }
+    public boolean stepDayBackwardCyclic() {
+        int new_day = (_day == 1)? monthLength() : _day - 1;
+        return setByYearMonthDay(_year, _month, new_day);
+    }
 
     @Override
     public int yearFirstDayGDN()
