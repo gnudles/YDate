@@ -121,7 +121,65 @@ public class TorahReading
              //14
         }
     };
-    final static String[][] sidra =
+    final static String[] sidraToken
+            = {
+                "",
+                "sidra_Bereshit",
+                "sidra_Noach",
+                "sidra_Lech_Lecha",
+                "sidra_Vayera",
+                "sidra_Chayei_Sarah",
+                "sidra_Toldot",
+                "sidra_Vayetze",
+                "sidra_Vayishlach",
+                "sidra_Vayeshev",
+                "sidra_Miketz",
+                "sidra_Vayigash",
+                "sidra_Vayechi",
+                "sidra_Shemot",
+                "sidra_Vaera",
+                "sidra_Bo",
+                "sidra_Beshalach",
+                "sidra_Yitro",
+                "sidra_Mishpatim",
+                "sidra_Terumah",
+                "sidra_Tetzaveh",
+                "sidra_Ki_Tisa",
+                "sidra_Vayakhel",
+                "sidra_Pekudei",
+                "sidra_Vayikra",
+                "sidra_Tzav",
+                "sidra_Shemini",
+                "sidra_Tazria",
+                "sidra_Metzora",
+                "sidra_Achrei_Mot",
+                "sidra_Kedoshim",
+                "sidra_Emor",
+                "sidra_Behar",
+                "sidra_Bechukotai",
+                "sidra_Bamidbar",
+                "sidra_Naso",
+                "sidra_Behaalotcha",
+                "sidra_Shelach_Lecha",
+                "sidra_Korach",
+                "sidra_Chukat",
+                "sidra_Balak",
+                "sidra_Pinchas",
+                "sidra_Matot",
+                "sidra_Masei",
+                "sidra_Devarim",
+                "sidra_Vaetchanan",
+                "sidra_Ekev",
+                "sidra_Reeh",
+                "sidra_Shoftim",
+                "sidra_Ki_Tetze",
+                "sidra_Ki_Tavo",
+                "sidra_Nitzavim",
+                "sidra_Vayelech",
+                "sidra_Haazinu",
+                "sidra_Vezot_Haberacha"
+            };
+    /*final static String[][] sidra =
     {
         {
             "",
@@ -158,7 +216,7 @@ public class TorahReading
             "Ki-Tavo", "Nitzavim", "Vayelech", "Ha\'azinu", "Vezot Haberacha"
         }
 
-    };
+    };*/
 
     /*final static String[] special_shabat =
     {
@@ -299,8 +357,9 @@ public class TorahReading
             ||((day_type & SHOSHAN_PURIM) != 0 && MukafHoma && diw != ADate.SATURDAY));
     }
 
-    public static String GetTorahReading(JewishDate h, boolean diaspora, boolean MukafHoma)
+    public static String GetTorahReading(JewishDate h, boolean diaspora, boolean MukafHoma, YDateLanguage.Language language)
     {
+        YDateLanguage le = YDateLanguage.getLanguageEngine(language);
         int diy = h.dayInYear();
         int ydiw = h.yearFirstDay() % 7;
         //int diw = (diy + ydiw) % 7;
@@ -341,23 +400,30 @@ public class TorahReading
             }
         }
         String lstr = "";
-        if (pnum < 0)
+        if (pnum < 0) // if two Parashot are connected
         {
             pnum = -pnum;
             if ((day_type & SHABBAT_DAY) !=0)
             {
-                lstr += "פרשת " + sidra[0][pnum] + ", " + sidra[0][pnum + 1];
+                String fp = le.getToken("format_parasha2");
+                fp = fp.replaceAll("_sd1_", le.getToken(sidraToken[pnum]));
+                fp = fp.replaceAll("_sd2_", le.getToken(sidraToken[pnum+1]));
+                lstr += fp;
             }
             else
             {//on monday and thursday we only read the first of two connected.
-                lstr += "פרשת " + sidra[0][pnum];
+                String fp = le.getToken("format_parasha");
+                fp = fp.replaceAll("_sd_", le.getToken(sidraToken[pnum]));
+                lstr += fp;
             }
         }
         else
         {
             if (pnum != 0)
             {
-                lstr += "פרשת " + sidra[0][pnum];
+                String fp = le.getToken("format_parasha");
+                fp = fp.replaceAll("_sd_", le.getToken(sidraToken[pnum]));
+                lstr += fp;
             }
         }
         if (((day_type & PURIM) != 0 && (!MukafHoma))||
@@ -412,8 +478,9 @@ public class TorahReading
  * @param diaspora are we in the diaspora?
  * @return the string of the parasha.
  */
-    public static String GetSidra(JewishDate h, boolean diaspora)
+    public static String GetSidra(JewishDate h, boolean diaspora, YDateLanguage.Language language)
     {
+        YDateLanguage le = YDateLanguage.getLanguageEngine(language);
         int diy = h.dayInYear();
         int ydiw = h.yearFirstDay() % 7;
         int simhat_torah = diaspora ? 23 : 22;
@@ -454,16 +521,21 @@ public class TorahReading
             }
         }
         String lstr = "";
-        if (pnum < 0)
-        {
+        if (pnum < 0) {
             pnum = -pnum;
-            lstr += "פרשת " + sidra[0][pnum] + ", " + sidra[0][pnum + 1];
+
+            String fp = le.getToken("format_parasha2");
+            fp = fp.replaceAll("_sd1_", le.getToken(sidraToken[pnum]));
+            fp = fp.replaceAll("_sd2_", le.getToken(sidraToken[pnum + 1]));
+            lstr += fp;
         }
         else
         {
             if (pnum != 0)
             {
-                lstr += "פרשת " + sidra[0][pnum];
+                String fp = le.getToken("format_parasha");
+                fp = fp.replaceAll("_sd_", le.getToken(sidraToken[pnum]));
+                lstr += fp;
             }
         }
         return lstr;

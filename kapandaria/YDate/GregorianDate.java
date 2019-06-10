@@ -129,14 +129,14 @@ public final class GregorianDate extends ADMYDate
     */
     public boolean MimicDate(GregorianDate o) {
        this._valid = o._valid;
-       this._desired = o._desired;
        this._year = o._year;
        this._month = o._month;
        this._day = o._day;
        this._yearFirstDay = o._yearFirstDay;
        this._yearLength = o._yearLength;
        this._dayInYear = o._dayInYear;
-       return stateChanged();
+       this._desired = stateChanged();
+       return this._desired;
     }
 
 
@@ -215,31 +215,6 @@ public final class GregorianDate extends ADMYDate
        }
     }
 
-    /*public static int test_setByDays_new() {
-       GregorianDate gd1 = new GregorianDate(1600, 1, 1);
-       GregorianDate gd2 = new GregorianDate(1600, 1, 1);
-       int i;
-       for (i = DAYS_OF_1600; i < DAYS_OF_2300; ++i) {
-           gd1.setByGDN(i);
-           gd2.setByDaysFvF(i);
-           if (gd1._year != gd2._year) {
-               break;
-           }
-           if (gd1._month != gd2._month) {
-               break;
-           }
-           if (gd1._day != gd2._day) {
-               break;
-           }
-           if (gd1._yearFirstDay != gd2._yearFirstDay) {
-               break;
-           }
-           if (gd1._dayInYear != gd2._dayInYear) {
-               break;
-           }
-       }
-       return i;
-    }*/
     @Override
     public boolean setByGDN(int gdn) {
         if (!checkBounds(gdn)) {
@@ -321,14 +296,17 @@ public final class GregorianDate extends ADMYDate
 
     /**
      *
-     * @return
+     * @return whether date represented is valid
      */
     @Override
     public boolean isValid()
     {
        return _valid;
     }
-    
+    /**
+     *
+     * @return whether last operation gave desired result.
+     */
     @Override
     public boolean isDesired() {
         return this._desired;

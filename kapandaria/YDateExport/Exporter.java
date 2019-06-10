@@ -14,6 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import kapandaria.YDate.Format;
 import kapandaria.YDate.JewishDate;
+import kapandaria.YDate.TorahReading;
 import kapandaria.YDate.YDateDual;
 import kapandaria.YDate.YDateLanguage;
 
@@ -59,11 +60,11 @@ public class Exporter
         YDateDual x=YDateDual.getNow();
         
         
-        if (larg.toLowerCase() == "now" || larg.toLowerCase() == "this")
+        /*if (larg.toLowerCase() == "now" || larg.toLowerCase() == "this")
         {
             x=YDateDual.getNow();
         }
-        if (larg.toLowerCase() == "next")
+        else if (larg.toLowerCase() == "next")*/
         {
             x=YDateDual.getNow();
             x.step(YDateDual.STEP_TYPE.HEB_YEAR_FORWARD); // print next year
@@ -80,6 +81,8 @@ public class Exporter
             for (int i=1; i<= month_length;++i)
             {
                 System.out.println("<tr><td>" +x.hebrewDate().dayString(YDateLanguage.Language.HEBREW)+ "</td>");
+                System.out.println("<td>" +TorahReading.GetSidra(x.hebrewDate(), false, YDateLanguage.Language.HEBREW)
+                        + "</td>");
                 System.out.println("<td>" +x.getEventString(YDateLanguage.Language.HEBREW, false)+ "</td></tr>");
                 x.hebrewDate().seekBy(1);
             }

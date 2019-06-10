@@ -226,7 +226,6 @@ public final class JewishDate extends ADMYDate
     */
     public boolean MimicDate(JewishDate o) {
         this._valid = o._valid;
-        this._desired = o._desired;
         this._year = o._year;
         this._month = o._month;
         this._day = o._day;
@@ -234,7 +233,8 @@ public final class JewishDate extends ADMYDate
         this._yearFirstDay = o._yearFirstDay;
         this._yearLength = o._yearLength;
         this._dayInYear = o._dayInYear;
-        return stateChanged();
+        this._desired = stateChanged();
+        return this._desired;
     }
     public static JewishDate createByYearMonthIdDay(int year, int monthId, int day)
     {
@@ -325,8 +325,8 @@ public final class JewishDate extends ADMYDate
         months = months - (235 * (year_in_19) + 1) / 19;
         parts += months * MONTH;
         this._yearGParts = orig_parts - parts;
-        this._yearFirstDay = days_until_year(years, this._yearGParts);
-        int next_year_day = days_until_year(years + 1, partsSinceGenesis(years + 1));
+        this._yearFirstDay = _calculateYearFirstDayGDN(years, this._yearGParts);
+        int next_year_day = _calculateYearFirstDayGDN(years + 1, partsSinceGenesis(years + 1));
         int months_in_year;
         if (gdn >= this._yearFirstDay && gdn < next_year_day) {
             this._year = years;
@@ -339,7 +339,7 @@ public final class JewishDate extends ADMYDate
                 months_in_year = calculateYearMonths(this._year);
                 this._yearGParts -= months_in_year * MONTH;
                 next_year_day = this._yearFirstDay;
-                this._yearFirstDay = days_until_year(this._year, this._yearGParts);
+                this._yearFirstDay = _calculateYearFirstDayGDN(this._year, this._yearGParts);
                 this._yearLength = next_year_day - this._yearFirstDay;
             }
             else {
@@ -347,7 +347,7 @@ public final class JewishDate extends ADMYDate
                 months_in_year = calculateYearMonths(years);
                 this._yearGParts += months_in_year * MONTH;
                 this._yearFirstDay = next_year_day;
-                this._yearLength = days_until_year(this._year + 1, partsSinceGenesis(this._year + 1)) - this._yearFirstDay;
+                this._yearLength = _calculateYearFirstDayGDN(this._year + 1, partsSinceGenesis(this._year + 1)) - this._yearFirstDay;
             }
         }
         this._dayInYear = gdn - this._yearFirstDay;
@@ -358,8 +358,8 @@ public final class JewishDate extends ADMYDate
     }
     private void _calculateYearVariables() {
         this._yearGParts = partsSinceGenesis(_year);
-        this._yearFirstDay = days_until_year(_year, this._yearGParts);
-        this._yearLength = days_until_year(_year + 1, partsSinceGenesis(_year + 1)) - this._yearFirstDay;
+        this._yearFirstDay = _calculateYearFirstDayGDN(_year, this._yearGParts);
+        this._yearLength = _calculateYearFirstDayGDN(_year + 1, partsSinceGenesis(_year + 1)) - this._yearFirstDay;
     }
 
 
@@ -377,36 +377,38 @@ public final class JewishDate extends ADMYDate
         return parts;
     }
 
-    public static int days_until_year(int year, long parts) {
-        int days = (int) ((parts + MOLAD_ZAKEN_ROUNDING) / DAY);
+    private static int _calculateYearFirstDayGDN(int year, long parts) {
+        int gdn = (int) ((parts + MOLAD_ZAKEN_ROUNDING) / DAY);
         int parts_mod = (int) (parts % DAY);
         int year_type = ((year - 1) * 7 + 1) % 19;
         /* this magic gives us the following array:
-         1, 8,15, 3,10,17, 5,12, 0, 7,14, 2, 9,16, 4,11,18, 6,13
+         01,08,15,03,10,17,05,12,00,07,14,02,09,16,04,11,18,06,13
          now if we compare it with the 235 months division:
          12,12,13,12,12,13,12,13,12,12,13,12,12,13,12,12,13,12,13
          we can see that all the leap years # >=12 and all the regular years # <12
          also, all the years that comes after a leap year have a number < 7
          */
-        int week_day = (days % 7);
+        boolean regular_year = year_type < 12;//regular year (non leap)
+        boolean regular_after_leap = year_type < 7;//a year after a leap year
+        int week_day = (gdn % 7);
         if (parts_mod < DAY - MOLAD_ZAKEN_ROUNDING) {
-            if (year_type < 12)//regular year (non leap)
+            if (regular_year)
             {
                 if (week_day == TUESDAY && parts_mod >= HP(9, 204)) {
-                    return days + 2;//we need to add 2 because Wednesday comes next (ADU)
+                    return gdn + 2;//we need to add 2 because Wednesday comes next (ADU)
                 }
             }
-            if (year_type < 7)//a year after a leap year
+            if (regular_after_leap)//a year after a leap year
             {
                 if (week_day == MONDAY && parts_mod >= HP(15, 589)) {
-                    return days + 1;//we need to add only 1..
+                    return gdn + 1;//we need to add only 1..
                 }
             }
         }
         if (week_day == SUNDAY || week_day == WEDNESDAY || week_day == FRIDAY) {
-            ++days;
+            ++gdn;
         }
-        return days;
+        return gdn;
     }
 
     public static int calculateYearLength(int year) {
@@ -414,11 +416,11 @@ public final class JewishDate extends ADMYDate
     }
 
     public static int calculateYearFirstDay(int year) {
-        return days_until_year(year, partsSinceGenesis(year));
+        return _calculateYearFirstDayGDN(year, partsSinceGenesis(year));
     }
 
-    public static int days_to_year(int days) {
-        long orig_parts = (long) days * DAY;
+    public static int gdnToYear(int gdn) {
+        long orig_parts = (long) gdn * DAY;
         long parts = orig_parts - MOLAD;
         int months = (int) (parts / MONTH);
         parts = (parts % MONTH);
@@ -429,21 +431,18 @@ public final class JewishDate extends ADMYDate
         years += year_in_19;
         months = months - (235 * (year_in_19) + 1) / 19;
         parts += months * MONTH;
-        int estimated_year_length = 353;
-        if (calculateYearMonths(years) == 13) {
-            estimated_year_length = 383;
-        }
+        int estimated_year_length = (calculateYearMonths(years) == 12)? 353 : 383;
         long year_molad_parts = orig_parts - parts;
-        int estimated_first_year_day = (int) ((year_molad_parts) / DAY);
-        if (estimated_first_year_day + 2 <= days && days < estimated_first_year_day + estimated_year_length) {
+        int estimated_first_year_day = (int) ((year_molad_parts + MOLAD_ZAKEN_ROUNDING) / DAY);
+        if (estimated_first_year_day + 2 <= gdn && gdn < estimated_first_year_day + estimated_year_length) {
             return years;
         }
-        int year_first_day = days_until_year(years, year_molad_parts);
-        if (days < year_first_day) {
+        int year_first_day = _calculateYearFirstDayGDN(years, year_molad_parts);
+        if (gdn < year_first_day) {
             return years - 1;
         }
-        int next_year_day = days_until_year(years + 1, partsSinceGenesis(years + 1));
-        if (days >= next_year_day) {
+        int next_year_day = _calculateYearFirstDayGDN(years + 1, partsSinceGenesis(years + 1));
+        if (gdn >= next_year_day) {
             return years + 1;
         }
         return years;

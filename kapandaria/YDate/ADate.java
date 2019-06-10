@@ -86,7 +86,15 @@ public abstract class ADate
      * for more information about GDN see {@link kapandaria.YDate.ADate#GDN}
      */
     public abstract int lowerBound();
+    /**
+     *
+     * @return whether date represented is valid
+     */
     public abstract boolean isValid();
+    /**
+     *
+     * @return whether last operation gave desired result.
+     */
     public abstract boolean isDesired();
     /**
      * Register a listner for a date change event.
