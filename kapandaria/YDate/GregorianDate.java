@@ -51,8 +51,66 @@ public final class GregorianDate extends ADMYDate
     * calculation to that date.
     */
     static final int DAYS_OF_2300 = 2213121;
+    static final int LEAP_YEAR_LENGTH = 366;
+    static final int NORMAL_YEAR_LENGTH = 365;
 
     static final int[] HUNDRED_OFFSET = {0, 36525, 36525 * 2 - 1, 36525 * 3 - 2};
+    
+    private static final int[][] months_days_offsets
+           = {
+               {0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365},
+               {0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366}
+           };
+    
+    public static boolean isLeap(int year) {
+    /* 
+    trick that work with unsigned 32 bit integers:
+       uint32_t z=(0xc28f5c29*year)&0xf800000f;
+       // 0xc28f5c29 is the multiplicative inverse of 25.
+       // divide by 25. the modulo of 25 will be encoded in the 5 msb, and modulo of 16 in the low 4 bits (because 25*16 = 40)
+       // z==0 checks if year modulo 400 is zero. z>=0x08000000 checks is year modulo 25 is not zero.
+       return (z==0) || ((year&3)==0 && z>=0x08000000);
+    */
+       return ( (year % 400) == 0)||( (year % 4) == 0 && (year % 100) != 0);
+    }
+    
+    public static int calculateDayInYear(boolean leap_year, int month, int day) {
+       return months_days_offsets[leap_year ? 1 : 0][month - 1] + day - 1;
+    }
+
+    /**
+     * get the GDN of the first day in the year
+     * @param year
+     * @return 
+     */
+    public static int yearGDN(int year) {
+
+       int years_since_1600 = year - 1600;
+       int year_first_day = DAYS_OF_1600;
+       year_first_day += DAYS_IN_400 * (years_since_1600 / 400);
+       year = years_since_1600 % 400;
+       int hundred= year / 100;
+       year_first_day += HUNDRED_OFFSET[hundred];
+       if (hundred == 0) {//if we are in the first hundred of the four hundreds
+           year_first_day += ((year + 3) / 4) + year * 365;
+           return year_first_day; //finito!
+       }
+       //else if we are in one of the other 3 hundreds 
+       year = year % 100;//get the year in this hundred.
+       //in the first four years of those 3 hundreds we don't have a leap february.
+       //so we try to do some tricks to skip an extra "if".
+       //if the assumption (-1)/4 ==0 is incorrect (like in python), use the following code.
+       if ((-1) / 4 != 0) {//we can't save that extra "if" so we do the abs function.
+           year_first_day += (Math.abs(year - 1) / 4) + year * 365;
+           //year_first_day += (((year == 0) ? 0 : year - 1) / 4) + year * 365;
+       }
+       else {//but if we are in java, that former "if" is optimized out (omitted).
+           year_first_day += ((year - 1) / 4) + year * 365;
+       }
+       return year_first_day;
+    }
+
+    
     /**
     * The Gregorian year. year 1 is the first year in CE. There is no year
     * zero. Year -1 is the last year before Common Era. Anyway, the valid
@@ -89,6 +147,9 @@ public final class GregorianDate extends ADMYDate
     * Is the date valid?
     */
     private boolean _valid;
+    /** 
+     * did last operation generated the desired date?
+     */
     private boolean _desired;
 
     /**
@@ -102,7 +163,7 @@ public final class GregorianDate extends ADMYDate
        this._month = 1;
        this._day = 1;
        this._yearFirstDay = 0;
-       this._yearLength = 365;
+       this._yearLength = NORMAL_YEAR_LENGTH;
        this._dayInYear = 0;
     }
     
@@ -190,7 +251,7 @@ public final class GregorianDate extends ADMYDate
            //calculate the year's first day in the "beginning count".
            this._yearFirstDay = yearGDN(this._year);
            //calculate the year's length.
-           this._yearLength = isLeap(this._year) ? 366 : 365;
+           this._yearLength = isLeap(this._year) ? LEAP_YEAR_LENGTH : NORMAL_YEAR_LENGTH;
            //calculate the month's length.
            int month_length = monthLength();
            //fix the day parameter
@@ -204,7 +265,7 @@ public final class GregorianDate extends ADMYDate
            }
 
            this._day = day;
-           this._dayInYear = calculateDayInYear(this._yearLength, this._month, this._day);
+           this._dayInYear = calculateDayInYear(this._yearLength == LEAP_YEAR_LENGTH, this._month, this._day);
            this._valid = true;
            this._desired = this._desired && stateChanged();
            return this._desired;
@@ -250,7 +311,7 @@ public final class GregorianDate extends ADMYDate
         this._dayInYear = day_in_year;
         setMonthDay(day_in_year);
         this._yearFirstDay = gd_year_first_day;
-        this._yearLength = isLeap(this._year) ? 366 : 365;
+        this._yearLength = isLeap(this._year) ? LEAP_YEAR_LENGTH : NORMAL_YEAR_LENGTH;
         this._valid = true;
         this._desired = stateChanged();
         return this._desired;
@@ -281,8 +342,8 @@ public final class GregorianDate extends ADMYDate
            this._month = gd_month;
            this._day = gd_day;
 
-           this._yearLength = isLeap(this._year) ? 366 : 365;
-           this._dayInYear = calculateDayInYear(this._yearLength, this._month, this._day);
+           this._yearLength = isLeap(this._year) ? LEAP_YEAR_LENGTH : NORMAL_YEAR_LENGTH;
+           this._dayInYear = calculateDayInYear(this._yearLength == LEAP_YEAR_LENGTH, this._month, this._day);
            this._yearFirstDay = days - this._dayInYear; //previously it was days_until_year(this.year);
            this._valid = true;
            this._desired = stateChanged();
@@ -312,16 +373,7 @@ public final class GregorianDate extends ADMYDate
         return this._desired;
     }
 
-    /**
-    * This method gives you a formatted string of the current date.
-    * @param language The language object in which the string will be formatted.
-    * @return a string in the format "August 1, 1999".
-    */
-    public String dayString(YDateLanguage.Language language) {
-       return YDateLanguage.getLanguageEngine(language).FormatGregorianDate(_day, _month, _year,dayInWeekEnum());
-    }
-
-    
+       
 
     /**
     * Get the day in the month for that specific date.
@@ -356,7 +408,8 @@ public final class GregorianDate extends ADMYDate
        return this._month;
     }
 
-    public int daysSinceBeginning() {
+    @Override
+    public int GDN() {
        return _yearFirstDay + _dayInYear;
     }
 
@@ -398,31 +451,37 @@ public final class GregorianDate extends ADMYDate
        return this._yearLength;
     }
 
-    public static boolean isLeap(int year) {
-    /* 
-    trick that work with unsigned 32 bit integers:
-       uint32_t z=(0xc28f5c29*year)&0xf800000f;
-       // 0xc28f5c29 is the multiplicative inverse of 25.
-       // divide by 25. the modulo of 25 will be encoded in the 5 msb, and modulo of 16 in the low 4 bits (because 25*16 = 40)
-       // z==0 checks if year modulo 400 is zero. z>=0x08000000 checks is year modulo 25 is not zero.
-       return (z==0) || ((year&3)==0 && z>=0x08000000);
-    */
-       return ( (year % 400) == 0)||( (year % 4) == 0 && (year % 100) != 0);
+    @Override
+    public int yearFirstDayGDN()
+    {
+        return yearFirstDay();
     }
+
+    @Override
+    public int monthFirstDayGDN()
+    {
+        return monthFirstDay();
+    }
+
+    
+    @Override
+    public int upperBound()
+    {
+        return DAYS_OF_2300;
+    }
+
+    @Override
+    public int lowerBound()
+    {
+        return DAYS_OF_1600;
+    }
+
 
 
     public double JulianDay() {
-       return daysSinceBeginning() + JULIAN_DAY_OFFSET - 0.5;
+       return GDN() + JULIAN_DAY_OFFSET - 0.5;
     }
 
-    public String monthName(YDateLanguage.Language language) {
-       return YDateLanguage.getLanguageEngine(language).getGregMonthToken(this._month - 1);
-    }
-    private static final int[][] months_days_offsets
-           = {
-               {0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365},
-               {0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366}
-           };
 
     /**
     * Sets the month and day in month according to the day in year.
@@ -443,47 +502,6 @@ public final class GregorianDate extends ADMYDate
        //TODO: create a static version for this method.
     }
 
-    private static int calculateDayInYear(int year_length, int month, int day) {
-       int mo_year_t = year_length - 365;
-       return months_days_offsets[mo_year_t][month - 1] + day - 1;
-    }
-
-    public static int calculateDayInYear(boolean leap_year, int month, int day) {
-       return months_days_offsets[leap_year ? 1 : 0][month - 1] + day - 1;
-    }
-
-    /**
-     * get the GDN of the first day in the year
-     * @param year
-     * @return 
-     */
-    public static int yearGDN(int year) {
-
-       int years_since_1600 = year - 1600;
-       int year_first_day = DAYS_OF_1600;
-       year_first_day += DAYS_IN_400 * (years_since_1600 / 400);
-       year = years_since_1600 % 400;
-       int hundred= year / 100;
-       year_first_day += HUNDRED_OFFSET[hundred];
-       if (hundred == 0) {//if we are in the first hundred of the four hundreds
-           year_first_day += ((year + 3) / 4) + year * 365;
-           return year_first_day; //finito!
-       }
-       //else if we are in one of the other 3 hundreds 
-       year = year % 100;//get the year in this hundred.
-       //in the first four years of those 3 hundreds we don't have a leap february.
-       //so we try to do some tricks to skip an extra "if".
-       //if the assumption (-1)/4 ==0 is incorrect (like in python), use the following code.
-       if ((-1) / 4 != 0) {//we can't save that extra "if" so we do the abs function.
-           year_first_day += (Math.abs(year - 1) / 4) + year * 365;
-           //year_first_day += (((year == 0) ? 0 : year - 1) / 4) + year * 365;
-       }
-       else {//but if we are in java, that former "if" is optimized out (omitted).
-           year_first_day += ((year - 1) / 4) + year * 365;
-       }
-       return year_first_day;
-    }
-
     public boolean stepMonthForward(boolean cyclic) {
        return setByYearMonthDay(_year + (cyclic ? 0 : (_month == 12 ? 1 : 0)), (_month % 12) + 1, _day);
     }
@@ -500,38 +518,18 @@ public final class GregorianDate extends ADMYDate
         return setByYearMonthDay(_year, _month, new_day);
     }
 
-    @Override
-    public int yearFirstDayGDN()
-    {
-        return yearFirstDay();
-    }
 
-    @Override
-    public int monthFirstDayGDN()
-    {
-        return monthFirstDay();
+    public String monthName(YDateLanguage.Language language) {
+       return YDateLanguage.getLanguageEngine(language).getGregMonthToken(this._month - 1);
     }
-
     
-    
-
-    @Override
-    public int GDN()
-    {
-        return daysSinceBeginning();
+    /**
+    * This method gives you a formatted string of the current date.
+    * @param language The language object in which the string will be formatted.
+    * @return a string in the format "August 1, 1999".
+    */
+    public String dayString(YDateLanguage.Language language) {
+       return YDateLanguage.getLanguageEngine(language).FormatGregorianDate(_day, _month, _year,dayInWeekEnum());
     }
-
-    @Override
-    public int upperBound()
-    {
-        return DAYS_OF_2300;
-    }
-
-    @Override
-    public int lowerBound()
-    {
-        return DAYS_OF_1600;
-    }
-
 
 }

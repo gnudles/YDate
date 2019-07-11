@@ -55,7 +55,7 @@ public class TorahReading
     **39 - Chukat Balak         X   X   X   X   X   X   X   X
     * 42 - Matot Mas'ei         V   V   V   V   V   X   X   V
     * 51 - Nitzavim Vayelech    V   X   V   V   V   X   X   V
-    * you can obtain the joining in israel by copying the joining outside IL and removing Chukat Balak joining.
+    * you can obtain the joining in israel by copying the joining outside IL and removing Chukat Balak joining,
     * except year type 4,11,12 where you should remove Behar Bechukotai in year type 4 and Matot Mas'ei in year types 11,12
     */
     final static byte[][] SIDRA_JOIN =
@@ -120,6 +120,118 @@ public class TorahReading
                 0x60 //0, 0, 0, 0, 0, 1, 1
              //14
         }
+    };
+    public enum Sidra
+    {
+        NONE,
+        BERESHIT,
+        NOACH,
+        LECH_LECHA,
+        VAYERA,
+        CHAYEI_SARAH,
+        TOLDOT,
+        VAYETZE,
+        VAYISHLACH,
+        VAYESHEV,
+        MIKETZ,
+        VAYIGASH,
+        VAYECHI,
+        SHEMOT,
+        VAERA,
+        BO,
+        BESHALACH,
+        YITRO,
+        MISHPATIM,
+        TERUMAH,
+        TETZAVEH,
+        KI_TISA,
+        VAYAKHEL,
+        PEKUDEI,
+        VAYIKRA,
+        TZAV,
+        SHEMINI,
+        TAZRIA,
+        METZORA,
+        ACHREI_MOT,
+        KEDOSHIM,
+        EMOR,
+        BEHAR,
+        BECHUKOTAI,
+        BAMIDBAR,
+        NASO,
+        BEHAALOTCHA,
+        SHELACH_LECHA,
+        KORACH,
+        CHUKAT,
+        BALAK,
+        PINCHAS,
+        MATOT,
+        MASEI,
+        DEVARIM,
+        VAETCHANAN,
+        EKEV,
+        REEH,
+        SHOFTIM,
+        KI_TETZE,
+        KI_TAVO,
+        NITZAVIM,
+        VAYELECH,
+        HAAZINU,
+        VEZOT_HABERACHA,     
+        __1_55,
+        __2_56,
+        __3_57,
+        __4_58,
+        __5_59,
+        __6_60,
+        __7_61,
+        __8_62,
+        __9_63,
+        __10_64,
+        __11_65,
+        __12_66,
+        __13_67,
+        __14_68,
+        __15_69,
+        __16_70,
+        __17_71,
+        __18_72,
+        __19_73,
+        __20_74,
+        __21_75,
+        VAYAKHEL__PEKUDEI,
+        __23_77,
+        __24_78,
+        __25_79,
+        __26_80,
+        TAZRIA__METZORA,
+        __28_82,
+        ACHREI_MOT__KEDOSHIM,
+        __30_84,
+        __31_85,
+        BEHAR__BECHUKOTAI,
+        __33_87,
+        __34_88,
+        __35_89,
+        __36_90,
+        __37_91,
+        __38_92,
+        CHUKAT__BALAK,
+        __40_94,
+        __41_95,
+        MATOT__MASEI,
+        __43_97,
+        __44_98,
+        __45_99,
+        __46_100,
+        __47_101,
+        __48_102,
+        __49_103,
+        __50_104,
+        NITZAVIM__VAYELECH,
+        __52_106,
+        __53_107,
+        __54_108,
     };
     final static String[] sidraToken
             = {
@@ -373,7 +485,7 @@ public class TorahReading
         }
         else
         {
-            byte[] sidra_array = calculateSidraArray(h.yearLength(), h.yearFirstDay(), diaspora);
+            byte[] sidra_array = _calculateSidraArray(h.yearLength(), h.yearFirstDay(), diaspora);
             if ((day_type & SHABBAT_DAY) != 0)
             {
                 pnum = sidra_array[diy / 7];
@@ -493,7 +605,7 @@ public class TorahReading
         }
         else
         {
-            byte[] sidra_array = calculateSidraArray(h.yearLength(), h.yearFirstDay(), diaspora);
+            byte[] sidra_array = _calculateSidraArray(h.yearLength(), h.yearFirstDay(), diaspora);
             if ((day_type & SHABBAT_DAY) != 0) // we are in shabbat
             {
                 pnum = sidra_array[diy / 7];
@@ -544,7 +656,7 @@ public class TorahReading
     //reverse access:
     static final byte[][][] sidra_to_shabbat = new byte[2][JewishDate.N_YEAR_TYPES][54];//[diaspora][year_type][sidra]
 
-    private static int getNextJoinPointer(byte joining, int jp)
+    private static int _getNextJoinPointer(byte joining, int jp)
     {
         for (; jp < double_reading.length; ++jp)
         {
@@ -556,7 +668,7 @@ public class TorahReading
         return jp;
     }
 
-    private static int getJoin(int jp)
+    private static int _getJoin(int jp)
     {
         if (jp >= double_reading.length)
         {
@@ -577,7 +689,7 @@ public class TorahReading
  * @param diaspora
  * @return 
  */
-    private static byte[] calculateSidraArray(int year_length, int year_first_day, boolean diaspora)
+    private static byte[] _calculateSidraArray(int year_length, int year_first_day, boolean diaspora)
     {
         int year_diw = year_first_day % 7; // can be only 1(+1=MON) 2(+1=TUE) 4(+1=THU) 6(+1=SAT) 
         
@@ -599,13 +711,13 @@ public class TorahReading
         //the following if is like if (year_diw  == ADate.MONDAY || year_diw  == ADate.TUESDAY)
         if (year_diw <= 2 ) //if the year started in monday or tuesday - pat bag
         {
-            reading[s] = 52;//Vayelech
+            reading[s] = (byte)Sidra.VAYELECH.ordinal();//Vayelech
             ++s;
-            reading[s] = 53;//Ha'azinu
+            reading[s] = (byte)Sidra.HAAZINU.ordinal();//Ha'azinu
             ++s;
             reading[s] = 0;//none
             ++s;
-            diy += 21;
+            diy += 21;//jump to after sukkuth.
         }
         else
         {
@@ -615,13 +727,13 @@ public class TorahReading
                 ++s;
                 diy += 7;
             }
-            reading[s] = 53;//Ha'azinu
+            reading[s] = (byte)Sidra.HAAZINU.ordinal();//Ha'azinu
             ++s;
             reading[s] = 0;//none
             ++s;
             reading[s] = 0;//none
             ++s;
-            diy += 21;
+            diy += 21;//jump to after sukkuth.
         }
         int pesah_day = JewishDate.calculateDayInYearByMonthId(year_length, JewishDate.M_ID_NISAN, 15); // day in year of pessach night.
         int pesah_length = diaspora ? 8 : 7;//how much days in pessach?
@@ -630,8 +742,8 @@ public class TorahReading
         int tr = 1;
         //now s points to shabat bereshit
         int jp = 0;
-        jp = getNextJoinPointer(joining, jp);
-        int next_join = getJoin(jp);
+        jp = _getNextJoinPointer(joining, jp);
+        int next_join = _getJoin(jp);
         while (s < shabats)
         {
             if ((diy >= pesah_day && diy < pesah_day + pesah_length)
@@ -649,8 +761,8 @@ public class TorahReading
                     ++s;
                     diy += 7;
                     tr += 2;
-                    jp = getNextJoinPointer(joining, jp + 1);
-                    next_join = getJoin(jp);
+                    jp = _getNextJoinPointer(joining, jp + 1);
+                    next_join = _getJoin(jp);
                 }
                 else
                 {
@@ -663,11 +775,11 @@ public class TorahReading
         }
         return reading;
     }
-    private static byte[] generateSidraToShabbatArray(int year_length, int year_first_day, boolean diaspora)
+    private static byte[] _generateSidraToShabbatArray(int year_length, int year_first_day, boolean diaspora)
     {
         int year_diw = year_first_day % 7; // can be only 1 2 4 6 (+1 = 2 3 5 7)
         int ldt = JewishDate.ld_year_type(year_length, year_diw + 1);
-        byte[] reading = calculateSidraArray(year_length, year_first_day, diaspora);
+        byte[] reading = _calculateSidraArray(year_length, year_first_day, diaspora);
         byte[] rev_access = sidra_to_shabbat[diaspora ? 0 : 1][ldt - 1];
         if (rev_access[0]!=0)
             return rev_access;
@@ -720,8 +832,8 @@ public class TorahReading
         return ADate.getPrevious(ADate.SATURDAY, year_first_day - 1);
     }
     /**
-     * UNTESTED. should give you day in "beginning count" (GDN) for specific sidra.
-     * Vaelech might be twice in year or just once or zero. if there are two shabbats Vayelech,
+     * UNTESTED. should give you day in "beginning count" (GDN) for specific Sidra.
+     * Vaelech might be twice in year or just once or zero. if there are two Shabbats Vayelech,
      * it gives the one in the end of the year.
      * there are two methods to get the desired Vayelech shabbat.
      * @param sidra 1..54
@@ -730,18 +842,18 @@ public class TorahReading
      * @param diaspora
      * @return -1 if not found. (might happen with "Vayelech")
      */
-    public static int getParashaDayInYear(int sidra,int year_length, int year_first_day, boolean diaspora)
+    public static int getParashaDayInYear(Sidra sidra,int year_length, int year_first_day, boolean diaspora)
     {
-        if (sidra < 1 || sidra > 54)
+        if (sidra.ordinal() < Sidra.BERESHIT.ordinal() || sidra.ordinal() > Sidra.VEZOT_HABERACHA.ordinal())
             return -1;
-        if (sidra==54)
+        if (sidra == Sidra.VEZOT_HABERACHA)  // we read VeZot HaBeracha on Simchat Torah.
         {
             // Simchat torah is in Tishrey 22 in Israel or 23 in Galuyot.
-            // but while day in month starts from 1, our "day in year" count starts from 0.
+            // but while day in month starts from 1, our "day in year" count starts from 0. so 23,22 become 22,21 respectively.
             return year_first_day + (diaspora ? 22 : 21); 
         }
-        int sat_num = generateSidraToShabbatArray(year_length,year_first_day,diaspora)[sidra-1];
-        if (sat_num<0)
+        int sat_num = _generateSidraToShabbatArray(year_length,year_first_day,diaspora)[sidra.ordinal()-1];
+        if (sat_num < 0)
             return -1;
         return ADate.getNext(ADate.SATURDAY, year_first_day) + sat_num * 7;
     }
