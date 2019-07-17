@@ -179,8 +179,8 @@ public abstract class ADate
      * Return the upcoming day in week, or the current day if it is that certain day in week.
      * 
      * @param diw day in week. un range 0..6
-     * @param days day in "beginning count" or other count that day 0 is sunday
-     * @return days + x (6 &gt; = x &gt; = 0). that gives that certain day in week. 
+     * @param days day in GDN or other count that day 0 is sunday
+     * @return days + x (0 &lt; = x &lt; = 6). that gives that certain day in week. 
      */
     public static int getNext(int diw, int gdn) // return the upcoming diw (or today if it's that diw)
     {
@@ -188,6 +188,13 @@ public abstract class ADate
         return (gdn + diff);
     }
 
+    /**
+     * Return the last day of certain day in week, or the current day if it is that certain day in week.
+     * 
+     * @param diw day in week. un range 0..6
+     * @param days day in GDN or other count that day 0 is sunday
+     * @return days - x (0 &lt; = x &lt; = 6). that gives that certain day in week. 
+     */
     public static int getPrevious(int diw, int gdn) {
         return getNext(diw, gdn - 6);
     }

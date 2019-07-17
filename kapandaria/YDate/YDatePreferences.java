@@ -35,7 +35,6 @@ public class YDatePreferences
         diaspora=_diaspora;
     }
     public enum DiasporaType{ ErezIsrael,Diaspora,Both}
-    public enum HaftaraMinhag{ SFARADIM,ASHKENAZ,ITALKI,TEIMANI,CHABAD,FRANKFURT}
     public double longitude;
     public double latitude;
     public double altitude;//in meters from MSL

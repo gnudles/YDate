@@ -204,10 +204,6 @@ public class YDateLanguage {
         return null;
     }
 
-    public  String getSpecialShabbat(int token){
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
     public  String getNumber(int num){
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }

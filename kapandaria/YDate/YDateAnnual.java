@@ -18,7 +18,7 @@ package kapandaria.YDate;
 import java.util.Arrays;
 public class YDateAnnual
 {
-    enum JewishEvents
+    public enum JewishEvents
     {
     NO_EVENT,
     ROSH_HASHANA_A,
