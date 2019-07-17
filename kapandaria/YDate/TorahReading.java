@@ -121,6 +121,7 @@ public class TorahReading
              //14
         }
     };
+    static final int TO_JOIN_54 = 54;
     public enum Sidra
     {
         NONE,
@@ -291,44 +292,6 @@ public class TorahReading
                 "sidra_Haazinu",
                 "sidra_Vezot_Haberacha"
             };
-    /*final static String[][] sidra =
-    {
-        {
-            "",
-            //1-8
-            "בראשית", "נח", "לך-לך", "וירא", "חיי-שרה", "תולדות", "ויצא", "וישלח",
-            //9-17
-            "וישב", "מקץ", "ויגש", "ויחי", "שמות", "וארא", "בא", "בשלח", "יתרו",
-            //18-25
-            "משפטים", "תרומה", "תצוה", "כי-תשא", "ויקהל", "פקודי", "ויקרא", "צו",
-            //26-33
-            "שמיני", "תזריע", "מצורע", "אחרי-מות", "קדושים", "אמור", "בהר", "בחקותי",
-            //34-41
-            "במדבר", "נשא", "בהעלותך", "שלח-לך", "קרח", "חקת", "בלק", "פנחס",
-            //42-49
-            "מטות", "מסעי", "דברים", "ואתחנן", "עקב", "ראה", "שופטים", "כי-תצא",
-            //50-54
-            "כי-תבוא", "נצבים", "וילך", "האזינו", "וזאת הברכה"
-        },
-        {
-            "",
-            //1-8
-            "Bereshit", "Noach", "Lech-Lecha", "Vayera", "Chayei-Sarah", "Toldot", "Vayetze", "Vayishlach",
-            //9-17
-            "Vayeshev", "Miketz", "Vayigash", "Vayechi", "Shemot", "Vaera", "Bo", "Beshalach", "Yitro",
-            //18-25
-            "Mishpatim", "Terumah", "Tetzaveh", "Ki-Tisa", "Vayakhel", "Pekudei", "Vayikra", "Tzav",
-            //26-33
-            "Shemini", "Tazria", "Metzora", "Achrei-Mot", "Kedoshim", "Emor", "Behar", "Bechukotai",
-            //34-41
-            "Bamidbar", "Naso", "Beha\'alotcha", "Shelach-Lecha", "Korach", "Chukat", "Balak", "Pinchas",
-            //42-49
-            "Matot", "Mas\'ei", "Devarim", "Vaetchanan", "Ekev", "Re\'eh", "Shoftim", "Ki-Tetze",
-            //50-54
-            "Ki-Tavo", "Nitzavim", "Vayelech", "Ha\'azinu", "Vezot Haberacha"
-        }
-
-    };*/
 
     /*final static String[] special_shabat =
     {
@@ -512,9 +475,9 @@ public class TorahReading
             }
         }
         String lstr = "";
-        if (pnum < 0) // if two Parashot are connected
+        if (pnum > TO_JOIN_54) // if two Parashot are connected
         {
-            pnum = -pnum;
+            pnum = pnum - TO_JOIN_54;
             if ((day_type & SHABBAT_DAY) !=0)
             {
                 String fp = le.getToken("format_parasha2");
@@ -584,15 +547,14 @@ public class TorahReading
         }
         return lstr;
     }
-/**
+    /**
  * This method gives you the upcoming parasha. it is useful to know what parasha we should start studying.
  * @param h the hebrew date object
  * @param diaspora are we in the diaspora?
  * @return the string of the parasha.
  */
-    public static String GetSidra(JewishDate h, boolean diaspora, YDateLanguage.Language language)
+    public static Sidra GetSidraEnum(JewishDate h, boolean diaspora)
     {
-        YDateLanguage le = YDateLanguage.getLanguageEngine(language);
         int diy = h.dayInYear();
         int ydiw = h.yearFirstDay() % 7;
         int simhat_torah = diaspora ? 23 : 22;
@@ -601,7 +563,7 @@ public class TorahReading
         int pnum = 0;
         if ((diy + 1) == simhat_torah)
         {
-            pnum = 54;//Vezot Haberacha
+            pnum = Sidra.VEZOT_HABERACHA.ordinal();//Vezot Haberacha
         }
         else
         {
@@ -614,7 +576,7 @@ public class TorahReading
             {
                 if ((diy + 1) <= simhat_torah && (diy + 1) >= succot)
                 {
-                    pnum = 54;//Vezot Haberacha
+                    pnum = Sidra.VEZOT_HABERACHA.ordinal();//Vezot Haberacha
                 }
                 else
                 {
@@ -625,16 +587,28 @@ public class TorahReading
                         //if the next saturday is in succot, it means we are already in Vezot Haberacha.
                         if (pnum == 0 && (sat / 7) == 2)//sat>=14 && sat <=20
                         {
-                            pnum = 54;//Vezot Haberacha
+                            pnum = Sidra.VEZOT_HABERACHA.ordinal();//Vezot Haberacha
                         }
                         sat += 7;
                     }
                 }
             }
         }
+        return Sidra.values()[pnum];
+    }
+/**
+ * This method gives you the upcoming parasha. it is useful to know what parasha we should start studying.
+ * @param h the hebrew date object
+ * @param diaspora are we in the diaspora?
+ * @return the string of the parasha.
+ */
+    public static String GetSidra(JewishDate h, boolean diaspora, YDateLanguage.Language language)
+    {
+        YDateLanguage le = YDateLanguage.getLanguageEngine(language);
+        int pnum = GetSidraEnum(h, diaspora).ordinal();
         String lstr = "";
-        if (pnum < 0) {
-            pnum = -pnum;
+        if (pnum > TO_JOIN_54) {
+            pnum = pnum - TO_JOIN_54;
 
             String fp = le.getToken("format_parasha2");
             fp = fp.replaceAll("_sd1_", le.getToken(sidraToken[pnum]));
@@ -757,7 +731,7 @@ public class TorahReading
             {
                 if (tr == next_join)
                 {
-                    reading[s] = (byte) (-tr);
+                    reading[s] = (byte) (tr + TO_JOIN_54);
                     ++s;
                     diy += 7;
                     tr += 2;
@@ -783,18 +757,19 @@ public class TorahReading
         byte[] rev_access = sidra_to_shabbat[diaspora ? 0 : 1][ldt - 1];
         if (rev_access[0]!=0)
             return rev_access;
-        rev_access[54-1]=-1;//Vezot Habracha.
+        rev_access[Sidra.VEZOT_HABERACHA.ordinal()-1]=-1;//Vezot Habracha.
         int r=0;
         for (int i=0; i< reading.length;)
         {
-            if (reading[i]>0)
+            
+            if( reading[i] > TO_JOIN_54 )//joined
             {
-                rev_access[reading[i]-1]=(byte)i;
+                rev_access[reading[i] - TO_JOIN_54 - 1]=(byte)i;
+                rev_access[reading[i] - TO_JOIN_54 + 1 - 1]=(byte)i;
             }
-            else if(reading[i]<0)//joined
+            else if (reading[i] > 0 )
             {
-                rev_access[-reading[i]-1]=(byte)i;
-                rev_access[-reading[i]]=(byte)i;
+                rev_access[reading[i] -1]=(byte)i;
             }
         }
         return rev_access;        
@@ -1010,63 +985,125 @@ Divrei Hayamim II - II Chronicles
         }
         
     }
-    BibleText haftarot_ashkenaz[]=
+    public enum HaftaraMinhag{ SFARADIM,ASHKENAZ,ITALKI,TEIMANI,CHABAD,FRANKFURT};
+    BibleText ko_amar_yeshaayah_42_5__43_10 = new BibleText("כה אמר האל").append(new BibleParagraph(BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 42, 5 ),
+            BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 43, 10 )));
+    BibleText ko_amar_yeshaayah_42_5__42_21 = new BibleText("כה אמר האל").append(new BibleParagraph(BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 42, 5 ),
+            BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 42, 21 )));
+    BibleText hen_avdi_yeshaayah_42_1__42_21 = new BibleText("הן עבדי").append(new BibleParagraph(BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 42, 1 ),
+            BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 42, 21 )));
+    BibleText hen_avdi_yeshaayah_42_1__42_16 = new BibleText("הן עבדי").append(new BibleParagraph(BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 42, 1 ),
+            BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 42, 16 )));
+    
+    BibleText roni_akara_yeshaayah_54_1__55_5 = new BibleText("רני עקרה").append(new BibleParagraph(BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 54, 1 ),
+            BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 55, 5 )));
+    BibleText roni_akara_yeshaayah_54_1__54_10 = new BibleText("רני עקרה").append(new BibleParagraph(BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 54, 1 ),
+            BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 54, 10 )));
+    BibleText roni_akara_yeshaayah_54_1__55_3 = new BibleText("רני עקרה").append(new BibleParagraph(BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 54, 1 ),
+            BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 55, 3 )));
+    BibleText lama_tomar_yaakov_yeshaayah_40_27__41_16 = new BibleText("למה תאמר יעקב").append(new BibleParagraph(BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 40, 27 ),
+            BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 41, 16 )));
+    BibleText vel_mi_tedamyuni_yeshaayah_40_25__41_17 = new BibleText("ואל מי תדמיוני").append(new BibleParagraph(BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 40, 25 ),
+            BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 41, 17 )));
+    BibleText veisha_akhat_melachim_ii_4_1__4_37 = new BibleText("ואשה אחת").append(new BibleParagraph(BibleIndex.BibleIndex(BibleIndex.BibleBook.Melachim_II, 4, 1 ),
+            BibleIndex.BibleIndex(BibleIndex.BibleBook.Melachim_II, 4, 37 )));
+    BibleText veisha_akhat_melachim_ii_4_1__4_23 = new BibleText("ואשה אחת").append(new BibleParagraph(BibleIndex.BibleIndex(BibleIndex.BibleBook.Melachim_II, 4, 1 ),
+            BibleIndex.BibleIndex(BibleIndex.BibleBook.Melachim_II, 4, 23 )));
+    
+    BibleText haftarot[][] = 
     {
-      //Bereshit
-        new BibleText("כה אמר האל").append(new BibleParagraph(BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 42, 5 ),
-            BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 43, 10 ))),
-        //Noah
-        new BibleText("רני עקרה").append(new BibleParagraph(BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 54, 1 ),
-            BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 55, 5 ))),
+        {//Bereshit
+            ko_amar_yeshaayah_42_5__42_21,//sefardim
+            ko_amar_yeshaayah_42_5__43_10,//ashkenaz
+            hen_avdi_yeshaayah_42_1__42_21,//italian
+            hen_avdi_yeshaayah_42_1__42_16,//teimani
+            ko_amar_yeshaayah_42_5__42_21,//chabad
+            ko_amar_yeshaayah_42_5__42_21,//frankfurt
+        },
+        {//Noah
+            roni_akara_yeshaayah_54_1__54_10,//sefardim
+            roni_akara_yeshaayah_54_1__55_5,//ashkenaz
+            roni_akara_yeshaayah_54_1__55_5,//italian
+            roni_akara_yeshaayah_54_1__55_3,//teimani
+            roni_akara_yeshaayah_54_1__54_10,//chabad
+            roni_akara_yeshaayah_54_1__55_5,//frankfurt
+        },
+        {//Lech Lecha
+            lama_tomar_yaakov_yeshaayah_40_27__41_16,//sefardim
+            lama_tomar_yaakov_yeshaayah_40_27__41_16,//ashkenaz
+            vel_mi_tedamyuni_yeshaayah_40_25__41_17,//italian
+            vel_mi_tedamyuni_yeshaayah_40_25__41_17,//teimani
+            lama_tomar_yaakov_yeshaayah_40_27__41_16,//chabad
+            lama_tomar_yaakov_yeshaayah_40_27__41_16,//frankfurt
+        },
+        {//Vayera
+            veisha_akhat_melachim_ii_4_1__4_23,//sefardim
+            veisha_akhat_melachim_ii_4_1__4_37,//ashkenaz
+            veisha_akhat_melachim_ii_4_1__4_37,//italian
+            veisha_akhat_melachim_ii_4_1__4_37,//teimani
+            veisha_akhat_melachim_ii_4_1__4_37,//chabad
+            veisha_akhat_melachim_ii_4_1__4_23//frankfurt
+        },
+        {//Chayei_Sarah
+            //sefardim
+            //ashkenaz
+            //italian
+            //teimani
+            //chabad
+            //frankfurt
+        },
+        {//Toldot
+            //sefardim
+            //ashkenaz
+            //italian
+            //teimani
+            //chabad
+            //frankfurt
+        },
+        {//Vayetze
+            //sefardim
+            //ashkenaz
+            //italian
+            //teimani
+            //chabad
+            //frankfurt
+        },
+        {//Vayishlach
+            //sefardim
+            //ashkenaz
+            //italian
+            //teimani
+            //chabad
+            //frankfurt
+        },
+        {//Vayeshev
+            //sefardim
+            //ashkenaz
+            //italian
+            //teimani
+            //chabad
+            //frankfurt
+        },
+        {//Miketz
+            //sefardim
+            //ashkenaz
+            //italian
+            //teimani
+            //chabad
+            //frankfurt
+        },
+        {//Vayigash
+            //sefardim
+            //ashkenaz
+            //italian
+            //teimani
+            //chabad
+            //frankfurt
+        },
     };
-    BibleText haftarot_sefaradim[]=
-    {
-      //Bereshit
-        new BibleText("כה אמר האל").append(new BibleParagraph(BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 42, 5 ),
-            BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 42, 21 ))),
-        //Noah
-        new BibleText("רני עקרה").append(new BibleParagraph(BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 54, 1 ),
-            BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 54, 10 ))),
-        
-    };
-    BibleText haftarot_chabad[]=
-    {
-        //bereshit
-        haftarot_sefaradim[0],
-        //Noah
-        haftarot_sefaradim[1],
-        
-        
-    };
-    BibleText haftarot_frankfurt[]=
-    {
-        //bereshit
-        haftarot_sefaradim[0],
-        //Noah
-        haftarot_ashkenaz[1],
-        
-    };
-    BibleText haftarot_italians[]=
-    {
-        //bereshit
-        new BibleText("הן עבדי").append(new BibleParagraph(BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 42, 1 ),
-            BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 42, 21 ))),
-        //Noah
-        haftarot_ashkenaz[1],
-        
-        
-        
-    };
-    BibleText haftarot_teiman[]=
-    {
-        //bereshit
-        new BibleText("הן עבדי").append(new BibleParagraph(BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 42, 1 ),
-            BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 42, 16 ))),
-        //Noah
-        new BibleText("רני עקרה").append(new BibleParagraph(BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 54, 1 ),
-            BibleIndex.BibleIndex(BibleIndex.BibleBook.Yeshaayah, 55, 3 ))),
-        
-    };
+
+    
+    
     BibleText gimel_depuranuta_sheva_denechamata[]={
         //gimel depuranuta
     new BibleText("דברי ירמיהו").append(new BibleParagraph(BibleIndex.BibleIndex(BibleIndex.BibleBook.Yirmiyah, 1, 1 ),
@@ -1097,6 +1134,8 @@ Divrei Hayamim II - II Chronicles
         new BibleText(gimel_depuranuta_sheva_denechamata[1]),
         gimel_depuranuta_sheva_denechamata[2]
     };
+    
+    
 
     BibleText getHaftaraShaharit(YDatePreferences.HaftaraMinhag minhag)
     {
