@@ -23,7 +23,7 @@ public class YDateAnnual
     NO_EVENT,
     ROSH_HASHANA_A,
     ROSH_HASHANA_B, 
-    TZOM_GEDALIA, 
+    TZOM_GEDALIAH, 
     EREV_YOM_KIPPUR, 
     YOM_KIPPUR,    
     SIMCHAT_COHEN, 
@@ -120,7 +120,7 @@ public class YDateAnnual
         events_type[JewishEvents.NO_EVENT.ordinal()]=EV_NONE;
         events_type[JewishEvents.ROSH_HASHANA_A.ordinal()]=EV_YOM_TOV;
         events_type[JewishEvents.ROSH_HASHANA_B.ordinal()]=EV_YOM_TOV;//
-        events_type[JewishEvents.TZOM_GEDALIA.ordinal()]=EV_TZOM|EV_HORBAN;
+        events_type[JewishEvents.TZOM_GEDALIAH.ordinal()]=EV_TZOM|EV_HORBAN;
         events_type[JewishEvents.EREV_YOM_KIPPUR.ordinal()]=EV_EREV_YOM_TOV;
         events_type[JewishEvents.YOM_KIPPUR.ordinal()]=EV_TZOM|EV_YOM_TOV;
         events_type[JewishEvents.SIMCHAT_COHEN.ordinal()]=EV_GOOD_DAYS;
@@ -175,9 +175,9 @@ public class YDateAnnual
 
 
     static final byte [][] event_db= 
-    {// month_id,day,array index,# of days,jump/dhia(if #_days==1). if dhia>=7 then dhia%7 is the only day of week possible
+    {// month_id,day,array index,# of days,jump/dhia(if #_days==1) if falls on saturday. if dhia>=7 then dhia%7 is the only day of week possible
         {JewishDate.M_ID_TISHREI,1,(byte)JewishEvents.ROSH_HASHANA_A.ordinal(),2,1},//two days of rosh hashana
-        {JewishDate.M_ID_TISHREI,3,(byte)JewishEvents.TZOM_GEDALIA.ordinal(),1,1},//zom gdalia, dhia
+        {JewishDate.M_ID_TISHREI,3,(byte)JewishEvents.TZOM_GEDALIAH.ordinal(),1,1},//zom gedaliah, dhia
         {JewishDate.M_ID_TISHREI,9,(byte)JewishEvents.EREV_YOM_KIPPUR.ordinal(),2,1},//yom kippur
         {JewishDate.M_ID_TISHREI,11,(byte)JewishEvents.SIMCHAT_COHEN.ordinal(),1,0},//yom Simhat Cohen
         {JewishDate.M_ID_TISHREI,14,(byte)JewishEvents.EREV_SUKKOT.ordinal(),2,1},//Erev Sukkot+Sukkot

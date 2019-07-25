@@ -698,6 +698,10 @@ public final class JewishDate extends ADMYDate
         return ld_year_type(this._yearLength, yearWeekDay());
     }
 
+    public int yearWeekDayEnum()//1- sunday,7-saturday
+    {
+        return this._yearFirstDay % 7;
+    }
     public int yearWeekDay()//1- sunday,7-saturday
     {
         return this._yearFirstDay % 7 + 1;
@@ -1254,11 +1258,56 @@ public final class JewishDate extends ADMYDate
     public int dayOfChanukkah() {
         int diy = dayInYear();
         int chnkday = calculateDayInYearByMonthId(_yearLength, M_ID_KISLEV, 25);
-        return (diy >= chnkday && diy < chnkday + 8) ? diy - chnkday + 1 : -1;
+        return (diy >= chnkday && diy < chnkday + 8) ? diy - chnkday + 1 : 0;
     }
 
     public boolean isKippurDay() {
-        return dayInYear() == 9; // 10 in Tishrei.
+        final int KIPPUR_DAY_IN_YEAR = 9;// 10 in Tishrei.
+        return dayInYear() == KIPPUR_DAY_IN_YEAR; 
+    }
+    public boolean isTzomGedaliah() {
+        final int THIRD_DAY = 2;// 3 in Tishrei.
+        final int FOURTH_DAY = 3;// 4 in Tishrei.
+        return (yearWeekDayEnum() == THURSDAY)? //year started on thursday, so the tzom nidkha
+                (dayInYear() == FOURTH_DAY) : (dayInYear() == THIRD_DAY); 
+    }
+    public boolean isTzomTenthTevet() {
+        return  (monthID() == M_ID_TEVET && dayInMonth() == 10);
+    }
+    public boolean isTaanitEsther() {
+        return (monthID() == M_ID_ADAR || monthID() == M_ID_ADAR_II) &&
+                ((dayInMonth() == 11 &&
+                 dayInWeekEnum() == THURSDAY) || (dayInMonth() == 13 && dayInWeekEnum() != SATURDAY));
+    }
+    public boolean isTzomSeventeenTammuz() {
+        return (monthID() == M_ID_TAMMUZ) &&
+                ( (dayInMonth() == 18 && dayInWeekEnum() == SUNDAY)
+                || (dayInMonth() == 17 && dayInWeekEnum() != SATURDAY));
+    }
+    public boolean isSuccotShminiAtzeret(boolean diaspora) {
+        int from = 15; // 15 in Tishrei
+        int to = diaspora? 23 : 22; // 23 or 22 in Tishrei
+        return monthID() == M_ID_TISHREI && dayInMonth()>= from && dayInMonth()<=to;
+    }
+    public boolean isPassover(boolean diaspora) {
+        int from = 15; // 15 in Nisan
+        int to = diaspora? 22 : 21; // 22 or 21 in Nisan
+        return monthID() == M_ID_NISAN && dayInMonth()>= from && dayInMonth()<=to;
+    }
+    public boolean isShavuoth(boolean diaspora) {
+        int from = 6; // 6 in Sivan
+        int to = diaspora? 7 : 6; // 7 or 6 in Sivan
+        return monthID() == M_ID_SIVAN && dayInMonth()>= from && dayInMonth()<=to;
+    }
+    /*
+    including Shmini Atzeret
+    */
+    public boolean isRegel(boolean diaspora) {
+        return (isShavuoth(diaspora) || isSuccotShminiAtzeret(diaspora) || isPassover(diaspora) );
+    }
+    public boolean isSimchatTorah(boolean diaspora) {
+        int simchat_day_in_month = diaspora? 23 : 22;
+        return monthID() == M_ID_TISHREI && dayInMonth() == simchat_day_in_month;
     }
 
     /**
@@ -1278,6 +1327,15 @@ public final class JewishDate extends ADMYDate
     public boolean isNineAv() {
 
         return dayInYear() == nineAvDayInYear(); // 9 in Av.
+    }
+    public boolean isPurimPerazim() {
+        return (monthID() == M_ID_ADAR || monthID() == M_ID_ADAR_II) && dayInMonth() == 14;
+    }
+    public boolean isShushanPurim() {
+        return (monthID() == M_ID_ADAR || monthID() == M_ID_ADAR_II) && dayInMonth() == 15;
+    }
+    public boolean isRoshHaShana() {
+        return dayInYear() < 2;
     }
 
     public int sfiratHaomer() {
