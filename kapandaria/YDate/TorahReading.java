@@ -25,7 +25,13 @@ public class TorahReading
     //based on shulhan aruch ORACH HAIM SIMAN 428 SEIF 4
     final static int[] double_reading =
     {
-        22, 27, 29, 32, 39, 42, 51
+        Sidra.VAYAKHEL.ordinal() /*22*/,
+        Sidra.TAZRIA.ordinal() /*27*/,
+        Sidra.ACHREI_MOT.ordinal()/*29*/,
+        Sidra.BEHAR.ordinal() /*32*/,
+        Sidra.CHUKAT.ordinal() /*39*/,
+        Sidra.MATOT.ordinal() /*42*/,
+        Sidra.NITZAVIM.ordinal() /*51*/
     };
     /* outside israel!:
     *  joining   year type      1   2   3   4   5   6   7
@@ -576,7 +582,7 @@ public class TorahReading
                 else
                 {
                     int sat = ADate.getNext(ADate.SATURDAY, diy + ydiw) - ydiw;// get the day in year of next saturday.
-                    while (pnum == 0)
+                    while (pnum == 0 && (sat/7) < sidra_array.length)
                     {
                         pnum = sidra_array[sat / 7];
                         //if the next saturday is in succot, it means we are already in Vezot Haberacha.
@@ -679,7 +685,7 @@ public class TorahReading
 
         int diy = ADate.getNext(ADate.SATURDAY, year_diw) - year_diw;
         int shabbats = (year_length - (diy) + 6) / 7;//number of shabbats in the given year.
-        shabbats++; // one for the next year
+        shabbats++; // one for the next year. Even though Rosh Hashana may be in Saturday, and therefore no Torah Reading, we still put there the upcoming parasha.
         byte[] reading = new byte[shabbats];
         sidra_reading[diaspora ? 0 : 1][ldt - 1] = reading;
         //the following if is like if (year_diw  == ADate.MONDAY || year_diw  == ADate.TUESDAY)
@@ -759,7 +765,7 @@ public class TorahReading
             return rev_access;
         rev_access[Sidra.VEZOT_HABERACHA.ordinal()-1]=-1;//Vezot Habracha.
         int r=0;
-        for (int i=0; i< reading.length;)
+        for (int i=0; i< reading.length -1;) //we substract one from length, because last one belongs to next year.
         {
             
             if( reading[i] > NUM_SIDRA_54 )//joined
