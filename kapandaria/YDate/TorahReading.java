@@ -412,7 +412,9 @@ public class TorahReading
     static final int NINE_AV = (1 << 10);
     static final int KIPPUR = (1 << 11);
     static final int ROSH_HASHANA = (1 << 12);
-
+    static final int SHABBAT_OF_HOL = (1 << 13);
+    static final int SHABBAT_OF_HOL_DIASPORA = (1 << 14);
+    
     static int getDayType(JewishDate h)
     {
         
@@ -432,14 +434,14 @@ public class TorahReading
         boolean rosh_hashana = h.isRoshHaShana();
 
         int type = 0;
+        type += regalim ? REGALIM : 0;
+        type += rosh_hashana ? ROSH_HASHANA : 0;
+        type += kippur ? KIPPUR : 0;
         type += rosh_chodesh ? ROSH_CHODESH : 0;
         type += four_taaniot ? TAANIT : 0;
         type += shabbat ? SHABBAT_DAY : 0;
         type += chanukkah ? CHANUKKAH : 0;
-        type += nine_av ? NINE_AV : 0;
-        type += kippur ? KIPPUR : 0;
-        type += rosh_hashana ? ROSH_HASHANA : 0;
-        type += regalim ? REGALIM : 0;
+        type += nine_av ? NINE_AV : 0;       
         type += (type == 0 && sheni_hamishi) ? HOL_DAY_MONDAY_THURSDAY : 0;
         
         type += erev_rosh_chodesh ? EREV_ROSH_CHODESH : 0;
@@ -451,95 +453,73 @@ public class TorahReading
 
     public static boolean GetMegilatEsther(JewishDate h, boolean MukafHoma)
     {
-        int diy = h.dayInYear();
-        int ydiw = h.yearFirstDay() % 7;
-        int day_type = getDayType(h);
-        int diw = (diy + ydiw) % 7;
-        return  (  ((day_type & PURIM) != 0 && MukafHoma && diw == ADate.FRIDAY)//purim meshulash
-            ||((day_type & PURIM) != 0 && (!MukafHoma))
-            ||((day_type & SHOSHAN_PURIM) != 0 && MukafHoma && diw != ADate.SATURDAY));
+        int diw = h.dayInWeekEnum();
+        return  (  (h.isPurimPerazim() && MukafHoma && diw == ADate.FRIDAY)//purim meshulash
+            ||(h.isPurimPerazim() && (!MukafHoma))
+            ||(h.isShushanPurim() && MukafHoma && diw != ADate.SATURDAY));
     }
 
-    public static String GetTorahReading(JewishDate h, boolean diaspora, boolean MukafHoma, YDateLanguage.Language language)
+    public static String GetTorahReading(JewishDate h, boolean diaspora, boolean MukafHoma, YDateLanguage le)
     {
-        YDateLanguage le = YDateLanguage.getLanguageEngine(language);
-        int diy = h.dayInYear();
-        int ydiw = h.yearWeekDayEnum();
-        //int diw = (diy + ydiw) % 7;
+   
+        boolean FourTaaniot = h.isTzomGedaliah() || h.isTzomTenthTevet()
+                    || h.isTaanitEsther() || h.isTzomSeventeenTammuz();
+        boolean isLocalPurim = (h.isPurimPerazim() && !MukafHoma)
+                    || (h.isShushanPurim() && MukafHoma);
+        boolean NineAv = h.isNineAv();
+        int parasha_num = 0;
+        if (!h.isKippurDay() && !h.isRoshHaShana() && h.isRegel(diaspora))
+        {
+            boolean no_weekly_reading_hol = NineAv
+                    || FourTaaniot
+                    || isLocalPurim
+                    || h.roshChodesh()
+                    || (h.dayOfChanukkah() > 0);
+                    
+            if (h.isShabbat() ||
+                    (h.isSheniChamishi() && !no_weekly_reading_hol))
+            {
+                parasha_num = GetSidraEnum(h, diaspora).ordinal();
+            }
+        }
         
-        int day_type = getDayType(h);
-        int pnum = 0;
-        if (h.isSimchatTorah(diaspora)) //if we are in simchat torah...
-        {
-            pnum = 54;//Vezot Haberacha
-        }
-        else
-        {
-            byte[] sidra_array = _calculateSidraArray(h.yearLength(), h.yearFirstDay(), diaspora);
-            if ((day_type & SHABBAT_DAY) != 0)
-            {
-                pnum = sidra_array[diy / 7];
-            }
-            else if (((day_type & HOL_DAY_MONDAY_THURSDAY) != 0 && (!(diaspora && (day_type & REGALIM_DIASPORA) != 0)))) // if Hol Day of monday or thursday
-            {
-                int sat = ADate.getNext(ADate.SATURDAY, diy + ydiw) - ydiw;
-                while (pnum == 0 && (sat/7) < sidra_array.length )
-                {
-                    pnum = sidra_array[sat / 7];
-                    if (pnum == 0 && (sat / 7) == 2)
-                    {
-                        pnum = 54;//Vezot Haberacha
-                    }
-                    sat += 7;
-                }
-            }
-        }
         String lstr = "";
-        if (pnum > 0)
+        if (parasha_num > 0)
         {
-            int sidra = pnum;
-            if ((day_type & HOL_DAY_MONDAY_THURSDAY) !=0 && sidra > NUM_SIDRA_54)
+            int sidra = parasha_num;
+            if (h.isSheniChamishi() && sidra > NUM_SIDRA_54)
             {
                 sidra -= NUM_SIDRA_54;//on monday and thursday we only read the first of two connected.
             }
             lstr += SidraEnumToString(sidra, le);
         }
-        if (((day_type & PURIM) != 0 && (!MukafHoma)) ||
-            ((day_type & SHOSHAN_PURIM) != 0 && MukafHoma))
+        if (isLocalPurim)
         {
-            if ((day_type & SHABBAT_DAY) == 0) //not shabbat
+            if (h.isShabbat()) //not shabbat
             {
-                lstr = "";
-            }
-            else
-            {
-                lstr += ", ";
+                lstr += ", ";                
             }
             lstr += "ויבא עמלק";
         }
-        if ((day_type & TAANIT) != 0)
+        if (FourTaaniot)
         {
             lstr = "ויחל משה";
         }
-        if ((day_type) == ROSH_CHODESH)
+        if (h.roshChodesh())
         {
             lstr = "קריאה לר\"ח";
         }
-        if ((day_type) == NINE_AV)
+        if (NineAv)
         {
             lstr ="מגילת איכה";
         }
-        if ((day_type & CHANUKKAH) !=0)
+        if (h.dayOfChanukkah() > 0)
         {
-            if ((day_type & SHABBAT_DAY) == 0) //not shabbat
-            {
-                lstr = "";
-            }
-            else
+            if (h.isShabbat()) 
             {
                 lstr += ", ";
             }
-            if ((day_type & ROSH_CHODESH) !=0)
+            if (h.roshChodesh())
             {
                 lstr +="קריאה לר\"ח וחנוכה";
             }
@@ -560,7 +540,6 @@ public class TorahReading
     {
         int diy = h.dayInYear();
         int ydiw = h.yearFirstDay() % 7;
-        int day_type = getDayType(h);
         int pnum = 0;
         if (h.isSimchatTorah(diaspora))
         {
@@ -569,7 +548,7 @@ public class TorahReading
         else
         {
             byte[] sidra_array = _calculateSidraArray(h.yearLength(), h.yearFirstDay(), diaspora);
-            if ((day_type & SHABBAT_DAY) != 0) // we are in shabbat
+            if (h.isShabbat()) // we are in shabbat
             {
                 pnum = sidra_array[diy / 7];
             }
@@ -603,9 +582,8 @@ public class TorahReading
  * @param diaspora are we in the diaspora?
  * @return the string of the parasha.
  */
-    public static String GetSidra(JewishDate h, boolean diaspora, YDateLanguage.Language language)
+    public static String GetSidra(JewishDate h, boolean diaspora, YDateLanguage le)
     {
-        YDateLanguage le = YDateLanguage.getLanguageEngine(language);
         int pnum = GetSidraEnum(h, diaspora).ordinal();
         return SidraEnumToString(pnum, le);
     }

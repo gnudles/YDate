@@ -458,8 +458,8 @@ public final class JewishDate extends ADMYDate
             return new JewishDate(GDN()+1);
     }
 
-    public String dayString(YDateLanguage.Language lang) {
-        return YDateLanguage.getLanguageEngine(lang).FormatJewishDate(_day, monthID(), _year, dayInWeekEnum());
+    public String dayString(YDateLanguage le) {
+        return le.FormatJewishDate(_day, monthID(), _year, dayInWeekEnum());
     }
 
     @Override
@@ -938,13 +938,13 @@ public final class JewishDate extends ADMYDate
         return 1 + (this._year - 4117) % 7;//4116 was a shmita year
     }
 
-    public String ShmitaLabel(YDateLanguage.Language lang) {
+    public String ShmitaLabel(YDateLanguage le) {
         int idx = 0;
         if (ShmitaOrdinal() == 50) {
             idx = 7; //index of the yovel label
         }
         idx = (ShmitaOrdinal() - 1) % 7;
-        return YDateLanguage.getLanguageEngine(lang).getShmitaToken(idx);
+        return le.getShmitaToken(idx);
     }
 
     public int dayInMazal() {
@@ -1010,11 +1010,10 @@ public final class JewishDate extends ADMYDate
         return Element.values()[zs.ordinal()%4];
     }
 
-    public String ZodiacSignFormatted(YDateLanguage.Language language) {
+    public String ZodiacSignFormatted(YDateLanguage le) {
         //TODO: make this return integer of mazal ID...
         
         ZodiacSign mazal = zodiacSign();
-        YDateLanguage le = YDateLanguage.getLanguageEngine(language);
 
         String formatted = le.getToken("format_zodiac");
         formatted = formatted.replaceAll("_z_sign_", le.getToken(zodiacNameTokens[mazal.ordinal()]));
@@ -1023,21 +1022,21 @@ public final class JewishDate extends ADMYDate
         return formatted;
     }
 
-    public String TkufaName(YDateLanguage.Language language) {
-        return YDateLanguage.getLanguageEngine(language).FormatPeriod(TkufaType());
+    public String TkufaName(YDateLanguage le) {
+        return le.FormatPeriod(TkufaType());
     }
 
-    public String MazalBeginning(TimeZoneProvider tz) {
+    public String MazalBeginning(TimeZoneProvider tz, YDateLanguage le) {
         Date m = partsToUTC(MazalParts());
-        return FormatUTC(m, tz, YDateLanguage.Language.HEBREW);
+        return FormatUTC(m, tz, le);
     }
 
-    public String TkufaBeginning(TimeZoneProvider tz) {
+    public String TkufaBeginning(TimeZoneProvider tz, YDateLanguage le) {
         final int TAMMUZ_OR_TEVET = (1<<M_ID_TAMMUZ) | (1<<M_ID_TEVET);
         long parts = TkufaParts();
         Date m = partsToUTC(parts);
-        return FormatUTC(m, tz, YDateLanguage.Language.HEBREW) + "\nמוסיפים " + ( (( 1<<TkufaType() ) & TAMMUZ_OR_TEVET) !=0 ? "60" : "30") + " דקות לפני ואחרי."
-                + "\nתחילת תקופה ב" + planetOfHourName(parts, YDateLanguage.Language.HEBREW);
+        return FormatUTC(m, tz, le) + "\nמוסיפים " + ( (( 1<<TkufaType() ) & TAMMUZ_OR_TEVET) !=0 ? "60" : "30") + " דקות לפני ואחרי."
+                + "\nתחילת תקופה ב" + planetOfHourName(parts, le);
     }
 
     /**
@@ -1261,6 +1260,13 @@ public final class JewishDate extends ADMYDate
         return (diy >= chnkday && diy < chnkday + 8) ? diy - chnkday + 1 : 0;
     }
 
+    public boolean isShabbat() {
+        return dayInWeekEnum() == SATURDAY;
+    }
+    public boolean isSheniChamishi() {
+        return dayInWeekEnum() == THURSDAY || dayInWeekEnum() == MONDAY;
+    }
+    
     public boolean isKippurDay() {
         final int KIPPUR_DAY_IN_YEAR = 9;// 10 in Tishrei.
         return dayInYear() == KIPPUR_DAY_IN_YEAR; 
@@ -1369,9 +1375,9 @@ public final class JewishDate extends ADMYDate
      * Also, according to the book of Yezira, each planet is connected with a
      * single day of the week (just as their names suggest).
      */
-    String planetOfHourName(long parts, YDateLanguage.Language lang) {
+    String planetOfHourName(long parts, YDateLanguage le) {
         Planet hour = planetOfHour(parts);
-        return YDateLanguage.getLanguageEngine(lang).getToken(planetNameTokens[hour.ordinal()]);
+        return le.getToken(planetNameTokens[hour.ordinal()]);
     }
     /**
      * There are seven planets, each planet controls different hour of the day in
@@ -1409,16 +1415,15 @@ public final class JewishDate extends ADMYDate
     }
     
     
-    public String MoladString(TimeZoneProvider tz, YDateLanguage.Language language) {
+    public String MoladString(TimeZoneProvider tz, YDateLanguage le) {
         //TODO: make this multilingual
-        YDateLanguage le = YDateLanguage.getLanguageEngine(language);
         long parts = MoladParts();
         int days = (int) (parts / DAY);
         int single_parts = (int) (parts % DAY);
         int hours = (int) (single_parts / HOUR);
         single_parts = single_parts % HOUR;
         String lstr = "המולד לחודש ";
-        lstr += monthName(language);
+        lstr += monthName(le);
         lstr += " ";
         lstr += Format.HebIntString(year(), true);
         lstr += " ביום ";
@@ -1431,36 +1436,21 @@ public final class JewishDate extends ADMYDate
         lstr += "\n";
         //int minutes=(single_parts)/(1080/60);
         Date m = partsToUTC(parts);
-        lstr += FormatUTC(m, tz, language);
-        lstr += "\nהמולד ב" + planetOfHourName(parts, YDateLanguage.Language.HEBREW);
+        lstr += FormatUTC(m, tz, le);
+        lstr += "\nהמולד ב" + planetOfHourName(parts, le);
         Date fill = partsToUTC(parts + MONTH / 2);
         lstr += "\nמילוי הלבנה ";
-        lstr += FormatUTC(fill, tz, language);
+        lstr += FormatUTC(fill, tz, le);
         return lstr;
     }
 
 
-    public static String monthNameByID(int mID, YDateLanguage.Language language) {
-        /*final String[][] months =
-        {
-            {"תשרי", "חשוון", "כסלו", "טבת",
-            "שבט", "אדר",
-            "אדר א'",
-            "אדר ב'",
-            "ניסן", "אייר",
-            "סיוון", "תמוז", "אב", "אלול"},
-            {"Tishrei", "Cheshvan", "Kislev", "Tevet",
-            "Shevat", "Adar",
-            "Adar I",
-            "Adar II",
-            "Nisan", "Iyar",
-            "Sivan", "Tammuz", "Av", "Elul"},
-        };*/
-        return YDateLanguage.getLanguageEngine(language).getHebMonthToken(mID);
+    public static String monthNameByID(int mID, YDateLanguage le) {
+        return le.getHebMonthToken(mID);
     }
 
-    public String monthName(YDateLanguage.Language language) {
-        return monthNameByID(monthID(), language);
+    public String monthName(YDateLanguage le) {
+        return monthNameByID(monthID(), le);
     }
 
     

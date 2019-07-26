@@ -70,18 +70,19 @@ public class Exporter
             x.step(YDateDual.STEP_TYPE.HEB_YEAR_FORWARD); // print next year
         }
         
+        YDateLanguage heb_le = YDateLanguage.getLanguageEngine(YDateLanguage.Language.HEBREW);
         System.out.println("<h2>"+Format.HebIntString(x.hebrewDate().year(), true)+"</h2>");
         x.hebrewDate().setByGDN(x.hebrewDate().yearFirstDayGDN());
         int monthsInYear = x.hebrewDate().monthsInYear();
         for (int m = 1; m <= monthsInYear; ++m)
         {
-            System.out.println("<h3>"+x.hebrewDate().monthName(YDateLanguage.Language.HEBREW)+"</h3>");
+            System.out.println("<h3>"+x.hebrewDate().monthName(heb_le)+"</h3>");
             System.out.println("<table>");
             int month_length= x.hebrewDate().monthLength();
             for (int i=1; i<= month_length;++i)
             {
-                System.out.println("<tr><td>" +x.hebrewDate().dayString(YDateLanguage.Language.HEBREW)+ "</td>");
-                System.out.println("<td>" +TorahReading.GetSidra(x.hebrewDate(), false, YDateLanguage.Language.HEBREW)
+                System.out.println("<tr><td>" +x.hebrewDate().dayString(heb_le)+ "</td>");
+                System.out.println("<td>" +TorahReading.GetSidra(x.hebrewDate(), false, heb_le)
                         + "</td>");
                 System.out.println("<td>" +x.getEventString(YDateLanguage.Language.HEBREW, false)+ "</td></tr>");
                 x.hebrewDate().seekBy(1);
@@ -111,7 +112,7 @@ public class Exporter
                 System.out.println("<td>" +x.hebrewDate().yearSign()+ "</td>");
                 System.out.println("<td>" +x.hebrewDate().yearLength()+ "</td>");
                 System.out.println("<td>" +(x.hebrewDate().yearOfColdWinter()?"חורף קר":"")+ "</td>");
-                System.out.println("<td>" +(x.hebrewDate().ShmitaLabel(YDateLanguage.Language.HEBREW))+ "</td>");
+                System.out.println("<td>" +(x.hebrewDate().ShmitaLabel(heb_le))+ "</td>");
                 System.out.println("</tr>");
         }
         System.out.println("</table>");

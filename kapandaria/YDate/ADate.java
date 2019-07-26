@@ -246,7 +246,7 @@ public abstract class ADate
         return "ערב";
     }
 
-    public static String FormatUTC(Date t, TimeZoneProvider tz, YDateLanguage.Language language ) {
+    public static String FormatUTC(Date t, TimeZoneProvider tz, YDateLanguage le ) {
         String lstr;
         int utc_minute_offset = (int) (tz.getOffset(t) * 60);
         t.setTime(t.getTime() + utc_minute_offset * 60000L);
@@ -261,7 +261,6 @@ public abstract class ADate
         int minutes = c.get(Calendar.HOUR_OF_DAY)*60 + c.get(Calendar.MINUTE);
         lstr = Format.GDateString(gdyear, gdmonth, gdday) + " " + Format.FormatMinutes(minutes);
         String day_part_name = dayPartName(minutes);
-        YDateLanguage le = YDateLanguage.getLanguageEngine(language);
         lstr += " (" + le.getToken(DayInWeekTokens[dayInWeek]) + " " + day_part_name + ")";
         lstr += " (" + clock_type + ")";
         return lstr;
