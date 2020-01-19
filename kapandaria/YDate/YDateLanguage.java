@@ -205,7 +205,16 @@ public class YDateLanguage {
     }
 
     public  String getNumber(int num){
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        String engine = getToken("numerical_engine");
+        if (engine.equals("heb"))
+        {
+            return Format.HebIntString(num,false);
+        }
+        else if (engine.equals("num"))
+        {
+            return String.valueOf(num);
+        }
+        return "";
     }
 
     public  String FormatGregorianDate(int day, int month, int year, int week_day){
@@ -213,8 +222,8 @@ public class YDateLanguage {
     }
 
     public  String FormatGregorianDate(int day, int month, int year, int week_day, String format){
-        format = format.replaceAll("_mn_", getGregMonthToken(month));
-        format = format.replaceAll("_smn_", getShortGregMonthToken(month));
+        format = format.replaceAll("_mn_", getGregMonthToken(month-1));
+        format = format.replaceAll("_smn_", getShortGregMonthToken(month-1));
         format = format.replaceAll("_dw_", getWeekToken(week_day));
         format = format.replaceAll("_sdw_", getShortWeekToken(week_day));
         format = format.replaceAll("_y_", Integer.toString(year));
@@ -230,7 +239,10 @@ public class YDateLanguage {
 
     }
     public String FormatPeriod(int monthId){
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        String format = _rbundle.getString("format_period");
+        format = format.replaceAll("_pn_", getHebMonthToken(monthId));
+        return format;
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }//tkufa
 
     /**

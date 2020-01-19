@@ -55,6 +55,7 @@ public final class JewishDate extends ADMYDate
     public static final int M_ID_AV = 12;
     public static final int M_ID_ELUL = 13;
 
+    
     public enum Planet
     {
         Mercury,//0
@@ -446,7 +447,7 @@ public final class JewishDate extends ADMYDate
             return years + 1;
         }
         return years;
-    }        
+    }
 
 
     /**
@@ -493,26 +494,43 @@ public final class JewishDate extends ADMYDate
         return DAYS_OF_4119;
     }
 
+    /**
+     * the ordinal day of the first day in current year. this method is useful
+     * for creating annual calendars.
+     * @return the day in GDN.
+     */
     @Override
     public int yearFirstDayGDN()
     {
         return yearFirstDay();
     }
-
+    /**
+     * the ordinal day of the first day in current month. this method is useful
+     * for creating monthly calendars.
+     * @return the day in GDN.
+     */
     @Override
     public int monthFirstDayGDN()
     {
         return monthFirstDay();
     }
 
-        @Override
-    public int dayInMonth()//starts from one
+    /**
+     * the ordinal day in month. range 1..30 (note that first day in month is 1)
+     * @return the day in month.
+     */
+    @Override
+    public int dayInMonth()
     {
         return this._day;
     }
 
+    /**
+     * the ordinal day in year. range 0..384 (note that first day in year is 0).
+     * @return the day in year.
+     */
     @Override
-    public int dayInYear()//starts from zero
+    public int dayInYear()
     {
         return this._dayInYear;
     }

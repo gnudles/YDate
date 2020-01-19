@@ -31,6 +31,10 @@ public class YDateDual
     EventsMaintainer m_eventsMaintainerDiaspora;
     private JewishDate m_hd;
     private GregorianDate m_gd;
+    public JewishDate jewishDate()
+    {
+        return m_hd;
+    }
     public JewishDate hebrewDate()
     {
         return m_hd;
@@ -49,7 +53,9 @@ public class YDateDual
         m_eventsMaintainerErezHaKodesh = new EventsMaintainer(m_hd, false);
         m_eventsMaintainerDiaspora = new EventsMaintainer(m_hd, true);
     }
-    public String getEventString(YDateLanguage.Language language, boolean diaspora)
+    public EventsMaintainer getEventMaintainerErezHaKodesh() { return m_eventsMaintainerErezHaKodesh;}
+    public EventsMaintainer getEventMaintainerDiaspora() { return m_eventsMaintainerDiaspora;}
+    public String getEventString(YDateLanguage language, boolean diaspora)
     {
         YDateAnnual annual=null;
         if (diaspora)
@@ -61,7 +67,7 @@ public class YDateDual
             annual = m_eventsMaintainerErezHaKodesh.yearEvents();
         }
         if (annual!=null)
-            return annual.getYearEventForDayRejection(m_hd, YDateLanguage.getLanguageEngine(language));
+            return annual.getYearEventForDayRejection(m_hd, language);
         return "";
     }
         public enum STEP_TYPE {

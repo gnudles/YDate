@@ -519,8 +519,8 @@ public final class GregorianDate extends ADMYDate
     }
 
 
-    public String monthName(YDateLanguage.Language language) {
-       return YDateLanguage.getLanguageEngine(language).getGregMonthToken(this._month - 1);
+    public String monthName(YDateLanguage language) {
+       return language.getGregMonthToken(this._month - 1);
     }
     
     /**
@@ -528,8 +528,8 @@ public final class GregorianDate extends ADMYDate
     * @param language The language object in which the string will be formatted.
     * @return a string in the format "August 1, 1999".
     */
-    public String dayString(YDateLanguage.Language language) {
-       return YDateLanguage.getLanguageEngine(language).FormatGregorianDate(_day, _month, _year,dayInWeekEnum());
+    public String dayString(YDateLanguage language) {
+       return language.FormatGregorianDate(_day, _month, _year,dayInWeekEnum());
     }
 
 }
