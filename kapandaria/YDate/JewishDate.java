@@ -573,8 +573,9 @@ public final class JewishDate extends ADMYDate
     }
 
     public int monthFirstDay() { //days since beginning
-        int yearLen_t = _yearLengthType(this._yearLength);
-        return this._yearFirstDay + _monthsDaysOffsets[yearLen_t][this._month - 1];
+        /*int yearLen_t = _yearLengthType(this._yearLength);
+        return this._yearFirstDay + _monthsDaysOffsets[yearLen_t][this._month - 1];*/
+        return this._yearFirstDay + this._dayInYear - this._day + 1;
     }
 
     public int monthIdFirstDay(int monthId) { //days since beginning
